@@ -1,0 +1,251 @@
+#combat-carousel.wrapper {
+    position: fixed;
+    top: 15px;
+    left: 120px;
+    width: calc(100% - 450px);
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+}
+
+#combat-carousel .toggle {
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 35px;
+    left: 0;
+}
+
+#combat-carousel .toggle img {
+    height: 32px;
+}
+
+#combat-carousel .overlay {
+    display: none;
+}
+
+#combat-carousel .overlay.active {
+    display: block;
+    position: absolute;
+    top: 0;
+}
+
+#combat-carousel .name {
+    display: none;
+}
+
+#combat-carousel .attributes {
+    display: none;
+}
+
+#combat-carousel .splide__slide:hover .attributes {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    color: white;
+}
+
+#combat-carousel .attributes img {
+    width: 15px;
+    height: 15px;
+}
+
+#combat-carousel .avatar {
+    display: flex;
+    align-items: center;
+    height: 125px;
+    vertical-align: middle;
+
+}
+
+#combat-carousel .initiative {
+    position: absolute;
+    right: 0;
+    padding: 2px 0px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 60%;
+}
+
+#combat-carousel .initiative .fa-2x {
+    font-size: 1em;
+}
+
+#combat-carousel .initiative .fa-stack-1x {
+    text-shadow: 1px 1px 1px black;
+}
+
+#combat-carousel .fa-dice-d20 {
+    color: maroon;
+}
+
+#combat-carousel .effects {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    flex-flow: wrap-reverse;
+}
+
+#combat-carousel .effect {
+    background: rgba(0,0,0,0.5);
+}
+
+#combat-carousel .effect img {
+    height: 15px;
+    width: 15px;
+}
+
+#combat-carousel .combatant {
+    /* line-height: 32px;
+    padding: 0 8px;
+    margin: 0 8px 8px 0;
+    border: 1px solid #000;
+    border-radius: 3px;
+    position: relative;
+    */
+}
+
+#combat-carousel .card {
+    border-radius: 3px;
+    border: 1px solid black;
+    background: url("/ui/denim075.png") repeat;
+    padding: 2px;
+}
+
+#combat-carousel .fly {
+    animation: fly-in 500ms both;
+}
+
+/*
+@keyframes fly-in {
+    0% {
+        transform: translate(200%, 200%) skew(10deg, 10deg);
+    }
+
+    100% {
+        transform: translate(0%, 0%) skew(0deg, 0deg);
+    }
+}
+*/
+
+@keyframes fly-in {
+    from {
+        transform: translate(200%, 200%) skew(10deg, 10deg);
+    }
+}
+
+#combat-carousel img {
+    border: none;
+}
+
+#combat-carousel .hp {
+    text-align: center;
+}
+
+#combat-carousel meter {
+    width: 98%;
+    text-align: center;
+}
+
+#combat-carousel meter[value="0"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: rgba(0,0,0,0.9);
+}
+
+#combat-carousel .splide__slide:hover meter::after {
+    position: relative;
+    content: attr(value) "/" attr(max);
+    top: -15px;
+    color: white;
+    text-shadow: 1px 1px black;
+}
+
+#combat-carousel .splide__slide:hover meter[value="0"]::after {
+    position: inherit;
+    content: attr(value) "/" attr(max);
+    top: -15px;
+    color: white;
+}
+
+.splide__slider {
+    padding: 0px 50px;
+}
+
+/*
+.splide .is-active {
+    margin: 15px;
+    transform: scale(1.2);
+}
+*/
+
+.splide__slide:hover {
+    margin: 25px 15px 15px 15px;
+    transform: scale(1.2);
+}
+
+#combat-carousel .name.hovered {
+    display: block;
+    text-align: center;
+    position: absolute;
+    margin-top: -25px;
+    width: 100%;
+    height: 20px;
+    background: url("/ui/denim075.png") repeat;
+    border: 1px solid black;
+    border-radius: 3px;
+    color: beige;
+    z-index: 100;
+}
+
+
+#combat-carousel .splide__slide:hover .fa-dice-d20 {
+    color: red;
+}
+
+#combat-carousel .is-active.card {
+    border: 2px solid orange;
+}
+
+/*
+#combat-carousel .is-active.card .fa-dice-d20 {
+    color: red;
+}
+*/
+
+/*
+#combat-carousel .splide__slide:hover .effects {
+    display: flex;
+    background: url("/ui/denim075.png") repeat;
+    border: 1px solid black;
+    position: absolute;
+    top: 150px;
+}
+*/
+
+#combat-carousel .fa-dice-d20:hover {
+    animation: spin 0.3s linear;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(180deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.splide__slider {
+    height: 150px;
+}
+
+#combat-carousel .splide__track {
+}
