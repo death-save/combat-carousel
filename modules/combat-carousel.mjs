@@ -89,10 +89,46 @@ export default class CombatCarousel extends Application {
                         await game.combat.update({turn:slide.index});
                     }
                 });
+
+                return this.splide.mount();
             }
             
-            this.splide.mount();
+            return this.splide.refresh();
         }
+    }
+
+    /**
+     * Takes a standard combatant or turn and prepares data for rendering
+     * @param {Combatant | Object} combatant  
+     * @returns {Object} preparedData  data ready for template
+     */
+    static prepareCombatantData(combatant) {
+        const token = canvas.tokens.get(combatant.tokenId);
+        const hp = token?.actor?.data?.data?.attributes?.hp || null;
+        const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
+            
+        if (hp) {
+            hp.low = hp.max * 0.34;
+            hp.high = hp.max * 0.6;
+            hp.optimum = hp.max * 0.9;
+        }
+
+        const preparedData = {
+            id: combatant._id,
+            name: combatant.name,
+            img: token.actor.img ?? combatant.img,
+            initiative: combatant.initiative,
+            hidden: combatant.hidden,
+            defeated: combatant.defeated,
+            carousel: {
+                hp,
+                overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
+                overlayEffect: token?.data?.overlayEffect || null,
+                effects: token?.data?.effects || null
+            }
+        }
+
+        return preparedData;
     }
 
     /**
@@ -101,7 +137,6 @@ export default class CombatCarousel extends Application {
     getData() {
         const view = canvas.scene;
         const combats = view ? game.combats.entities.filter(c => c.data.scene === view._id) : [];
-        const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
         const currentCombatIdx = combats.findIndex(c => c === game.combat);
         const hasCombat = currentCombatIdx > -1;
 
@@ -109,39 +144,16 @@ export default class CombatCarousel extends Application {
 
         const encounter = currentCombatIdx + 1;
         const round = game.combat.round;
-        const turns = game.combat.turns.map(t => {
-            const token = canvas.tokens.get(t.tokenId);
-            const hp = token?.actor?.data?.data?.attributes?.hp || null;
-            
-
-            if (hp) {
-                hp.low = hp.max * 0.34;
-                hp.high = hp.max * 0.6;
-                hp.optimum = hp.max * 0.9;
-            }
-
-            return {
-                id: t._id,
-                name: t.name,
-                img: token.actor.img ?? t.img,
-                initiative: t.initiative,
-                hidden: t.hidden,
-                defeated: t.defeated,
-                carousel: {
-                    hp,
-                    overlayProperties: this.getOverlayProperties(token, overlaySettings),
-                    overlayEffect: token?.data?.overlayEffect || null,
-                    effects: token?.data?.effects || null
-                }                
-            }
-        });
+        const turns = game.combat.turns.map(t => CombatCarousel.prepareCombatantData(t));
+        const combatantCard = "modules/combat-carousel/templates/combatant-card.hbs";
         
         this.turn = turns.length ? game.combat.turn : null;
 
         return {
             turns,
             encounter,
-            round
+            round,
+            combatantCard
         }
     }
 
@@ -315,11 +327,11 @@ export default class CombatCarousel extends Application {
     }
 
     /**
-     * Get the overlay properties for a given token
+     * Get the data for the Combat Carousel property overlay for a given token
      * @param token 
      * @param overlaySettings
      */
-    getOverlayProperties(token, overlaySettings) {
+    static getOverlayProperties(token, overlaySettings) {
         // Only return if value mask is set
         const tokenOverlay = overlaySettings.filter(o => o.value).map(o => {
             return {
