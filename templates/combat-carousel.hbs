@@ -1,0 +1,73 @@
+<div id="combat-carousel" class="wrapper">
+    <div class="toggle">
+        <a id="combat-carousel-toggle" title="click to hide/unhide, right click for config">
+            <img class="carousel-icon" src={{#if turns}}"modules/combat-carousel/icons/combat-carousel-solid2.svg"{{else}}"modules/combat-carousel/icons/empty-carousel-solid.svg"{{/if}}>
+        </a>
+    </div>
+    <div class="overlay"><h1>Round: {{this.round}}</h1></div>
+    <div class="splide">
+        <div class="splide__slider">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    {{#each turns}}
+                    <li class="splide__slide card" data-combatant-id={{this.id}}>
+                        <div class="name">
+                            <div class="button-tray flexrow">
+                                <a class="combatant-control" data-control="toggleHidden"><i class="fas fa-eye-slash"></i></a>
+                                <a class="combatant-control" data-control="toggleDefeated"><i class="fas fa-skull"></i></a>
+                                <a class="combatant-control" data-control="remove"><i class="fas fa-trash"></i></a>
+                            </div>
+                            <h3 title="{{this.name}}">{{this.name}}</h3>
+                        </div>
+                        <div class="splide__container">
+                            <div class="overlay-hud">
+                                
+                                <span class="tracker-indicators">
+                                    {{#if this.defeated}}
+                                    <i class="fas fa-skull" title="{{localize "WORDS.Defeated"}}"></i>
+                                    {{/if}}
+                                    {{#if this.hidden}}
+                                    <i class="fas fa-eye-slash" title="{{localize "WORDS.Hidden"}}"></i>
+                                    {{/if}}
+                                </span>
+                                <div class="overlay-properties">
+                                {{#each this.carousel.overlayProperties}}
+                                <div class="property">
+                                    <img class="icon" src="{{this.img}}" title="{{this.name}}"/>
+                                    <span class="value" title="{{this.value}}">{{this.value}}</span>
+                                </div>
+                                {{/each}}
+                            </div>
+                            </div>
+                            <div class="initiative">
+                                <a class="roll-init">
+                                    <span class="fa-stack fa-2x">
+                                    <i class="fas fa-dice-d20 fa-stack-2x" title="click to roll, right-click to set"></i>
+                                    <input type="text" class="fa-stack-1x fa-inverse" title="{{#if this.initiative}}{{this.initiative}} - {{/if}}click to roll, right-click to set" value="{{this.initiative}}" disabled/>
+                                </span>
+                                </a>
+                            </div>
+                            <div class="effects">
+                                {{#each this.carousel.effects}}
+                                <div class="effect">
+                                    <img src="{{this}}"/>
+                                </div>
+                                {{/each}}
+                            </div>
+                            <div class="avatar">
+                                {{#if this.carousel.overlayEffect}}
+                                <img class="overlay-effect" src="{{this.carousel.overlayEffect}}"/>
+                                {{/if}}
+                                <img src="{{this.img}}" title="{{this.name}}"/>
+                            </div>
+                        </div>
+                        <div class="hp" width="100%">
+                            <meter value="{{this.carousel.hp.value}}" min="0" max="{{this.carousel.hp.max}}" title="{{this.carousel.hp.value}}/{{this.carousel.hp.max}}" optimum="{{this.carousel.hp.optimum}}" low="{{this.carousel.hp.low}}" high="{{this.carousel.hp.high}}"></meter>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

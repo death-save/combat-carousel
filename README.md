@@ -1,6 +1,9 @@
 # combat-carousel
 A Foundry VTT module to display larger combatant cards
 
+## Known Issues
+- Can't change round from the carousel
+
 ## Attribution
 Carousel icon based on icon by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
 

@@ -10,8 +10,10 @@
     "manifest": "https://raw.githubusercontent.com/death-save/combat-carousel/main/module.json",
     "download": "https://github.com/death-save/combat-carousel/archive/main.zip",
     "scripts": [
-      "./combat-carousel.js",
-      "./splide/js/splide.min.js"
+      "./libs/splide/js/splide.min.js"
+    ],
+    "esmodules": [
+      "./init.js"
     ],
     "languages": [
       {
@@ -21,8 +23,8 @@
       }
     ],
     "styles" : [
-        "./combat-carousel.css",
-        "./splide/css/splide.min.css"
+        "./styles/combat-carousel.css",
+        "./libs/splide/css/splide.min.css"
     ]
   }
   

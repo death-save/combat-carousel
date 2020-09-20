@@ -1,0 +1,11 @@
+{
+    "SETTINGS.CollapseNavN": "Collapse Navigation Bar",
+    "SETTINGS.CollapseNavH": "Collapse the Navigation Bar when Combat Carousel is rendered",
+    "SETTINGS.ShowHealthN": "Show Health Bar",
+    "SETTINGS.ShowHealthH": "Shows the health bar under the portrait",
+
+    "WORDS.Save": "Save",
+    "WORDS.Cancel": "Cancel",
+    "WORDS.Hidden": "Hidden",
+    "WORDS.Defeated": "Defeated"
+}
