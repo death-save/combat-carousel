@@ -1,6 +1,8 @@
 import CombatCarouselConfig from "./config-form.mjs";
-import { SETTING_KEYS } from "./config.mjs";
-import { NAME } from "./config.mjs";
+import { CAROUSEL_ICONS } from "./config.mjs";
+import { NAME, SETTING_KEYS } from "./config.mjs";
+import { getKeyByValue } from "./util.mjs";
+import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 
 /**
  * Main app class
@@ -10,6 +12,7 @@ export default class CombatCarousel extends Application {
         super(options);
 
         this.turn = null;
+        this._collapsed = false;
     }
 
     /**
@@ -42,68 +45,118 @@ export default class CombatCarousel extends Application {
         const sceneNav = ui.nav;
         const sceneNavHeight = sceneNav.element.height();
         this.element.css({"top":`${sceneNavHeight ? sceneNavHeight + 12 + 5 : 12}px`});
+
+        /**
+        * Create a Splide instance and store it for later use
+        */
+        const splide = this.splide = new Splide(".splide", {
+            perMove: 0,
+            focus: "center",
+            cover: true,
+            pagination: false,
+            arrows: "slider",
+            keyboard: false,
+            drag: false,
+            height: 150,
+            fixedWidth: 100
+        });
         
-        // Only create and mount the splide on the forced or first render
-        if (force || !this.rendered) {
+        /**
+         * Hook on mount to add animation
+         */
+        this.splide.on("mounted", () => {
+            const slides = document.querySelectorAll(".splide__slide");
             
-            if (!this.splide) {
-                /**
-                * Create a Splide instance and store it for later use
-                */
-                const splide = this.splide = new Splide(".splide", {
-                    perMove: 0,
-                    focus: "center",
-                    cover: true,
-                    pagination: false,
-                    arrows: "slider",
-                    keyboard: false,
-                    height: 150,
-                    fixedWidth: 100
-                });
-            
-                /**
-                 * Hook on mount to add animation
-                 */
-                splide.on("mounted", () => {
-                    const slides = document.querySelectorAll(".splide__slide");
-                    
-                    for (let i = 0; i < slides.length; i++) {
-                        slides[i].classList.add("fly");
-                        slides[i].style.animationDelay = `${0.1 * i}s`;
-                    }
-
-                    $(slides).on("webkitAnimationEnd oanimationend msAnimationEnd animationend", (event) => {
-                        event.target.classList.remove("fly");
-                        event.target.style.animationDelay = null;
-                        splide.go(this.turn);
-                    });
-                    
-                });
-
-                splide.on("click", slide => {
-                    splide.go(slide.index);
-                });
-
-                splide.on("active", async slide => {
-                    if (game.combat.turn !== slide.index) {
-                        await game.combat.update({turn:slide.index});
-                    }
-                });
-
-                return this.splide.mount();
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.add("fly");
+                slides[i].style.animationDelay = `${0.1 * i}s`;
             }
+
+            $(slides).on("webkitAnimationEnd oanimationend msAnimationEnd animationend", (event) => {
+                event.target.classList.remove("fly");
+                event.target.style.animationDelay = null;
+
+                const combatant = game?.combat?.combatant || null;
+
+                if (!combatant) return;
+
+                const activeCombatantIndex = this.getCombatantSlideIndex(combatant);
+                splide.go(activeCombatantIndex);
+            });
             
-            return this.splide.refresh();
-        }
+            const combatState = this.getCombatState(game.combat);
+
+            switch (combatState) {
+                case "noCombat":
+                case "noTurns":
+                    this.collapse();
+                    break;
+                
+                case "hasTurns":
+                default:
+                    this.expand();
+                    break;
+            }
+
+        });
+
+        this.splide.on("click", async slide => {
+            if (slide.slide.dataset.action === "nextRound") {
+                await game.combat.nextRound();
+                return this.render();
+            }
+
+            if (slide.slide.dataset.action === "previousRound") {
+                await game.combat.previousRound();
+                return this.render();
+            }
+
+            return splide.go(slide.index);
+        });
+
+        this.splide.on("active", async slide => {
+            const slideCombatantId = slide.slide.dataset.combatantId || null;
+
+            if (!slideCombatantId) return;
+
+            const slideCombatantTurn = game.combat.turns.find(t => t._id === slideCombatantId);
+            const turnIndex = game.combat.turns.indexOf(slideCombatantTurn);
+
+            if (turnIndex > -1 && game.combat.turn !== turnIndex) {
+                return await game.combat.update({turn: turnIndex});
+            }
+        });
+
+        this.splide.on("arrows:mounted", (prev, next) => {
+            prev.title = game.i18n.localize("CAROUSEL.PreviousTurn");
+            next.title = game.i18n.localize("CAROUSEL.NextTurn");
+        });
+
+        this.splide.on("addCombatant", (element, index) =>{
+            // correct for any round control cards
+            
+            // get the cards
+            const slides = this.splide.Components.Elements.slides;
+            
+            const roundCardCount = slides.filter(s => !s.dataset.combatantId).length;
+
+            // if the new array is 2 shorter then add one to the index
+            const correctedIndex = roundCardCount === 2 ? index + 1 : index;
+
+            // add the element in the new position
+            this.splide.add(element, correctedIndex);
+        });
+
+        await this.splide.mount();
     }
 
     /**
-     * Takes a standard combatant or turn and prepares data for rendering
-     * @param {Combatant | Object} combatant  
+     * Takes a standard combat turn and prepare data for Combat Carousel rendering
+     * @param {Turn | Object} turn  the combat turn object
      * @returns {Object} preparedData  data ready for template
      */
-    static prepareCombatantData(combatant) {
-        const token = canvas.tokens.get(combatant.tokenId);
+    static prepareTurnData(turn) {
+        const token = canvas.tokens.get(turn.tokenId);
         const hp = token?.actor?.data?.data?.attributes?.hp || null;
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
             
@@ -114,12 +167,12 @@ export default class CombatCarousel extends Application {
         }
 
         const preparedData = {
-            id: combatant._id,
-            name: combatant.name,
-            img: token.actor.img ?? combatant.img,
-            initiative: combatant.initiative,
-            hidden: combatant.hidden,
-            defeated: combatant.defeated,
+            id: turn._id,
+            name: turn.name,
+            img: token.actor.img ?? turn.img,
+            initiative: turn.initiative,
+            hidden: turn.hidden,
+            defeated: turn.defeated,
             carousel: {
                 hp,
                 overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
@@ -139,21 +192,28 @@ export default class CombatCarousel extends Application {
         const combats = view ? game.combats.entities.filter(c => c.data.scene === view._id) : [];
         const currentCombatIdx = combats.findIndex(c => c === game.combat);
         const hasCombat = currentCombatIdx > -1;
-
-        if (hasCombat < 0) return;
-
-        const encounter = currentCombatIdx + 1;
-        const round = game.combat.round;
-        const turns = game.combat.turns.map(t => CombatCarousel.prepareCombatantData(t));
-        const combatantCard = "modules/combat-carousel/templates/combatant-card.hbs";
-        
+        const encounter = hasCombat ? currentCombatIdx + 1 : null;
+        const round = game.combat ? game.combat.round : null;
+        const previousRound = round > 0 ? round - 1 : null;
+        const nextRound = Number.isNumeric(round) ? round + 1 : null;
+        const hasPreviousRound = Number.isNumeric(previousRound);
+        const hasNextRound = Number.isNumeric(nextRound);
+        //@todo use util method to setup turns -- need to filter out non-visible turns
+        const turns = game.combat?.turns ? calculateTurns(game.combat).map(t => CombatCarousel.prepareTurnData(t)): [];
+        const combatState = this.getCombatState(game.combat);
+        const carouselIcon = CAROUSEL_ICONS[combatState];
+                
         this.turn = turns.length ? game.combat.turn : null;
 
         return {
+            carouselIcon,
             turns,
             encounter,
             round,
-            combatantCard
+            previousRound,
+            nextRound,
+            hasPreviousRound,
+            hasNextRound
         }
     }
 
@@ -165,26 +225,33 @@ export default class CombatCarousel extends Application {
         super.activateListeners(html);
 
         const moduleIcon = html.find("a#combat-carousel-toggle");
-        const rollInit = html.find(".fa-dice-d20");
+        const splide = html.find(".splide").first();
+        const rollInit = html.find("a.roll-init");
         const initiativeInput = html.find(".initiative input");
         const card = html.find(".splide__slide");
         const combatantControl = html.find("a.combatant-control");
         
-        moduleIcon.on("click", (event) => this._onModuleIconClick(event, html));
-        moduleIcon.on("contextmenu", (event) => this._onModuleIconContext(event, html));
+        moduleIcon.on("click", event => this._onModuleIconClick(event, html));
+        moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
         rollInit.on("click", this._onRollInitiative);
-        rollInit.on("contextmenu", (event) => this._onEditInitiative(event, html));
-        initiativeInput.on("change", (event, html) => this._onInitiativeChange(event, html));
-        initiativeInput.on("focusout", (event, html) => this._onInitiativeFocusOut(event, html));
-        card.on("mouseenter", (event) => this._onHoverCard(event, html)).on("mouseleave", (event, html) => this._onHoverOutCard(event, html));
-        combatantControl.on("click", (event, html) => this._onCombatantControl(event, html));
-
+        rollInit.on("contextmenu", event => this._onEditInitiative(event, html));
+        initiativeInput.on("change", event => this._onInitiativeChange(event, html));
+        initiativeInput.on("focusout", event => this._onInitiativeFocusOut(event, html));
+        splide.on("mouseenter", event => this._onHoverSplide(event, html)).on("mouseleave", event => this._onHoverOutSplide(event, html));
+        card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
+        card.on("dblclick", event => this._onCardDoubleClick(event, html));
+        combatantControl.on("click", event => this._onCombatantControl(event, html));
     }
+
+    /* -------------------------------------------- */
+    /*                Event Handlers                */
+    /* -------------------------------------------- */
 
     /**
      * Module Icon click handler
      * @param event 
      * @param html 
+     * @todo #6 #5 add visual indicator of collapse state on icon
      */
     _onModuleIconClick(event, html) {
         this.toggleVisibility();
@@ -219,11 +286,10 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onEditInitiative(event, html) {
-        const input = event.target.nextElementSibling;
+        const input = event.currentTarget.querySelector("input");
         const $input = $(input);
 
-        input.removeAttribute("disabled");
-        $input.focus().select();
+        $input.attr("disabled", null).focus().select();
     }
 
     /**
@@ -259,12 +325,16 @@ export default class CombatCarousel extends Application {
         event.preventDefault();
         const hoveredCard = event.currentTarget;
         const combatantId = hoveredCard.dataset.combatantId;
-        const token = this.getTokenFromCombatantId(combatantId);
+        const token = getTokenFromCombatantId(combatantId);
 
         if ( token && token.isVisible ) {
             if ( !token._controlled ) token._onHoverIn(event);
             this._highlightedToken = token;
         }
+
+        // Hide scrollbars during a hover event
+        const splideTrack = hoveredCard.closest(".splide__track");
+        splideTrack.style.overflow = "hidden";
     }
 
     /**
@@ -273,7 +343,25 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onHoverOutCard(event, html) {
+        const hoveredCard = event.currentTarget;
+
         if ( this._highlightedToken ) this._highlightedToken._onHoverOut(event);
+
+        const splideTrack = hoveredCard.closest(".splide__track");
+        splideTrack.style.overflowX = "scroll";
+        splideTrack.style.overflowY = "visible";
+    }
+
+    /**
+     * Card double click handler
+     * @param event 
+     * @param html 
+     */
+    _onCardDoubleClick(event, html) {
+        const card = event.currentTarget;
+        const combatantId = card.dataset.combatantId;
+        const token = getTokenFromCombatantId(combatantId);
+        token.actor.sheet.render(true);
     }
 
     /**
@@ -318,13 +406,124 @@ export default class CombatCarousel extends Application {
     }
 
     /**
+     * Hover splide handler
+     * @param event 
+     * @param html 
+     */
+    _onHoverSplide(event, html) {
+        const splideTrack = event.currentTarget.querySelector(".splide__track");
+
+        splideTrack.style.overflowX = "scroll";
+        splideTrack.style.overflowY = "visible";
+    }
+
+    /**
+     * Hover Out splide handler
+     * @param event 
+     * @param html 
+     */
+    _onHoverOutSplide(event, html) {
+        const splideTrack = event.currentTarget.querySelector(".splide__track");
+
+        splideTrack.style.overflowX = "hidden";
+        splideTrack.style.overflowY = "visible";
+    }
+
+    /* -------------------------------------------- */
+    /*                  UI Methods                  */
+    /* -------------------------------------------- */
+
+    /**
      * Toggles visibility of the carousel
      */
-    toggleVisibility() {
-        $(this.splide.root).slideToggle(200, () => {
-            this._collapsed = !this._collapsed;
+    async toggleVisibility(forceCollapse=false) {
+        return new Promise(resolve => {
+            const $splide = $(this.splide.root);
+
+            if (forceCollapse) {
+                $splide.slideUp(200, () => {
+                    this._collapsed = true;
+                });
+
+                return resolve(true);
+            }
+
+            $(this.splide.root).slideToggle(200, () => {
+                this._collapsed = !this._collapsed;
+            });
+
+            return resolve(true);
         });
     }
+
+    /**
+     * Expand the Combat Carousel
+     */
+    async expand() {
+        return new Promise(resolve => {
+            const $splide = $(this.splide.root);
+
+            $splide.slideDown(200, () => {
+                this._collapsed = false;
+                resolve(true);
+            });        
+        });
+    }
+
+    /**
+     * Collapse the Combat Carousel
+     */
+    async collapse() {
+        return new Promise(resolve => {
+            const $splide = $(this.splide.root);
+
+            $splide.slideUp(200, () => {
+                this._collapsed = true;
+                resolve(true);
+            });
+        });
+    }
+
+    /**
+     * Gets the state of a combat instance
+     * @param combat 
+     */
+    getCombatState(combat) {
+        const hasCombat = !!combat;
+        const turns = hasCombat ? combat.turns : null;
+        
+        if (!turns) return "noCombat";
+        
+        if (!turns.length) return "noTurns";
+        
+        if (turns.length) return "hasTurns";
+    }
+
+    /**
+     * Gets the current combat state of the toggle icon
+     */
+    getToggleIconState() {
+        const $icon = this.element.find("img.carousel-icon").first();
+        const img = $icon.attr("src");
+
+        return getKeyByValue(CAROUSEL_ICONS, img);
+    }
+
+    /**
+     * Sets the Combat Carousel icon based on the app and combat state
+     * @param {String} combatState
+     */
+    setToggleIcon(combatState=null) {
+        const $icon = this.element.find(".carousel-icon img").first();
+        const img = $icon.attr("src");
+        combatState = combatState ? combatState : this.getCombatState(game?.combat);
+
+        $icon.attr("src", CAROUSEL_ICONS[combatState]);
+    }
+
+    /* -------------------------------------------- */
+    /*                 Data Methods                 */
+    /* -------------------------------------------- */
 
     /**
      * Get the data for the Combat Carousel property overlay for a given token
@@ -342,6 +541,27 @@ export default class CombatCarousel extends Application {
         });
 
         return tokenOverlay;
+    }
+
+    /**
+     * Get the matching slide for the provided combatant
+     * @param combatant 
+     */
+    getCombatantSlideIndex(combatant) {
+        const slides = ui.combatCarousel.splide.root.querySelectorAll("li");
+
+        if (!slides.length) return;
+
+        const combatantIds = [];
+
+        // Manually iterate throught the slides NodeList (no array methods possible)
+        for (const s of slides) {
+            combatantIds.push(s.dataset.combatantId);
+        }
+
+        const index = combatantIds.indexOf(combatant._id);
+
+        return index;
     }
 }
 

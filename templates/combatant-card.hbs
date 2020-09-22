@@ -1,9 +1,9 @@
 <li class="splide__slide card" data-combatant-id={{combatant.id}}>
     <div class="name">
         <div class="button-tray flexrow">
-            <a class="combatant-control" data-control="toggleHidden"><i class="fas fa-eye-slash"></i></a>
-            <a class="combatant-control" data-control="toggleDefeated"><i class="fas fa-skull"></i></a>
-            <a class="combatant-control" data-control="remove"><i class="fas fa-trash"></i></a>
+            <a class="combatant-control" data-control="toggleHidden" title="{{localize "COMBATANT_CARD.Controls.Hide"}}"><i class="fas fa-eye-slash"></i></a>
+            <a class="combatant-control" data-control="toggleDefeated" title="{{localize "COMBATANT_CARD.Controls.Defeated"}}"><i class="fas fa-skull"></i></a>
+            <a class="combatant-control" data-control="remove" title="{{localize "COMBATANT_CARD.Controls.Remove"}}"><i class="fas fa-trash"></i></a>
         </div>
         <h3 title="{{combatant.name}}">{{combatant.name}}</h3>
     </div>
@@ -50,6 +50,12 @@
         </div>
     </div>
     <div class="hp" width="100%">
-        <meter value="{{combatant.carousel.hp.value}}" min="0" max="{{combatant.carousel.hp.max}}" title="{{combatant.carousel.hp.value}}/{{combatant.carousel.hp.max}}" optimum="{{combatant.carousel.hp.optimum}}" low="{{combatant.carousel.hp.low}}" high="{{combatant.carousel.hp.high}}"></meter>
+        <meter 
+            value="{{combatant.carousel.hp.value}}" 
+            min="0" max="{{combatant.carousel.hp.max}}" 
+            title="{{combatant.carousel.hp.value}}/{{combatant.carousel.hp.max}}" 
+            optimum="{{combatant.carousel.hp.optimum}}" low="{{combatant.carousel.hp.low}}" 
+            high="{{combatant.carousel.hp.high}}"
+        />
     </div>
 </li>

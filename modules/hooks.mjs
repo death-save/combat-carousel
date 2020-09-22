@@ -2,7 +2,7 @@ import CombatCarousel from "./combat-carousel.mjs";
 import registerSettings from "./settings.mjs";
 import overrideMethods from "./overrides.mjs";
 import { NAME, SETTING_KEYS } from "./config.mjs";
-import { getTokenFromCombatantId } from "./util.mjs";
+import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 import { preloadHandlebarsTemplates } from "./templates.mjs";
 
 /**
@@ -28,10 +28,7 @@ export default function registerHooks() {
      */
     Hooks.on("ready", () => {
         ui.combatCarousel = new CombatCarousel();
-        
-        if (game.combat) {
-            ui.combatCarousel.render(true);
-        }
+        ui.combatCarousel.render(true);
     });
 
     /* -------------------------------------------- */
@@ -44,11 +41,18 @@ export default function registerHooks() {
      * Create Combat hook
      */
     Hooks.on("createCombat", (combat, createData, options, userId) => {
-        
-        ui.combatCarousel.render(true);
+        ui.combatCarousel.render();
+        /*
+        if (ui.combatCarousel._collapsed) {
+            ui.combatCarousel.expand();
+        }
+        ui.combatCarousel.setToggleIcon();
+        */
     });
 
     Hooks.on("updateCombat", (combat, update, options, userId) => {
+        console.log("combat update", {combat, update, options, userId});
+        /*
         if (hasProperty(update, "turn")) {
             if (update.turn != ui.combatCarousel.turn) {
                 ui.combatCarousel.splide.go(update.turn);
@@ -57,12 +61,17 @@ export default function registerHooks() {
         }
 
         ui.combatCarousel.render(true);
-        console.log("combat update", {combat, update, options, userId});
+        */
+
+        if (combat.turns.length <= 0) {
+            ui.combatCarousel.collapse();
+            ui.combatCarousel.setToggleIcon("noTurns");
+        }
+        
     });
     
     Hooks.on("deleteCombat", (combat, options, userId) => {
-        //ui.combatCarousel.close();
-        ui.combatCarousel.toggleVisibility();
+        ui.combatCarousel.render();
     });
     
     /* ----------------- Combatant ---------------- */
@@ -73,20 +82,41 @@ export default function registerHooks() {
     Hooks.on("createCombatant", async (combat, createData, options, userId) => {
         console.log("create combatantant:", {combat, createData, options, userId});
         
-        const templateData = CombatCarousel.prepareCombatantData(createData);
-        const combatantCard = await renderTemplate("./templates/combatant-card.hbs", templateData);
-        ui.combatCarousel.splide.add(combatantCard);
-        //ui.combatCarousel.render(true);
+        // calculate the new turn order
+        const newTurns = calculateTurns(combat);
+
+        // grab the new combatant
+        const turn = newTurns.find(t => t._id === createData._id);
+
+        if (!turn) return;
+
+        const templateData = {
+            combatant: CombatCarousel.prepareTurnData(turn)
+        };
+
+        if (!templateData) return;
+
+        const combatantCard = await renderTemplate("modules/combat-carousel/templates/combatant-card.hbs", templateData);
+        const index = newTurns.map(t => t._id).indexOf(createData._id) ?? -1;
+        
+        await ui.combatCarousel.splide.emit("addCombatant", combatantCard, index);
+        
+        ui.combatCarousel.setToggleIcon();
+
+        if (ui.combatCarousel._collapsed) {
+            ui.combatCarousel.expand();
+        }
     });
     
     /**
      * Update Combatant hook
      */
-    Hooks.on("updateCombatant", (combat, update, options, userId) => {
+    Hooks.on("updateCombatant", async (combat, update, options, userId) => {
         console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
         //ui.combatCarousel.splide.refresh();
-        ui.combatCarousel.render();
+
+        await ui.combatCarousel.render();
     });
 
     /**
@@ -94,12 +124,12 @@ export default function registerHooks() {
      */
     Hooks.on("deleteCombatant", (combat, combatant, options, userId) => {
         console.log("delete combatant:", {combat, combatant, options, userId});
-        const slides = ui.combatCarousel.splide.root.querySelectorAll("li");
-        const combatantIds = slides.map(s => s.dataset.combatantId);
-        const index = combatantIds.indexOf(combatant._id);
+        
+        const index = ui.combatCarousel.getCombatantSlideIndex(combatant);
 
-        ui.combatCarousel.splide.remove(index)
-        //ui.combatCarousel.render(true);
+        if (index < 0) return;
+
+        ui.combatCarousel.splide.remove(index);
     });
 
     /* -------------------------------------------- */
@@ -116,10 +146,10 @@ export default function registerHooks() {
 
         if (collapsed) {
             ui.combatCarousel.element.css({"top": "12px"});
-            ui.combatCarousel.element.find(".toggle").css({"top": "47px"});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "47px"});
         } else {
             ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
-            ui.combatCarousel.element.find(".toggle").css({"top": "auto"});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
         }
     });
 
@@ -131,10 +161,10 @@ export default function registerHooks() {
 
         if (collapsed) {
             ui.combatCarousel.element.css({"top": "12px"});
-            ui.combatCarousel.element.find(".toggle").css({"top": "42px"});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "42px"});
         } else {
             ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
-            ui.combatCarousel.element.find(".toggle").css({"top": "auto"});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
         }
     });
 

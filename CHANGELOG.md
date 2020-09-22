@@ -3,10 +3,14 @@
 ## Unreleased/To-do
 - "Flip" defeated cards
 - Show blood splatter on card on actor/token damage
+- Set status effects from the combatant card
+- Drag/drop reordering
+- Drag token/actor into Carousel
+- Drag card out of Carousel to remove
 
 ## Known Issues
 - Hysteria when mouse cursor is just barely outside card during hover
-- Combat with no combatants still occupies some space in the window
+- Does not support multiple Encounters
 
 ## [0.1.0] - 2020-09-19
 ### Added

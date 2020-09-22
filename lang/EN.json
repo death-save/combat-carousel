@@ -4,6 +4,17 @@
     "SETTINGS.ShowHealthN": "Show Health Bar",
     "SETTINGS.ShowHealthH": "Shows the health bar under the portrait",
 
+    "CAROUSEL.NextTurn": "Next Turn",
+    "CAROUSEL.PreviousTurn": "Previous Turn",
+    "CAROUSEL.NextRound": "Next Round",
+    "CAROUSEL.PreviousRound": "Previous Round",
+    "CAROUSEL.NextRoundTooltip": "Click to proceed to Next Round",
+    "CAROUSEL.PreviousRoundTooltip": "Click to return to Previous Round",
+
+    "COMBATANT_CARD.Controls.Hide": "Toggle Visibility",
+    "COMBATANT_CARD.Controls.Defeated": "Mark Defeated",
+    "COMBATANT_CARD.Controls.Remove": "Remove from Encounter",
+
     "WORDS.Save": "Save",
     "WORDS.Cancel": "Cancel",
     "WORDS.Hidden": "Hidden",

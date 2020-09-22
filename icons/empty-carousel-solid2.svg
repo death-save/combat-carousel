@@ -18,7 +18,7 @@
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"><metadata
    id="metadata45"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
    id="defs43" /><sodipodi:namedview
    pagecolor="#000000"
    bordercolor="#666666"
@@ -28,18 +28,19 @@
    guidetolerance="10"
    inkscape:pageopacity="0.48627451"
    inkscape:pageshadow="2"
-   inkscape:window-width="2283"
-   inkscape:window-height="1321"
+   inkscape:window-width="1826"
+   inkscape:window-height="1057"
    id="namedview41"
    showgrid="false"
    inkscape:pagecheckerboard="false"
-   inkscape:zoom="1.7221472"
-   inkscape:cx="199.91315"
-   inkscape:cy="290.2602"
-   inkscape:window-x="109"
-   inkscape:window-y="-9"
+   inkscape:zoom="1.217742"
+   inkscape:cx="157.16762"
+   inkscape:cy="295.72815"
+   inkscape:window-x="86"
+   inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="g8" />
+   inkscape:current-layer="g8"
+   inkscape:document-rotation="0" />
 <g
    id="g8"
    style="display:inline">
@@ -47,7 +48,7 @@
    d="M 450.362,445.41 H 264.556 c 0,0 -3.93867,-0.027 -8.08067,-0.027 -4.142,0 -6.91933,0.027 -6.91933,0.027 H 63.751 c -12.958,0 -23.5,10.542 -23.5,23.5 v 15.831 c 0,4.142 3.358,7.5 7.5,7.5 h 418.611 c 4.142,0 7.5,-3.358 7.5,-7.5 V 468.91 c 0,-12.958 -10.542,-23.5 -23.5,-23.5 z"
    id="path2"
    inkscape:label="base"
-   style="fill:#bbbbbb;fill-opacity:1"
+   style="fill:#ffffff;fill-opacity:1"
    sodipodi:nodetypes="scscssssssss" />
 	
 	<path
@@ -55,9 +56,9 @@
    id="path6"
    sodipodi:nodetypes="cssccccssccscssscccssccscccscsccssccscsccssssssssssssssssssssssccssccsscccs"
    inkscape:label="carousel"
-   style="display:inline;fill:#bbbbbb;fill-opacity:1" />
+   style="display:inline;fill:#ffffff;fill-opacity:1" />
 <rect
-   style="opacity:0.997;fill:#bbbbbb;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5.01201;stroke-opacity:1"
+   style="opacity:0.997;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5.01201;stroke-opacity:1"
    id="rect935"
    width="14.544931"
    height="162.90623"
