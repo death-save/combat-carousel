@@ -54,7 +54,7 @@ export default class CombatCarousel extends Application {
             focus: "center",
             cover: true,
             pagination: false,
-            arrows: "slider",
+            arrows: false,
             keyboard: false,
             drag: false,
             height: 150,
@@ -114,6 +114,7 @@ export default class CombatCarousel extends Application {
             return splide.go(slide.index);
         });
 
+        /*
         this.splide.on("active", async slide => {
             const slideCombatantId = slide.slide.dataset.combatantId || null;
 
@@ -126,6 +127,7 @@ export default class CombatCarousel extends Application {
                 return await game.combat.update({turn: turnIndex});
             }
         });
+        */
 
         this.splide.on("arrows:mounted", (prev, next) => {
             prev.title = game.i18n.localize("CAROUSEL.PreviousTurn");
@@ -200,10 +202,13 @@ export default class CombatCarousel extends Application {
         const hasNextRound = Number.isNumeric(nextRound);
         //@todo use util method to setup turns -- need to filter out non-visible turns
         const turns = game.combat?.turns ? calculateTurns(game.combat).map(t => CombatCarousel.prepareTurnData(t)): [];
+        
         const combatState = this.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
                 
         this.turn = turns.length ? game.combat.turn : null;
+        const hasPreviousTurn = Number.isNumeric(this.turn) && turns.length;
+        const hasNextTurn = Number.isNumeric(this.turn) && turns.length;
 
         return {
             carouselIcon,
@@ -213,7 +218,9 @@ export default class CombatCarousel extends Application {
             previousRound,
             nextRound,
             hasPreviousRound,
-            hasNextRound
+            hasNextRound,
+            hasPreviousTurn,
+            hasNextTurn
         }
     }
 
@@ -230,6 +237,7 @@ export default class CombatCarousel extends Application {
         const initiativeInput = html.find(".initiative input");
         const card = html.find(".splide__slide");
         const combatantControl = html.find("a.combatant-control");
+        const combatControl = html.find(".combat-control a");
         
         moduleIcon.on("click", event => this._onModuleIconClick(event, html));
         moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
@@ -241,6 +249,7 @@ export default class CombatCarousel extends Application {
         card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
         card.on("dblclick", event => this._onCardDoubleClick(event, html));
         combatantControl.on("click", event => this._onCombatantControl(event, html));
+        combatControl.on("click", event => this._onCombatControlClick(event, html));
     }
 
     /* -------------------------------------------- */
@@ -403,6 +412,36 @@ export default class CombatCarousel extends Application {
   
         // Render tracker updates
         ui.combat.render();
+    }
+
+    /**
+     * Combat Control click handler
+     * @param event 
+     * @param html 
+     */
+    _onCombatControlClick(event, html) {
+        const action = event.currentTarget.dataset.action;
+
+        switch (action) {
+            case "nextTurn":
+                game.combat.nextTurn();
+                break;
+            
+            case "nextRound":
+                game.combat.nextRound();
+                break;
+
+            case "previousTurn":
+                game.combat.previousTurn();
+                break;
+
+            case "previousRound":
+                game.combat.previousRound();
+                break;
+
+            default:
+                break;
+        }
     }
 
     /**

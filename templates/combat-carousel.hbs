@@ -9,41 +9,25 @@
     <div class="overlay"><h1>Round: {{this.round}}</h1></div>
     <div class="splide">
         <div class="splide__slider">
+            <div class="combat-control">
+                {{#if this.hasPreviousTurn}}
+                <a class="previous turn" title="{{localize "CAROUSEL.PreviousTurn"}}" data-action="previousTurn"><i class="fas fa-chevron-left"></i></a>
+                {{/if}}
+                {{#if this.hasPreviousRound}}
+                <a class="previous round" title="{{localize "CAROUSEL.PreviousRound"}}" data-action="previousRound"><i class="fas fa-step-backward"></i></a>
+                {{/if}}
+                {{#if this.hasNextTurn}}
+                <a class="next turn" title="{{localize "CAROUSEL.NextTurn"}}" data-action="nextTurn"><i class="fas fa-chevron-right"></i></a>
+                {{/if}}
+                {{#if this.hasNextRound}}
+                <a class="next round" title="{{localize "CAROUSEL.NextRound"}}" data-action="nextRound"><i class="fas fa-step-forward"></i></a>
+                {{/if}}
+            </div>
             <div class="splide__track">
                 <ul class="splide__list">
-                    {{#if this.hasPreviousRound}}
-                    <li class="splide__slide card combat-round flexcol" data-action="previousRound" title="{{localize "CAROUSEL.PreviousRoundTooltip"}}">
-                        <h4 class="description">
-                            {{localize "CAROUSEL.PreviousRound"}}
-                        </h4>
-                        <div class="round-marker-wrapper">
-                            <div class="round-marker">
-                                <span class="direction-indicator"><i class="fas fa-step-backward"></i></span>
-                            </div>
-                        </div>
-                        <h4 class="description">
-                            Round {{this.previousRound}}
-                        </h4>
-                    </li>
-                    {{/if}}
                     {{#each turns}}
                         {{> "modules/combat-carousel/templates/combatant-card.hbs" combatant=this}}
                     {{/each}}
-                    {{#if this.hasNextRound}}
-                    <li class="splide__slide card combat-round flexcol" data-action="nextRound" title="{{localize "CAROUSEL.NextRoundTooltip"}}">
-                        <h4 class="description">
-                            {{localize "CAROUSEL.NextRound"}} 
-                        </h4>
-                        <div class="round-marker-wrapper">
-                            <div class="round-marker">
-                                <span class="direction-indicator"><i class="fas fa-step-forward"></i></span>
-                            </div>
-                        </div>
-                        <h4 class="description">
-                            Round {{this.nextRound}}
-                        </h4>
-                    </li>
-                    {{/if}}
                 </ul>
             </div>
         </div>

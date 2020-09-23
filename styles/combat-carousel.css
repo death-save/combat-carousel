@@ -94,7 +94,7 @@
     align-items: center;
     height: 125px;
     vertical-align: middle;
-
+    overflow: hidden;
 }
 
 #combat-carousel img.overlay-effect {
@@ -404,13 +404,38 @@
     fill: #f0f0e0;
 }
 
+#combat-carousel .combat-control .previous,
 #combat-carousel .splide__arrow--prev {
     left: 0px;
 }
 
+#combat-carousel .combat-control .next,
 #combat-carousel .splide__arrow--next {
     right: 0px;
 }
+
+#combat-carousel .combat-control a {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 2px;
+    background: rgba(0,0,0,0.5);
+    font-size: large;
+    color: white;
+}
+
+#combat-carousel .combat-control a.round {
+    top: calc(50% + 45px);
+}
+
+#combat-carousel .combat-control a.turn {
+    top: calc(50% + 10px);
+}
+
 
 #combat-carousel .splide__track {
 }
