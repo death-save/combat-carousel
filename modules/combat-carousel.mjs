@@ -43,9 +43,15 @@ export default class CombatCarousel extends Application {
 
         // Find the Scene Nav and ensure to render outside it
         const sceneNav = ui.nav;
-        const sceneNavHeight = sceneNav.element.height();
-        this.element.css({"top":`${sceneNavHeight ? sceneNavHeight + 12 + 5 : 12}px`});
+        const sceneNavHeight = sceneNav.element.height(); 
 
+        if (sceneNav && sceneNav._collapsed) {
+            this.element.css({"top":"12px"});
+            this.element.find(".carousel-icon").css({"top": "47px"});
+        } else {
+            this.element.css({"top":`${sceneNavHeight + 12 + 5}px`});
+            this.element.find(".carousel-icon").css({"top": "auto"});
+        }
         
         /**
         * Create a Splide instance and store it for later use

@@ -141,7 +141,7 @@ export default function registerHooks() {
         
         // update their hp bar
 
-        //ui.combatCarousel.render();
+        ui.combatCarousel.render();
     });
 
     /* ------------------- Token ------------------ */
@@ -151,7 +151,7 @@ export default function registerHooks() {
         // find any matching combat carousel combatants
         
         // update their hp bar and effects
-        //ui.combatCarousel.render();
+        ui.combatCarousel.render();
     });
 
     /* -------------------------------------------- */
