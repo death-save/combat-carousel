@@ -46,6 +46,7 @@ export default class CombatCarousel extends Application {
         const sceneNavHeight = sceneNav.element.height();
         this.element.css({"top":`${sceneNavHeight ? sceneNavHeight + 12 + 5 : 12}px`});
 
+        
         /**
         * Create a Splide instance and store it for later use
         */
@@ -67,23 +68,23 @@ export default class CombatCarousel extends Application {
         this.splide.on("mounted", () => {
             const slides = document.querySelectorAll(".splide__slide");
             
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].classList.add("fly");
-                slides[i].style.animationDelay = `${0.1 * i}s`;
+            const $slides = $(slides);
+
+            if (force || this._rendered === false) {
+                for (let i = 0; i < slides.length; i++) {
+                    slides[i].classList.add("fly");
+                    slides[i].style.animationDelay = `${0.1 * i}s`;
+
+                    slides[i].addEventListener("animationend", event => {
+                        event.target.classList.remove("fly");
+                        event.target.style.animationDelay = null;
+                        if (i === slides.length - 1) this.activateCombatantSlide();
+                    });
+                }
+            } else {
+                this.activateCombatantSlide();
             }
 
-            $(slides).on("webkitAnimationEnd oanimationend msAnimationEnd animationend", (event) => {
-                event.target.classList.remove("fly");
-                event.target.style.animationDelay = null;
-
-                const combatant = game?.combat?.combatant || null;
-
-                if (!combatant) return;
-
-                const activeCombatantIndex = this.getCombatantSlideIndex(combatant);
-                splide.go(activeCombatantIndex);
-            });
-            
             const combatState = this.getCombatState(game.combat);
 
             switch (combatState) {
@@ -97,7 +98,6 @@ export default class CombatCarousel extends Application {
                     this.expand();
                     break;
             }
-
         });
 
         this.splide.on("click", async slide => {
@@ -111,45 +111,23 @@ export default class CombatCarousel extends Application {
                 return this.render();
             }
 
-            return splide.go(slide.index);
+            return await game.combat.update({turn: slide.index});
         });
 
-        /*
-        this.splide.on("active", async slide => {
-            const slideCombatantId = slide.slide.dataset.combatantId || null;
+        this.splide.on("addCombatant", (element, index) => {
+            const $element = $(element);
+            $element.addClass("fly");
+            $element.one("webkitAnimationEnd oanimationend msAnimationEnd animationend", (event) => {
+                event.target.classList.remove("fly");
+                event.target.style.animationDelay = null;
+            });
 
-            if (!slideCombatantId) return;
-
-            const slideCombatantTurn = game.combat.turns.find(t => t._id === slideCombatantId);
-            const turnIndex = game.combat.turns.indexOf(slideCombatantTurn);
-
-            if (turnIndex > -1 && game.combat.turn !== turnIndex) {
-                return await game.combat.update({turn: turnIndex});
-            }
-        });
-        */
-
-        this.splide.on("arrows:mounted", (prev, next) => {
-            prev.title = game.i18n.localize("CAROUSEL.PreviousTurn");
-            next.title = game.i18n.localize("CAROUSEL.NextTurn");
-        });
-
-        this.splide.on("addCombatant", (element, index) =>{
-            // correct for any round control cards
-            
-            // get the cards
-            const slides = this.splide.Components.Elements.slides;
-            
-            const roundCardCount = slides.filter(s => !s.dataset.combatantId).length;
-
-            // if the new array is 2 shorter then add one to the index
-            const correctedIndex = roundCardCount === 2 ? index + 1 : index;
-
+            const newElement = $element[0].outerHTML;
             // add the element in the new position
-            this.splide.add(element, correctedIndex);
+            this.splide.add(newElement, index);
         });
 
-        await this.splide.mount();
+        return await this.splide.mount();
     }
 
     /**
@@ -559,6 +537,20 @@ export default class CombatCarousel extends Application {
 
         $icon.attr("src", CAROUSEL_ICONS[combatState]);
     }
+
+    /**
+     * Activates the given combatant's slide
+     * @param combatant 
+     */
+    activateCombatantSlide(combatant=null) {
+        combatant = combatant || game?.combat?.combatant || null;
+
+        if (!combatant) return;
+
+        const activeCombatantIndex = this.getCombatantSlideIndex(combatant);
+        this.splide.go(activeCombatantIndex);
+    }
+    
 
     /* -------------------------------------------- */
     /*                 Data Methods                 */

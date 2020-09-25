@@ -52,16 +52,17 @@ export default function registerHooks() {
 
     Hooks.on("updateCombat", (combat, update, options, userId) => {
         console.log("combat update", {combat, update, options, userId});
-        /*
+        
         if (hasProperty(update, "turn")) {
             if (update.turn != ui.combatCarousel.turn) {
                 ui.combatCarousel.splide.go(update.turn);
                 return ui.combatCarousel.turn = update.turn;
             }
+
+            //ui.combatCarousel.render();
         }
 
-        ui.combatCarousel.render(true);
-        */
+        
 
         if (combat.turns.length <= 0) {
             ui.combatCarousel.collapse();
@@ -130,6 +131,27 @@ export default function registerHooks() {
         if (index < 0) return;
 
         ui.combatCarousel.splide.remove(index);
+    });
+
+    /* ------------------- Actor ------------------ */
+
+    Hooks.on("updateActor", (actor, update, options, userId) => {
+        if (!hasProperty(update, "data.attributes.hp.value")) return;
+        // find any matching combat carousel combatants
+        
+        // update their hp bar
+
+        //ui.combatCarousel.render();
+    });
+
+    /* ------------------- Token ------------------ */
+
+    Hooks.on("updateToken", (scene, token, update, options, userId) => {
+        if (!hasProperty(update, "effects") && !hasProperty(update, "overlayEffect") && !hasProperty(update, "actorData.data.attributes.hp.value")) return;
+        // find any matching combat carousel combatants
+        
+        // update their hp bar and effects
+        //ui.combatCarousel.render();
     });
 
     /* -------------------------------------------- */
