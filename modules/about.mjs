@@ -14,7 +14,7 @@ export default class AboutApp extends FormApplication {
             template: "modules/combat-carousel/templates/about.hbs",
             popOut: true,
             width: 500,
-            height: 600
+            height: 605
         });
     }
 

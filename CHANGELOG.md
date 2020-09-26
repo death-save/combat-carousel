@@ -9,6 +9,7 @@
 - Drag card out of Carousel to remove
 
 ## Known Issues
+- Encounters on non-active scenes do not appear in the Carousel
 - Tested exclusively with `dnd5e` system -- other systems may encounter errors at this time
 - Initiative icon assumes `d20`-based initiative
 
