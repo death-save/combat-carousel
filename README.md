@@ -89,8 +89,9 @@ An example (from the dnd5e system): `data.attributes.ac.value`
 Enter a path to an icon to represent the **Property** or use the `filepicker` button to select one
 
 ## Attribution
-- Carousel icon based on icon by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
-
-- goblin-face, spiked-dragon, cowled icons from game-icons.net
-
-- "Combat Carousel" text logo uses the following fonts: Capture It by ??? Budmo Jiggler by ????
+- This module uses the SplideJS library to provide carousel functionality: https://splidejs.com/
+- Carousel icon based on `Horse Carousel` icon by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from https://www.flaticon.com/free-icon/horse-carousel_82324
+- - `goblin-face`, `spiked-dragon`, `cowled` icons from https://game-icons.net
+- "Combat Carousel" textmark uses the following fonts: 
+- - `Capture It` by Magique Fonts https://www.dafont.com/capture-it.font 
+- - `Budmo Jiggler` by Typodermic Fonts https://www.dafont.com/budmo.font?text=budmo
