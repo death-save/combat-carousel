@@ -9,11 +9,12 @@
 - Drag card out of Carousel to remove
 
 ## Known Issues
-- Hysteria when mouse cursor is just barely outside card during hover
-- Does not support multiple Encounters
-- Weird flashes when actor/token data changes
+- Tested exclusively with `dnd5e` system -- other systems may encounter errors at this time
+- Initiative icon assumes `d20`-based initiative
 
-## [0.1.0] - 2020-09-19
+## [0.1.0] - 2020-09-26
 ### Added
+- Initial release
+
 ### Changed
 ### Fixed
