@@ -10,6 +10,7 @@ export const CAROUSEL_ICONS = {
 export const SETTING_KEYS = {
     collapseNav: "collapseNav",
     showHealth: "showHealthBar",
+    healthBarPermission: "playerHealthBarPermission",
     overlaySettings: "overlaySettings"
 }
 
@@ -36,5 +37,12 @@ export const DEFAULT_CONFIG = {
             img: "/icons/svg/d20-black.svg",
             value: ""
         }
-    ]
+    ],
+    healthBarPermission: {
+        choices: {
+            owner: "All Owned",
+            token: "Use Token Setting",
+            none: "None" 
+        }
+    }
 }

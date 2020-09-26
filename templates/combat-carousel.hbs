@@ -1,10 +1,9 @@
 <div id="combat-carousel" class="wrapper">
     <div class="carousel-icon">
-        <a id="combat-carousel-toggle" title="{{#if this.encounter}}Encounter: {{this.encounter}} / Round: {{this.round}}{{else}}no encounter{{/if}}&#10;click to hide/unhide, right click for config">
+        <a id="combat-carousel-toggle" title="{{localize "CAROUSEL.ToggleHint"}}">
             <img src="{{carouselIcon}}">
+            <i class="collapse-indicator fas fa-caret-down"></i>
         </a>
-        <span class="encounter">{{this.encounter}}</span>
-        <span class="round">{{this.round}}</span>
     </div>
     <div class="overlay"><h1>Round: {{this.round}}</h1></div>
     <div class="splide">
@@ -31,5 +30,17 @@
                 </ul>
             </div>
         </div>
+        {{#if this.encounter}}
+    <div class="encounter-info flexcol">
+        <div class="encounter flexrow" title="{{localize "WORDS.Encounter"}} {{this.encounter}}">
+            <span class="counter">{{this.encounter}}</span>
+            <i class="fas fa-fist-raised"></i>
+        </div>
+        <div class="round flexrow" title="{{localize "WORDS.Round"}} {{this.round}}">
+            <span class="counter">{{this.round}}</span>
+            <i class="fas fa-circle-notch"></i>
+        </div>
+    </div>
+    {{/if}}
     </div>
 </div>

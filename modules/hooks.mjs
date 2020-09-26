@@ -41,36 +41,47 @@ export default function registerHooks() {
      * Create Combat hook
      */
     Hooks.on("createCombat", (combat, createData, options, userId) => {
-        ui.combatCarousel.render();
-        /*
-        if (ui.combatCarousel._collapsed) {
-            ui.combatCarousel.expand();
-        }
-        ui.combatCarousel.setToggleIcon();
-        */
+        ui.combatCarousel.render(true);
     });
 
+    /**
+     * Update Combat hook
+     */
     Hooks.on("updateCombat", (combat, update, options, userId) => {
         console.log("combat update", {combat, update, options, userId});
         
+        if (getProperty(update, "active") === true) {
+            return ui.combatCarousel.render(true);
+        }
+
         if (hasProperty(update, "turn")) {
             if (update.turn != ui.combatCarousel.turn) {
-                ui.combatCarousel.splide.go(update.turn);
-                return ui.combatCarousel.turn = update.turn;
+                //ui.combatCarousel.splide.refresh();
+                ui.combatCarousel.turn = update.turn;
+                return ui.combatCarousel.splide.go(update.turn);
+                //return ui.combatCarousel.render();
+                
+                //return ui.combatCarousel.render();
             }
 
             //ui.combatCarousel.render();
         }
-
+        
         
 
+        /*
         if (combat.turns.length <= 0) {
             ui.combatCarousel.collapse();
             ui.combatCarousel.setToggleIcon("noTurns");
         }
+        */
+        return ui.combatCarousel.render();
         
     });
     
+    /**
+     * Delete Combat hook
+     */
     Hooks.on("deleteCombat", (combat, options, userId) => {
         ui.combatCarousel.render();
     });
@@ -116,7 +127,14 @@ export default function registerHooks() {
         console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
         //ui.combatCarousel.splide.refresh();
-
+        /*
+        const turn = combat.turns.find(t => t._id === update._id);
+        const combatant = CombatCarousel.prepareTurnData(turn);
+        const template = await renderTemplate("modules/combat-carousel/templates/combatant-card.hbs", {combatant});
+        const cardToReplace = ui.combatCarousel.element.find(`li[data-combatant-id="${update._id}"]`);
+        cardToReplace.replaceWith(template);
+        ui.combatCarousel.splide.refresh();
+        */
         await ui.combatCarousel.render();
     });
 
@@ -147,6 +165,7 @@ export default function registerHooks() {
     /* ------------------- Token ------------------ */
 
     Hooks.on("updateToken", (scene, token, update, options, userId) => {
+        console.log("token update:", scene,token,update,options,userId);
         if (!hasProperty(update, "effects") && !hasProperty(update, "overlayEffect") && !hasProperty(update, "actorData.data.attributes.hp.value")) return;
         // find any matching combat carousel combatants
         
@@ -190,10 +209,15 @@ export default function registerHooks() {
         }
     });
 
+    Hooks.on("renderCombatTracker", (app, html, data) => {
+        console.log("combat tracker rendered:", app, html, data);
+    });
+
     /**
      * CombatCarousel render hook
      */
     Hooks.on("renderCombatCarousel", (app, html, data) => {
+        //app.activateCombatantSlide();
     });
 
     /* -------------------------------------------- */

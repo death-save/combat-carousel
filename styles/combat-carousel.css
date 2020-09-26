@@ -18,13 +18,18 @@
 }
 
 #combat-carousel .carousel-icon {
+    display: flex;
     color: white;
     background: rgba(0, 0, 0, 0.5);
     border: solid 1px black;
     border-radius: 2px;
     position: absolute;
-    width: 34px;
+    height: 38px;
+    width: 38px;
     z-index: 100;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
 }
 
 #combat-carousel .carousel-icon .encounter {
@@ -34,11 +39,12 @@
     left: 1px;
 }
 
-#combat-carousel .carousel-icon .round {
+#combat-carousel .carousel-icon .collapse-indicator {
     position: absolute;
     font-size: 9px;
     top: 1px;
     right: 1px;
+    transform: translateY(-3px);
 }
 
 #combat-carousel .carousel-icon img {
@@ -50,6 +56,29 @@
     border: 1px solid red;
     border-bottom: 1px solid #ff6400;
     box-shadow: 0 0 10px #ff6400;
+}
+
+#combat-carousel .encounter-info {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    color: #eee;
+}
+
+#combat-carousel .encounter-info .flexrow {
+    align-items: center;
+}
+
+#combat-carousel .encounter-info span {
+    width: 30px;
+}
+
+#combat-carousel .encounter-info i.fas {
+    text-align: center;
+}
+
+#combat-carousel .encounter-info .counter {
+    text-align: right;
 }
 
 #combat-carousel .overlay {
@@ -99,9 +128,10 @@
 
 #combat-carousel img.overlay-effect {
     position: absolute;
+    left: 10px;
     opacity: 0.5;
-    transform: scale(0.8);
-    animation-delay: 0s;
+    height: 80px;
+    width: 80px;
 }
 
 #combat-carousel .initiative {
@@ -299,7 +329,7 @@
 }
 
 #combat-carousel .splide__slide:hover:not(.combat-round) {
-    margin: 41px 15px 15px 15px;
+    margin: 39px 10px 15px 10px;
     transform: scale(1.2);
     height: 168px;
 }

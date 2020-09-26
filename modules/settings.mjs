@@ -10,7 +10,7 @@ export default function registerSettings() {
         type: Boolean,
         default: false,
         config: true,
-        onchange: s => {
+        onChange: s => {
 
         }
     });
@@ -22,8 +22,23 @@ export default function registerSettings() {
         type: Boolean,
         default: true,
         config: true,
-        onchange: s => {
+        onChange: s => {
+            ui.combatCarousel.render(true);
+        }
+    });
 
+    game.settings.register(NAME, SETTING_KEYS.healthBarPermission, {
+        name: "SETTINGS.HealthBarPermissionN",
+        hint: "SETTINGS.HealthBarPermissionH",
+        scope: "world",
+        type: String,
+        default: "owner",
+        choices: DEFAULT_CONFIG.healthBarPermission.choices,
+        config: true,
+        onChange: s => {
+            if (!game.user.isGM) {
+                ui.combatCarousel.render(true);
+            }
         }
     });
 
@@ -34,8 +49,8 @@ export default function registerSettings() {
         type: Object,
         default: DEFAULT_CONFIG.overlaySettings,
         config: false,
-        onchange: s => {
-
+        onChange: s => {
+            ui.combatCarousel.render(true);
         }
     });
 }

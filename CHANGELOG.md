@@ -11,6 +11,7 @@
 ## Known Issues
 - Hysteria when mouse cursor is just barely outside card during hover
 - Does not support multiple Encounters
+- Weird flashes when actor/token data changes
 
 ## [0.1.0] - 2020-09-19
 ### Added

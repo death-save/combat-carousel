@@ -58,6 +58,7 @@ export default class CombatCarousel extends Application {
         */
         const splide = this.splide = new Splide(".splide", {
             perMove: 0,
+            start: this.turn ?? 0,
             focus: "center",
             cover: true,
             pagination: false,
@@ -78,6 +79,7 @@ export default class CombatCarousel extends Application {
 
             if (force || this._rendered === false) {
                 for (let i = 0; i < slides.length; i++) {
+                    
                     slides[i].classList.add("fly");
                     slides[i].style.animationDelay = `${0.1 * i}s`;
 
@@ -87,8 +89,6 @@ export default class CombatCarousel extends Application {
                         if (i === slides.length - 1) this.activateCombatantSlide();
                     });
                 }
-            } else {
-                this.activateCombatantSlide();
             }
 
             const combatState = this.getCombatState(game.combat);
@@ -122,13 +122,18 @@ export default class CombatCarousel extends Application {
 
         this.splide.on("addCombatant", (element, index) => {
             const $element = $(element);
-            $element.addClass("fly");
-            $element.one("webkitAnimationEnd oanimationend msAnimationEnd animationend", (event) => {
-                event.target.classList.remove("fly");
-                event.target.style.animationDelay = null;
-            });
-
+            
+            if (this.splide.length > 0) {
+                $element.addClass("fly");
+                $element.on("webkitAnimationEnd oanimationend msAnimationEnd animationend", (event) => {
+                    event.target.classList.remove("fly");
+                    event.target.style.animationDelay = null;
+                    //this.activateCombatantSlide();
+                });
+            }
+           
             const newElement = $element[0].outerHTML;
+
             // add the element in the new position
             this.splide.add(newElement, index);
         });
@@ -145,7 +150,26 @@ export default class CombatCarousel extends Application {
         const token = canvas.tokens.get(turn.tokenId);
         const hp = token?.actor?.data?.data?.attributes?.hp || null;
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
-            
+        const showHealthSetting = game.settings.get(NAME, SETTING_KEYS.showHealth);
+        const healthBarPermissionSetting = game.settings.get(NAME, SETTING_KEYS.healthBarPermission);
+        let showHealth = (game.user.isGM && showHealthSetting) ? true : false;
+
+        if (showHealthSetting === true && !game.user.isGM) {
+            switch (healthBarPermissionSetting) {
+                case "owner":
+                    showHealth = token.owner;
+                    break;
+
+                case "token":
+                    showHealth = token._canViewMode(token.data.displayBars);
+                    break;
+    
+                case "none":
+                default:
+                    break;
+            }
+        }
+
         if (hp) {
             hp.low = hp.max * 0.34;
             hp.high = hp.max * 0.6;
@@ -160,6 +184,9 @@ export default class CombatCarousel extends Application {
             hidden: turn.hidden,
             defeated: turn.defeated,
             carousel: {
+                isGM: game.user.isGM,
+                owner: token.owner,
+                showHealth,
                 hp,
                 overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
@@ -192,7 +219,7 @@ export default class CombatCarousel extends Application {
                 
         this.turn = turns.length ? game.combat.turn : null;
         const hasPreviousTurn = Number.isNumeric(this.turn) && turns.length;
-        const hasNextTurn = Number.isNumeric(this.turn) && turns.length;
+        const hasNextTurn = Number.isNumeric(this.turn);
 
         return {
             carouselIcon,
@@ -279,6 +306,7 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onEditInitiative(event, html) {
+        if (!game.user.isGM) return;
         const input = event.currentTarget.querySelector("input");
         const $input = $(input);
 
@@ -460,11 +488,14 @@ export default class CombatCarousel extends Application {
      * Toggles visibility of the carousel
      */
     async toggleVisibility(forceCollapse=false) {
+        const collapseIndicator = this.element.find("i.collapse-indicator");
+
         return new Promise(resolve => {
             const $splide = $(this.splide.root);
 
             if (forceCollapse) {
                 $splide.slideUp(200, () => {
+                    collapseIndicator.removeClass("fa-caret-down").addClass("fa-caret-up");
                     this._collapsed = true;
                 });
 
@@ -472,6 +503,13 @@ export default class CombatCarousel extends Application {
             }
 
             $(this.splide.root).slideToggle(200, () => {
+                const currentDirection = collapseIndicator.hasClass("fa-caret-down") ? "down" : "up";
+                const newDirection = currentDirection ? (currentDirection === "down" ? "up" : "down") : null;
+
+                if(newDirection) {
+                    collapseIndicator.removeClass(`fa-caret-${currentDirection}`).addClass(`fa-caret-${newDirection}`)
+                }
+
                 this._collapsed = !this._collapsed;
             });
 
@@ -485,9 +523,11 @@ export default class CombatCarousel extends Application {
     async expand() {
         return new Promise(resolve => {
             const $splide = $(this.splide.root);
+            const collapseIndicator = this.element.find("i.collapse-indicator");
 
             $splide.slideDown(200, () => {
                 this._collapsed = false;
+                collapseIndicator.removeClass("fa-caret-down").addClass("fa-caret-up");
                 resolve(true);
             });        
         });
@@ -499,9 +539,11 @@ export default class CombatCarousel extends Application {
     async collapse() {
         return new Promise(resolve => {
             const $splide = $(this.splide.root);
+            const collapseIndicator = this.element.find("i.collapse-indicator");
 
             $splide.slideUp(200, () => {
                 this._collapsed = true;
+                collapseIndicator.removeClass("fa-caret-up").addClass("fa-caret-down");
                 resolve(true);
             });
         });

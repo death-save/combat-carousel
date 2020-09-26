@@ -3,6 +3,8 @@
     "SETTINGS.CollapseNavH": "Collapse the Navigation Bar when Combat Carousel is rendered",
     "SETTINGS.ShowHealthN": "Show Health Bar",
     "SETTINGS.ShowHealthH": "Shows the health bar under the portrait",
+    "SETTINGS.HealthBarPermissionN": "Player Health Bar Permissions",
+    "SETTINGS.HealthBarPermissionH": "Define what circumstances to show health bars to players. All Owned: Health bars for any tokens the player owns will be show. Use Token Setting: Use the bar setting on the token (eg. Owner or Always). None: Do not show players any health bars.",
 
     "CAROUSEL.NextTurn": "Next Turn",
     "CAROUSEL.PreviousTurn": "Previous Turn",
@@ -10,6 +12,7 @@
     "CAROUSEL.PreviousRound": "Previous Round",
     "CAROUSEL.NextRoundTooltip": "Click to proceed to Next Round",
     "CAROUSEL.PreviousRoundTooltip": "Click to return to Previous Round",
+    "CAROUSEL.ToggleHint": "Click to hide/unhide, Right-click for config",
 
     "COMBATANT_CARD.Controls.Hide": "Toggle Visibility",
     "COMBATANT_CARD.Controls.Defeated": "Mark Defeated",
@@ -18,5 +21,8 @@
     "WORDS.Save": "Save",
     "WORDS.Cancel": "Cancel",
     "WORDS.Hidden": "Hidden",
-    "WORDS.Defeated": "Defeated"
+    "WORDS.Defeated": "Defeated",
+    "WORDS.Encounter": "Encounter",
+    "WORDS.Round": "Round",
+    "WORDS.Turn": "Turn"
 }
