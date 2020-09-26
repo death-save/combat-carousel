@@ -8,6 +8,7 @@ export const CAROUSEL_ICONS = {
 }
 
 export const SETTING_KEYS = {
+    about: "about",
     collapseNav: "collapseNav",
     showHealth: "showHealthBar",
     healthBarPermission: "playerHealthBarPermission",

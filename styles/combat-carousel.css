@@ -466,6 +466,42 @@
     top: calc(50% + 10px);
 }
 
+#combat-carousel-about img {
+    border: none;
+}
 
-#combat-carousel .splide__track {
+#combat-carousel-about .logo {
+    width: 600px;
+}
+
+#combat-carousel-about .version {
+    flex-grow: 0;
+}
+
+#combat-carousel-about div.patrons {
+    width: 100%;
+}
+
+#combat-carousel-about .patrons ol {
+    height: 175px;
+    border: 1px inset white;
+    list-style: none;
+    overflow: hidden scroll;
+    text-align: center;
+}
+
+#combat-carousel-about .patrons li {
+    font-size: x-large;
+}
+
+#combat-carousel-about .death-save {
+    flex: 0 0 120px;
+}
+
+#combat-carousel-about .heart {
+    color: tomato;
+}
+
+#combat-carousel-about .patreon img {
+    flex: 0 0 100px;
 }

@@ -1,4 +1,6 @@
 {
+    "SETTINGS.AboutN": "About",
+    "SETTINGS.AboutH": "Info about Combat Carousel",
     "SETTINGS.CollapseNavN": "Collapse Navigation Bar",
     "SETTINGS.CollapseNavH": "Collapse the Navigation Bar when Combat Carousel is rendered",
     "SETTINGS.ShowHealthN": "Show Health Bar",

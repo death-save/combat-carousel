@@ -1,0 +1,30 @@
+<form autocomplete="off" onsubmit="event.preventDefault()">
+    <img src="modules/combat-carousel/img/combat-carousel-fulllogo.png" class="logo" title="Combat Carousel">
+    <div class="flexrow">
+        <i>You can ride for free, but it might cost your life...</i>
+        <span class="version"><strong>v{{version}}</strong></span>
+    </div>
+    <div class="readme">
+        <p><a href="modules/combat-carousel/README.md" title="README"><i class="fas fa-book"></i> Read Me / More Info</a></p>
+    </div>
+    <div class="made-by flexcol">
+        <span class="made">
+            Made with <span class="heart">❤</span> by <strong>DEATH SAVE DEVELOPMENT</strong>
+        </span>
+    </div>
+    <div class="patrons">
+        <p>Thanks to the support of these awesome people</p>
+        <ol class="patrons">
+        {{#each patrons}}
+            <li class="patron">{{this.name}}</li>
+        {{/each}}
+        </ol>
+    </div>
+    <footer class="flexrow">
+        <a href="https://www.patreon.com/bePatron?u=21811555" class="patreon flexcol">
+            <img src="modules/combat-carousel/img/Digital-Patreon-Logo_FieryCoral.png" title="Patreon" height="100px" width="100px">
+            Become a Patron!
+        </a>
+    <img src="modules/combat-carousel/img/deathsave-newlogo.png" class="death-save" title="DEATH SAVE" height="120px" width="120px">
+    </footer>
+</form>
