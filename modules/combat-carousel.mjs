@@ -485,6 +485,15 @@ export default class CombatCarousel extends Application {
     /* -------------------------------------------- */
 
     /**
+     * Safe render for multiple embedded entity updates
+     */
+    safeRender() {
+        debounce(() => {
+            this.render(), 100
+        });
+    }
+
+    /**
      * Toggles visibility of the carousel
      */
     async toggleVisibility(forceCollapse=false) {

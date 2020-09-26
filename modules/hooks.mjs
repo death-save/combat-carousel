@@ -48,9 +48,9 @@ export default function registerHooks() {
      * Update Combat hook
      */
     Hooks.on("updateCombat", (combat, update, options, userId) => {
-        console.log("combat update", {combat, update, options, userId});
+        //console.log("combat update", {combat, update, options, userId});
         
-        if (getProperty(update, "active") === true) {
+        if (getProperty(update, "active") === true || hasProperty(update, "round")) {
             return ui.combatCarousel.render(true);
         }
 
@@ -59,8 +59,6 @@ export default function registerHooks() {
                 //ui.combatCarousel.splide.refresh();
                 ui.combatCarousel.turn = update.turn;
                 return ui.combatCarousel.splide.go(update.turn);
-                //return ui.combatCarousel.render();
-                
                 //return ui.combatCarousel.render();
             }
 
@@ -76,14 +74,13 @@ export default function registerHooks() {
         }
         */
         return ui.combatCarousel.render();
-        
     });
     
     /**
      * Delete Combat hook
      */
     Hooks.on("deleteCombat", (combat, options, userId) => {
-        ui.combatCarousel.render();
+        ui.combatCarousel.render(true);
     });
     
     /* ----------------- Combatant ---------------- */
@@ -92,7 +89,7 @@ export default function registerHooks() {
      * Create Combatant hook
      */
     Hooks.on("createCombatant", async (combat, createData, options, userId) => {
-        console.log("create combatantant:", {combat, createData, options, userId});
+        //console.log("create combatantant:", {combat, createData, options, userId});
         
         // calculate the new turn order
         const newTurns = calculateTurns(combat);
@@ -118,13 +115,15 @@ export default function registerHooks() {
         if (ui.combatCarousel._collapsed) {
             ui.combatCarousel.expand();
         }
+
+        ui.combatCarousel.render();
     });
     
     /**
      * Update Combatant hook
      */
     Hooks.on("updateCombatant", async (combat, update, options, userId) => {
-        console.log("combatant update", {combat, update, options, userId});
+        //console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
         //ui.combatCarousel.splide.refresh();
         /*
@@ -135,14 +134,18 @@ export default function registerHooks() {
         cardToReplace.replaceWith(template);
         ui.combatCarousel.splide.refresh();
         */
-        await ui.combatCarousel.render();
+        const safeRender = debounce(() => {
+            ui.combatCarousel.render(), 100
+        });
+        
+        safeRender();
     });
 
     /**
      * Delete Combatant hook
      */
     Hooks.on("deleteCombatant", (combat, combatant, options, userId) => {
-        console.log("delete combatant:", {combat, combatant, options, userId});
+        //console.log("delete combatant:", {combat, combatant, options, userId});
         
         const index = ui.combatCarousel.getCombatantSlideIndex(combatant);
 
@@ -165,7 +168,7 @@ export default function registerHooks() {
     /* ------------------- Token ------------------ */
 
     Hooks.on("updateToken", (scene, token, update, options, userId) => {
-        console.log("token update:", scene,token,update,options,userId);
+        //console.log("token update:", scene,token,update,options,userId);
         if (!hasProperty(update, "effects") && !hasProperty(update, "overlayEffect") && !hasProperty(update, "actorData.data.attributes.hp.value")) return;
         // find any matching combat carousel combatants
         
@@ -210,7 +213,7 @@ export default function registerHooks() {
     });
 
     Hooks.on("renderCombatTracker", (app, html, data) => {
-        console.log("combat tracker rendered:", app, html, data);
+        //console.log("combat tracker rendered:", app, html, data);
     });
 
     /**
