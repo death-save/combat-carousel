@@ -488,10 +488,20 @@
     list-style: none;
     overflow: hidden scroll;
     text-align: center;
+    padding: 2px;
+}
+
+#combat-carousel-about .patrons li:nth-child(odd) {
+    background: rgba(0,0,0,0.2);
 }
 
 #combat-carousel-about .patrons li {
     font-size: x-large;
+}
+
+#combat-carousel-about footer div {
+    justify-content: center;
+    text-align: center;
 }
 
 #combat-carousel-about .death-save {
