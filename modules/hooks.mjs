@@ -58,8 +58,8 @@ export default function registerHooks() {
             if (update.turn != ui.combatCarousel.turn) {
                 //ui.combatCarousel.splide.refresh();
                 ui.combatCarousel.turn = update.turn;
-                return ui.combatCarousel.splide.go(update.turn);
-                //return ui.combatCarousel.render();
+                ui.combatCarousel.splide.go(update.turn);
+                return ui.combatCarousel.render();
             }
 
             //ui.combatCarousel.render();

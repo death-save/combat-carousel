@@ -209,8 +209,6 @@ export default class CombatCarousel extends Application {
         const round = game.combat ? game.combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
-        const hasPreviousRound = Number.isNumeric(previousRound);
-        const hasNextRound = Number.isNumeric(nextRound);
         //@todo use util method to setup turns -- need to filter out non-visible turns
         const turns = game.combat?.turns ? calculateTurns(game.combat).map(t => CombatCarousel.prepareTurnData(t)): [];
         
@@ -218,9 +216,14 @@ export default class CombatCarousel extends Application {
         const carouselIcon = CAROUSEL_ICONS[combatState];
                 
         this.turn = turns.length ? game.combat.turn : null;
-        const hasPreviousTurn = Number.isNumeric(this.turn) && turns.length;
-        const hasNextTurn = Number.isNumeric(this.turn);
-
+        const canControlCombat = game.user.isGM;
+        const combatant = game?.combat?.combatant;
+        const canAdvanceTurn = combatant?.players?.includes(game.user);
+        const hasPreviousTurn = canControlCombat && Number.isNumeric(this.turn) && turns.length;
+        const hasNextTurn = (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
+        const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
+        const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
+        
         return {
             carouselIcon,
             turns,
