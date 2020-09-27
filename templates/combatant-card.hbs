@@ -1,0 +1,66 @@
+<li class="splide__slide card" data-combatant-id="{{combatant.id}}">
+    <div class="name">
+        {{#if combatant.carousel.isGM}}
+        <div class="button-tray flexrow">
+            <a class="combatant-control" data-control="toggleHidden" title="{{localize "COMBATANT_CARD.Controls.Hide"}}"><i class="fas fa-eye-slash"></i></a>
+            <a class="combatant-control" data-control="toggleDefeated" title="{{localize "COMBATANT_CARD.Controls.Defeated"}}"><i class="fas fa-skull"></i></a>
+            <a class="combatant-control" data-control="remove" title="{{localize "COMBATANT_CARD.Controls.Remove"}}"><i class="fas fa-trash"></i></a>
+        </div>
+        {{/if}}
+        <h3 title="{{combatant.name}}">{{combatant.name}}</h3>
+    </div>
+    <div class="splide__container">
+        {{#if combatant.carousel.owner}}
+        <div class="overlay-hud">
+            <span class="tracker-indicators">
+                {{#if combatant.defeated}}
+                <i class="fas fa-skull" title="{{localize "WORDS.Defeated"}}"></i>
+                {{/if}}
+                {{#if combatant.hidden}}
+                <i class="fas fa-eye-slash" title="{{localize "WORDS.Hidden"}}"></i>
+                {{/if}}
+            </span>
+            <div class="overlay-properties">
+                {{#each combatant.carousel.overlayProperties}}
+                <div class="property">
+                    <img class="icon" src="{{this.img}}" title="{{this.name}}"/>
+                    <span class="value" title="{{this.value}}">{{this.value}}</span>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        <div class="initiative">
+            <a class="roll-init">
+                <span class="fa-stack fa-2x">
+                <i class="fas fa-dice-d20 fa-stack-2x" title="click to roll, right-click to set (GM only)"></i>
+                <input type="text" class="fa-stack-1x fa-inverse" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}click to roll, right-click to set (GM only)" value="{{combatant.initiative}}" disabled/>
+            </span>
+            </a>
+        </div>
+        {{/if}}
+        <div class="effects">
+            {{#each combatant.carousel.effects}}
+            <div class="effect">
+                <img src="{{this}}"/>
+            </div>
+            {{/each}}
+        </div>
+        <div class="avatar">
+            {{#if combatant.carousel.overlayEffect}}
+            <img class="overlay-effect" src="{{combatant.carousel.overlayEffect}}"/>
+            {{/if}}
+            <img src="{{combatant.img}}" title="{{combatant.name}}"/>
+        </div>
+    </div>
+    {{#if combatant.carousel.showHealth}}
+    <div class="hp" width="100%">
+        <meter 
+            value="{{combatant.carousel.hp.value}}" 
+            min="0" max="{{combatant.carousel.hp.max}}" 
+            title="{{combatant.carousel.hp.value}}/{{combatant.carousel.hp.max}}" 
+            optimum="{{combatant.carousel.hp.optimum}}" low="{{combatant.carousel.hp.low}}" 
+            high="{{combatant.carousel.hp.high}}"
+        />
+    </div>
+    {{/if}}
+</li>

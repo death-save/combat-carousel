@@ -1,0 +1,45 @@
+<div id="combat-carousel" class="wrapper">
+    <div class="carousel-icon">
+        <a id="combat-carousel-toggle" title="{{localize "CAROUSEL.ToggleHint"}}">
+            <img src="{{carouselIcon}}">
+            <i class="collapse-indicator fas fa-caret-down"></i>
+        </a>
+    </div>
+    <div class="splide">
+        <div class="splide__slider">
+            <div class="combat-control">
+                {{#if this.hasPreviousTurn}}
+                <a class="previous turn" title="{{localize "CAROUSEL.PreviousTurn"}}" data-action="previousTurn"><i class="fas fa-chevron-left"></i></a>
+                {{/if}}
+                {{#if this.hasPreviousRound}}
+                <a class="previous round" title="{{localize "CAROUSEL.PreviousRound"}}" data-action="previousRound"><i class="fas fa-step-backward"></i></a>
+                {{/if}}
+                {{#if this.hasNextTurn}}
+                <a class="next turn" title="{{localize "CAROUSEL.NextTurn"}}" data-action="nextTurn"><i class="fas fa-chevron-right"></i></a>
+                {{/if}}
+                {{#if this.hasNextRound}}
+                <a class="next round" title="{{localize "CAROUSEL.NextRound"}}" data-action="nextRound"><i class="fas fa-step-forward"></i></a>
+                {{/if}}
+            </div>
+            <div class="splide__track">
+                <ul class="splide__list">
+                    {{#each turns}}
+                        {{> "modules/combat-carousel/templates/combatant-card.hbs" combatant=this}}
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+        {{#if this.encounter}}
+    <div class="encounter-info flexcol">
+        <div class="encounter flexrow" title="{{localize "WORDS.Encounter"}} {{this.encounter}}">
+            <span class="counter">{{this.encounter}}</span>
+            <i class="fas fa-fist-raised"></i>
+        </div>
+        <div class="round flexrow" title="{{localize "WORDS.Round"}} {{this.round}}">
+            <span class="counter">{{this.round}}</span>
+            <i class="fas fa-circle-notch"></i>
+        </div>
+    </div>
+    {{/if}}
+    </div>
+</div>
