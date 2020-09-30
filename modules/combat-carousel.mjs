@@ -304,7 +304,15 @@ export default class CombatCarousel extends Application {
         const parentLi = event.currentTarget.closest("li");
         const combatantId = parentLi.dataset.combatantId;
         
-        if (!combatantId || !game.user.isGM) return;
+        if (!combatantId) return;
+
+        const combatant = game.combat.getCombatant(combatantId);
+
+        if (!combatant) return;
+
+        const token = canvas.tokens.get(combatant.tokenId);
+        
+        if (!token.owner) return;
 
         game.combat.rollInitiative(combatantId);
     }
