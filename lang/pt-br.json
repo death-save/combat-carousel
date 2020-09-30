@@ -1,0 +1,30 @@
+{
+    "SETTINGS.AboutN": "Sobre",
+    "SETTINGS.AboutH": "Sobre o Combat Carousel",
+    "SETTINGS.CollapseNavN": "Esconder Barra de Navegação",
+    "SETTINGS.CollapseNavH": "Esconde a Barra de Navegação quando o Combat Carousel aparecer.",
+    "SETTINGS.ShowHealthN": "Mostrar Barra de Vida",
+    "SETTINGS.ShowHealthH": "Mostra a Barra de Vida embaixo do retrato.",
+    "SETTINGS.HealthBarPermissionN": "Permissões da Barra de Vida para os jogadores",
+    "SETTINGS.HealthBarPermissionH": "Define quando as Barras de Vida devem ser mostradas para os jogadores. All Owned: mostra as Barras de Vida de todos os tokens que o jogador for dono. Use Token Setting: usa a configuração de Barra de Vida de cada token. None: não mostra nenhuma Barra de Vida aos jogadores.",
+
+    "CAROUSEL.NextTurn": "Próximo Turno",
+    "CAROUSEL.PreviousTurn": "Turno Anterior",
+    "CAROUSEL.NextRound": "Próxima Rodada",
+    "CAROUSEL.PreviousRound": "Rodada Anterior",
+    "CAROUSEL.NextRoundTooltip": "Ir para a Próxima Rodada",
+    "CAROUSEL.PreviousRoundTooltip": "Ir para a Rodada Anterior",
+    "CAROUSEL.ToggleHint": "Botão esquerdo para esconder/revelar, botão direito para configurar",
+
+    "COMBATANT_CARD.Controls.Hide": "Mudar Visibilidade",
+    "COMBATANT_CARD.Controls.Defeated": "Marcar como Derrotado",
+    "COMBATANT_CARD.Controls.Remove": "Remover do Encontro",
+
+    "WORDS.Save": "Salvar",
+    "WORDS.Cancel": "Calcelar",
+    "WORDS.Hidden": "Escondido",
+    "WORDS.Defeated": "Derrotado",
+    "WORDS.Encounter": "Encontro",
+    "WORDS.Round": "Rodada",
+    "WORDS.Turn": "Turno"
+}

@@ -32,8 +32,8 @@
         <div class="initiative">
             <a class="roll-init">
                 <span class="fa-stack fa-2x">
-                <i class="fas fa-dice-d20 fa-stack-2x" title="click to roll, right-click to set (GM only)"></i>
-                <input type="text" class="fa-stack-1x fa-inverse" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}click to roll, right-click to set (GM only)" value="{{combatant.initiative}}" disabled/>
+                <i class="fas fa-dice-d20 fa-stack-2x" title="{{localize COMBATANT_CARD.RollInitiative}}"></i>
+                <input type="text" class="fa-stack-1x fa-inverse" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}{{localize "COMBATANT_CARD.RollInitiative"}}" value="{{combatant.initiative}}" disabled/>
             </span>
             </a>
         </div>

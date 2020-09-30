@@ -1,0 +1,30 @@
+{
+    "SETTINGS.AboutN": "詳細",
+    "SETTINGS.AboutH": "Combat Carouselについて",
+    "SETTINGS.CollapseNavN": "イニシアチブバーを非表示",
+    "SETTINGS.CollapseNavH": "モッドが初めて表示されるときにイニシアチブバーを非表示にします。",
+    "SETTINGS.ShowHealthN": "HPバーを表示",
+    "SETTINGS.ShowHealthH": "画像の下にHPバーを表示します。",
+    "SETTINGS.HealthBarPermissionN": "HPバーの権限設定",
+    "SETTINGS.HealthBarPermissionH": "プレイヤーに表示するHPバーの権限を定義します。All Owned: プレイヤーが操作権限を持っているキャラクターのHPのみを表示。 Use Token Setting: コマに付与されているバーの権限をそのまま使用（OwnerやAlways等）。 None: プレイヤーのHPバーを非表示にする。",
+
+    "CAROUSEL.NextTurn": "ターンを進める",
+    "CAROUSEL.PreviousTurn": "ターンを巻き戻す",
+    "CAROUSEL.NextRound": "ラウンドを進める",
+    "CAROUSEL.PreviousRound": "ラウンドを巻き戻す",
+    "CAROUSEL.NextRoundTooltip": "クリックすれば次のラウンドへ進みます。",
+    "CAROUSEL.PreviousRoundTooltip": "クリックすれば前のラウンドへ巻き戻します。",
+    "CAROUSEL.ToggleHint": "クリックすると表示・非表示を切り替えます。右クリックで設定画面を開きます。",
+
+    "COMBATANT_CARD.Controls.Hide": "可視／不可視切り替え",
+    "COMBATANT_CARD.Controls.Defeated": "敗北マーク",
+    "COMBATANT_CARD.Controls.Remove": "遭遇から削除する",
+
+    "WORDS.Save": "保存",
+    "WORDS.Cancel": "キャンセル",
+    "WORDS.Hidden": "不可視",
+    "WORDS.Defeated": "敗北",
+    "WORDS.Encounter": "遭遇",
+    "WORDS.Round": "ラウンド",
+    "WORDS.Turn": "ターン"
+}

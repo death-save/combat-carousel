@@ -1,3 +1,8 @@
+/**
+ * Hooks module
+ * @module hooks
+ */
+
 import CombatCarousel from "./combat-carousel.mjs";
 import registerSettings from "./settings.mjs";
 import overrideMethods from "./overrides.mjs";

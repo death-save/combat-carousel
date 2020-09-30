@@ -1,8 +1,19 @@
+/**
+ * Overrides module
+ * @module overrides
+ */
+
+/**
+ * Wrapper to call overrides
+ */
 export default function overrideMethods() {
     SceneNavigation.prototype.expand = sceneNavExpandOverride;
     SceneNavigation.prototype.collapse = sceneNavCollapseOverride;
 }
 
+/**
+ * Override sceneNavExpand to move Hook call into promise
+ */
 function sceneNavExpandOverride() {
     if ( !this._collapsed ) return true;
     const nav = this.element;
@@ -20,6 +31,9 @@ function sceneNavExpandOverride() {
     });
 }
 
+/**
+ * Override sceneNavCollapse to move Hook call into promise
+ */
 function sceneNavCollapseOverride() {
     if ( this._collapsed ) return true;
     const nav = this.element;

@@ -1,3 +1,8 @@
+/**
+ * CombatCarousel module
+ * @module combat-carousel
+ */
+
 import CombatCarouselConfig from "./config-form.mjs";
 import { CAROUSEL_ICONS } from "./config.mjs";
 import { NAME, SETTING_KEYS } from "./config.mjs";
@@ -6,6 +11,7 @@ import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 
 /**
  * Main app class
+ * @extends Application
  */
 export default class CombatCarousel extends Application {
     constructor(options={}) {
@@ -298,7 +304,7 @@ export default class CombatCarousel extends Application {
         const parentLi = event.currentTarget.closest("li");
         const combatantId = parentLi.dataset.combatantId;
         
-        if (!combatantId) return;
+        if (!combatantId || !game.user.isGM) return;
 
         game.combat.rollInitiative(combatantId);
     }

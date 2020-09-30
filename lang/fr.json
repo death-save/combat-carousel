@@ -1,0 +1,30 @@
+{
+    "SETTINGS.AboutN": "A propos",
+    "SETTINGS.AboutH": "Infos à propos de Combat Carousel",
+    "SETTINGS.CollapseNavN": "Réduire la Barre de Navigation",
+    "SETTINGS.CollapseNavH": "Réduire la Barre de Navigation lorsque Combat Carousel est affiché",
+    "SETTINGS.ShowHealthN": "Afficher la Jauge de Vie",
+    "SETTINGS.ShowHealthH": "Affiche la jauge de vie sous chaque portrait",
+    "SETTINGS.HealthBarPermissionN": "Permissions sur les Jauges de Vie pour les Joueurs",
+    "SETTINGS.HealthBarPermissionH": "Définit dans quelles circonstances montrer les jauges de vies aux joueurs. All Owned: Les jauges de vie de tout jeton que le joueur possède seront affichées. Use Token Setting: Utiliser le paramètre de jauge du jeton (comme Owner ou Always). None: Ne pas montrer aux joueurs les jauges de vie.",
+
+    "CAROUSEL.NextTurn": "Prochain Tour",
+    "CAROUSEL.PreviousTurn": "Tour Précédent",
+    "CAROUSEL.NextRound": "Prochain Round",
+    "CAROUSEL.PreviousRound": "Round Précédent",
+    "CAROUSEL.NextRoundTooltip": "Cliquer pour accéder au Prochain Round",
+    "CAROUSEL.PreviousRoundTooltip": "Cliquer pour retourner au Round Précédent",
+    "CAROUSEL.ToggleHint": "Cliquer pour afficher/cacher, clic droit pour accéder à la configuration",
+
+    "COMBATANT_CARD.Controls.Hide": "Changer la Visibilité",
+    "COMBATANT_CARD.Controls.Defeated": "Noter comme Vaincu",
+    "COMBATANT_CARD.Controls.Remove": "Retirer de la Rencontre",
+
+    "WORDS.Save": "Sauver",
+    "WORDS.Cancel": "Annuler",
+    "WORDS.Hidden": "Caché",
+    "WORDS.Defeated": "Vaincu",
+    "WORDS.Encounter": "Rencontre",
+    "WORDS.Round": "Round",
+    "WORDS.Turn": "Tour"
+}
