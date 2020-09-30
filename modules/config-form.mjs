@@ -1,7 +1,13 @@
+/**
+ * CombatCarouselConfig module
+ * @module config-form
+ */
+
 import { NAME, SETTING_KEYS } from "./config.mjs";
 
 /**
  * A form-app for setting the icons and properties to use in the Combat Carousel Overlay
+ * @extends FormApplication
  */
 export default class CombatCarouselConfig extends FormApplication {
     /**

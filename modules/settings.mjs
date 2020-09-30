@@ -1,12 +1,20 @@
+/**
+ * Settings module
+ * @module settings
+ */
+
 import AboutApp from "./about.mjs";
 import { DEFAULT_CONFIG } from "./config.mjs";
 import { SETTING_KEYS } from "./config.mjs";
 import { NAME } from "./config.mjs";
 
+/**
+ * Wrapper to call settings registration
+ */
 export default function registerSettings() {
     game.settings.registerMenu(NAME, SETTING_KEYS.about, {
         name: "SETTINGS.AboutN",
-        label: "About Combat Carousel",
+        label: "ABOUT.Label",
         hint: "SETTINGS.AboutH",
         icon: "fas fa-question",
         type: AboutApp,

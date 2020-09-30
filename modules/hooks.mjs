@@ -1,3 +1,8 @@
+/**
+ * Hooks module
+ * @module hooks
+ */
+
 import CombatCarousel from "./combat-carousel.mjs";
 import registerSettings from "./settings.mjs";
 import overrideMethods from "./overrides.mjs";
@@ -58,8 +63,8 @@ export default function registerHooks() {
             if (update.turn != ui.combatCarousel.turn) {
                 //ui.combatCarousel.splide.refresh();
                 ui.combatCarousel.turn = update.turn;
-                return ui.combatCarousel.splide.go(update.turn);
-                //return ui.combatCarousel.render();
+                ui.combatCarousel.splide.go(update.turn);
+                return ui.combatCarousel.render();
             }
 
             //ui.combatCarousel.render();

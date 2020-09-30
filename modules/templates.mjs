@@ -1,4 +1,9 @@
 /**
+ * Templates module
+ * @module templates
+ */
+
+/**
  * Define a set of template paths to pre-load
  * Pre-loaded templates are compiled and cached for fast access when rendering
  * Taken from dnd5e system (see link)

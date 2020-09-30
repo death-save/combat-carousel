@@ -19,6 +19,9 @@
     "COMBATANT_CARD.Controls.Hide": "Toggle Visibility",
     "COMBATANT_CARD.Controls.Defeated": "Mark Defeated",
     "COMBATANT_CARD.Controls.Remove": "Remove from Encounter",
+    "COMBATANT_CARD.RollInitiative": "Click to Roll, Right-Click to Set (GM Only)",
+
+    "ABOUT.Label": "About Combat Carousel",
 
     "WORDS.Save": "Save",
     "WORDS.Cancel": "Cancel",

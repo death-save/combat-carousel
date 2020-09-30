@@ -1,0 +1,30 @@
+{
+    "SETTINGS.AboutN": "Acerca de",
+    "SETTINGS.AboutH": "Información acerca de Combat Carousel (Carrusel de Combate)",
+    "SETTINGS.CollapseNavN": "Plegar la Barra de Navegación",
+    "SETTINGS.CollapseNavH": "Pliega la Barra de Navegación cuando se muestra el Carrusel de Combate",
+    "SETTINGS.ShowHealthN": "Mostrar Barra de Vida",
+    "SETTINGS.ShowHealthH": "Muestra la Barra de Vida bajo cada retrato",
+    "SETTINGS.HealthBarPermissionN": "Permisos de la Barra de Vida del Jugador",
+    "SETTINGS.HealthBarPermissionH": "Define en qué circunstancias quieres mostrar las barras de vida a los jugadores. Propiedad: se mostrará la barra de vida de cualquier icono que sea de tu propiedad. Usar Ajustes de Icono: Usa la configuración de las barras del icono (p.ej. Propietario o Siempre). Ninguno: no mostrará a los jugadores ninguna barra de vida",
+
+    "CAROUSEL.NextTurn": "Turno Siguiente",
+    "CAROUSEL.PreviousTurn": "Turno Anterior",
+    "CAROUSEL.NextRound": "Asalto Siguiente",
+    "CAROUSEL.PreviousRound": "Asalto Anterior",
+    "CAROUSEL.NextRoundTooltip": "Haz clic para pasar al Asalto Siguiente",
+    "CAROUSEL.PreviousRoundTooltip": "Haz clic para volver al Asalto Anterior",
+    "CAROUSEL.ToggleHint": "Haz clic para ocultar/mostrar, clic-derecho para ajustes",
+
+    "COMBATANT_CARD.Controls.Hide": "Alternar Visibilidad",
+    "COMBATANT_CARD.Controls.Defeated": "Marcar como Derrotado",
+    "COMBATANT_CARD.Controls.Remove": "Quitar del Encuentro",
+
+    "WORDS.Save": "Guardar",
+    "WORDS.Cancel": "Cancelar",
+    "WORDS.Hidden": "Oculto",
+    "WORDS.Defeated": "Derrotado",
+    "WORDS.Encounter": "Encounter",
+    "WORDS.Round": "Asalto",
+    "WORDS.Turn": "Turno"
+}

@@ -1,4 +1,9 @@
 /**
+ * Util module
+ * @module util
+ */
+
+/**
  * Retrieves a key using the given value
  * @param {Object} object -- the object that contains the key/value
  * @param {*} value 

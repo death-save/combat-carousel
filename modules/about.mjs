@@ -1,3 +1,12 @@
+/**
+ * AboutApp module
+ * @module about
+ */
+
+/**
+ * About this module FormApp
+ * @extends FormApplication
+ */
 export default class AboutApp extends FormApplication {
     constructor(options={}) {
         super(options);
