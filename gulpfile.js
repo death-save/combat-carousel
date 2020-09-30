@@ -1,14 +1,12 @@
 const jsdoc2md = require('jsdoc-to-markdown');
-const patreonAPI = require('patreon').patreon;
 const { parallel, series } = require('gulp');
 const fs = require('fs');
-const { nextTick } = require('process');
 const zip = require('gulp-zip');
 const gulp = require('gulp');
 const version = require('./package.json').version;
 
 function docs(done) {
-  jsdoc2md.render({ files: ['*.js','modules/*.mjs','!gulpfile.js'], configure: 'jsdoc/conf.json' })
+  jsdoc2md.render({ files: ['modules/*.mjs', '*.js'], configure: 'jsdoc/conf.json' })
     .then(output => fs.writeFileSync('api.md', output));
   return done();
 }
@@ -104,6 +102,7 @@ async function fetchPatrons(patrons=[], nextPage=null) {
 const chores = parallel(patrons, docs);
 
 exports.build = build;
+exports.docs = docs;
 exports.patrons = patrons;
 exports.chores = chores;
 exports.default = series(chores, build);
