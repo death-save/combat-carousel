@@ -14,6 +14,11 @@
 - Initiative icon assumes `d20`-based initiative
 - Some strings are still not setup for translation
 
+## [0.1.2] - 2020-09-29
+### Fixed
+- Players can now roll initiative again
+- Players can no longer change the active combatant by clicking a Combatant Card
+
 ## [0.1.1] - 2020-09-29
 ### Added
 - Translations:
