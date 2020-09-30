@@ -4,6 +4,7 @@ const fs = require('fs');
 const zip = require('gulp-zip');
 const gulp = require('gulp');
 const version = require('./package.json').version;
+const fetch  = require('node-fetch');
 
 function docs(done) {
   jsdoc2md.render({ files: ['modules/*.mjs', '*.js'], configure: 'jsdoc/conf.json' })
@@ -61,13 +62,13 @@ function build(done) {
 }
 
 async function fetchPatrons(patrons=[], nextPage=null) {
-  const accessToken = '***REMOVED***'
+  const accessToken = fs.readFileSync('patreon_key.txt', 'utf-8');
   const campaignId = '5254689';
   const url = `https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/members`;
   const query = '?fields%5Bmember%5D=full_name,patron_status';
   const pagination = nextPage ? `&page%5Bcursor%5D=${nextPage}` : '';
 
-  let myHeaders = new Headers();
+  let myHeaders = new fetch.Headers();
   myHeaders.append("Authorization", `Bearer ${accessToken}`);
   myHeaders.append("Cookie", "__cfduid=d0ff53e0a0f52232bc3d071e4e41b36f11601349207; patreon_device_id=aa72995a-d296-4e22-8336-fba6580fa49b; __cf_bm=6d8302a7c059da3dc166c9718f7372a386a1911c-1601350627-1800-AXgBmtTqEn83/w2Ka4Mq+ewtUVrvq5+bZppjqM6WDA2ofb1XwF22RNcARQzzHOF2S9K/A2UUeVUnfInGOwqJ6qk=");
 
