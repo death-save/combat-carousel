@@ -1,6 +1,6 @@
 {
   "name": "combat-carousel",
-  "version": "0.1.1-alpha",
+  "version": "0.1.2-alpha",
   "description": "A Foundry VTT module providing CRPG-style combat tracker",
   "main": "init.js",
   "scripts": {
@@ -19,9 +19,9 @@
   "author": "Evan Clarke (errational)",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/death-save/combat-carousel/issues"
+    "url": "https://github.com/death-save/combat-carousel-public/issues"
   },
-  "homepage": "https://github.com/death-save/combat-carousel#readme",
+  "homepage": "https://github.com/death-save/combat-carousel-public#readme",
   "dependencies": {
     "jquery": "3.5.1"
   },
