@@ -113,16 +113,22 @@ export default class CombatCarousel extends Application {
         });
 
         this.splide.on("click", async slide => {
-            if (slide.slide.dataset.action === "nextRound") {
-                await game.combat.nextRound();
-                return this.render();
-            }
+            /*
+            // @todo think about whether players should ever be able to activate this
+            const combatantId = slide.slide.dataset.combatantId;
+            
+            if (!combatantId) return;
 
-            if (slide.slide.dataset.action === "previousRound") {
-                await game.combat.previousRound();
-                return this.render();
-            }
+            const combatant = game.combat.getCombatant(combatantId);
 
+            if (!combatant) return;
+
+            const token = canvas.tokens.get(combatant.tokenId);
+
+            if (!token?.owner) return;
+            */
+            if (!game.user.isGM) return;
+            
             return await game.combat.update({turn: slide.index});
         });
 
