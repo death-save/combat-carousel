@@ -405,6 +405,9 @@ export default class CombatCarousel extends Application {
         const card = event.currentTarget;
         const combatantId = card.dataset.combatantId;
         const token = getTokenFromCombatantId(combatantId);
+
+        if (!game.user.isGM || !token.owner) return;
+        
         token.actor.sheet.render(true);
     }
 
