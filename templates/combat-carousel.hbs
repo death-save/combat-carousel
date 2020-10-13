@@ -1,5 +1,5 @@
 <div id="combat-carousel" class="wrapper">
-    <div class="carousel-icon">
+        <div class="carousel-icon">
         <a id="combat-carousel-toggle" title="{{localize "CAROUSEL.ToggleHint"}}">
             <img src="{{carouselIcon}}">
             <i class="collapse-indicator fas fa-caret-down"></i>
@@ -33,7 +33,13 @@
     <div class="encounter-info flexcol">
         <div class="encounter flexrow" title="{{localize "WORDS.Encounter"}} {{this.encounter}}">
             <span class="counter">{{this.encounter}}</span>
-            <i class="fas fa-fist-raised"></i>
+            {{#if canControlCombat}}
+            <a class="encounter-control" title="{{localize "CAROUSEL.EndEncounter"}}">
+            {{/if}}
+                <i class="fas fa-fist-raised"></i>
+            {{#if canControlCombat}}
+            </a>
+            {{/if}}
         </div>
         <div class="round flexrow" title="{{localize "WORDS.Round"}} {{this.round}}">
             <span class="counter">{{this.round}}</span>
