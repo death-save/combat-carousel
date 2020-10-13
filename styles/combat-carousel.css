@@ -63,6 +63,13 @@
     right: 0px;
     top: 0px;
     color: #eee;
+    background: rgba(0, 0, 0, 0.5);
+    border: solid 1px black;
+    border-radius: 3px;
+}
+
+#combat-carousel a.encounter-control {
+    text-align: center;
 }
 
 #combat-carousel .encounter-info .flexrow {
@@ -97,8 +104,13 @@
 
 #combat-carousel .overlay-hud {
     position: absolute;
+    z-index: 20;
 }
 
+#combat-carousel .overlay-hud .tracker-indicators {
+    background: rgba(0, 0, 0, 0.5);
+}
+ 
 #combat-carousel .overlay-properties {
     display: none;
 }
@@ -129,7 +141,7 @@
 #combat-carousel img.overlay-effect {
     position: absolute;
     left: 10px;
-    opacity: 0.5;
+    opacity: 0.7;
     height: 80px;
     width: 80px;
 }
@@ -140,6 +152,7 @@
     padding: 2px 0px;
     background: rgba(0,0,0,0.5);
     border-radius: 60%;
+    z-index: 20;
 }
 
 #combat-carousel .initiative .fa-2x {
@@ -227,6 +240,32 @@
     }
 }
 
+#combat-carousel .car .active-combatant-wrapper {
+    position: relative;
+}
+
+#combat-carousel .card .active-combatant {
+    display: none;
+}
+
+#combat-carousel .is-active.card .active-combatant {
+    display: block;
+    position: absolute;
+    top: -6px;
+    left: 0px;
+    width: 16px;
+    height: 16px;
+    z-index: 999;
+}
+
+#combat-carousel .is-active.card .tracker-indicators {
+    margin-left: 20px;
+}
+
+#combat-carousel .is-active.card:hover .tracker-indicators {
+    margin-left: unset;
+}
+
 #combat-carousel img {
     border: none;
 }
@@ -305,12 +344,11 @@
 }
 
 #combat-carousel .splide {
-    height: 170px;
+    height: 177px;
 }
 
 #combat-carousel .splide__track {
-    overflow-x: hidden;
-    overflow-y: visible;
+    padding-top: 5px;
 }
 #combat-carousel .splide__slider {
     padding: 0px 50px;
@@ -358,6 +396,7 @@
 
 #combat-carousel .name:hover .button-tray {
     display: flex;
+    padding: 0px 10px;
 }
 
 #combat-carousel .name .button-tray {
@@ -371,7 +410,7 @@
 }
 
 #combat-carousel a.combatant-control {
-    color: #666;
+    color: #fff;
 }
 
 #combat-carousel a.combatant-control.active {
@@ -383,7 +422,11 @@
 }
 
 #combat-carousel .is-active.card {
-    border: 1px solid orange;
+    /* border: 1px solid orange; */
+}
+
+#combat-carousel .splide__slide:hover .active-combatant {
+    margin-top: -20px;
 }
 
 /*

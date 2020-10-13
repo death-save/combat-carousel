@@ -14,6 +14,23 @@
 - Initiative icon assumes `d20`-based initiative
 - Some strings are still not setup for translation
 
+## [0.1.3] - 2020-10-12
+### Added
+- You can now End a Combat Encounter by clicking the Encounter icon (fist) on the right side of the Carousel
+
+### Changed
+- The Active Turn in the current Combat is now indicated by a red bookmark icon at the top of the card (the orange border around card has been removed)
+- Interacting with the Combatant Card has changed:
+- - Clicking on the card now `selects` / `controls` the matching token
+- - Right-clicking on the card now sets that Combatant as the Active Turn in Combat
+- - Double-clicking on the card still opens the Actor sheet
+
+### Fixed
+- Players can no longer reroll initiative
+- Players can no longer double-click a Combatant Card to open an Actor sheet which they do not own
+- The Combatant Control buttons (which appear when you hover over a Combatant name) are now brighter
+- Combat Tracker Indicators (Defeated, and Visibility) now have a background so they are easier to see
+
 ## [0.1.2] - 2020-09-29
 ### Fixed
 - Players can now roll initiative again

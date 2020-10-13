@@ -15,7 +15,9 @@
     "CAROUSEL.NextRoundTooltip": "Click to proceed to Next Round",
     "CAROUSEL.PreviousRoundTooltip": "Click to return to Previous Round",
     "CAROUSEL.ToggleHint": "Click to hide/unhide, Right-click for config",
+    "CAROUSEL.EndEncounter": "Click to End Encounter",
 
+    "COMBATANT_CARD.ActiveTurn": "Active Turn",
     "COMBATANT_CARD.Controls.Hide": "Toggle Visibility",
     "COMBATANT_CARD.Controls.Defeated": "Mark Defeated",
     "COMBATANT_CARD.Controls.Remove": "Remove from Encounter",

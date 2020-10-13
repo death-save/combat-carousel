@@ -238,6 +238,29 @@ export default function registerHooks() {
     Hooks.on("hoverToken", (token, hovered) => {
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
+        if (!ui?.combatCarousel?.splide || !game.combat) return;
+
+        const combatant = game.combat.combatants.find(c => c.tokenId === token.id);
+
+        if (!combatant) return;
+
+        const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant._id}"]`);
+        
+        if (!slide) return;
+
+        switch (hovered) {
+            case true:
+                const borderColor = PIXI.utils.hex2string(token._getBorderColor());
+                return slide.style.borderColor = borderColor;
+                
+            case false:
+                if (token._controlled) return;
+                return slide.style.borderColor = null;
+
+            default:
+                return;
+        }
+        /*
         if (hovered) {
             const combatant = game.combat.combatants.find(c => c.tokenId === token.id);
             const borderColor = PIXI.utils.hex2string(token._getBorderColor());
@@ -248,7 +271,39 @@ export default function registerHooks() {
             return slide.style.borderColor = borderColor;
         }
 
+        const controlledTokens = canvas.tokens.controlled;
+        const controlledTokenIds = controlledTokens ? controlledTokens.map(t => t.id) : [];
+        const controlledCombatants = game.combat.combatants.filter(c => controlledTokenIds.includes(c.tokenId));
+        const controlledCombatantIds = controlledCombatants ? controlledCombatants.map(c => c._id) : [];
         const slides = ui.combatCarousel.splide.root.querySelectorAll("li.splide__slide");
-        return slides.forEach(s => s.style.borderColor = null);
+        return slides.forEach(s => {
+            if (controlledCombatantIds.includes(s.dataset.combatantId)) return;
+            s.style.borderColor = null;
+        });
+        */
+    });
+
+    Hooks.on("controlToken", (token, controlled) => {
+        if (!ui?.combatCarousel?.splide || !game.combat) return;
+
+        const combatant = game.combat.combatants.find(c => c.tokenId === token.id);
+
+        if (!combatant) return;
+
+        const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant._id}"]`);
+        
+        if (!slide) return;
+
+        switch (controlled) {
+            case true:
+                const borderColor = PIXI.utils.hex2string(token._getBorderColor());
+                return slide.style.borderColor = borderColor;
+                
+            case false:
+                return slide.style.borderColor = null;
+
+            default:
+                return;
+        }
     });
 }

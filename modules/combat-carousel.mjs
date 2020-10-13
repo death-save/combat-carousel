@@ -43,7 +43,7 @@ export default class CombatCarousel extends Application {
 
         const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
 
-        if (collapseNavSetting) {
+        if (collapseNavSetting && game.combat) {
             ui.nav.collapse();
         }
 
@@ -97,6 +97,19 @@ export default class CombatCarousel extends Application {
                 }
             }
 
+            const controlledTokens = canvas?.tokens?.controlled;
+            const controlledCombatants = game?.combat?.combatants?.filter(c => controlledTokens.some(t => c.tokenId === t.id));
+
+            for (const slide of slides) {
+                const combatantId = slide.dataset.combatantId;
+                if (controlledCombatants.some(c => c._id === combatantId)) {
+                    const combatant = controlledCombatants.find(c => c._id === combatantId);
+                    const token = controlledTokens.find(t => t.id === combatant.tokenId);
+                    const borderColor = PIXI.utils.hex2string(token._getBorderColor());
+                    slide.style.borderColor = borderColor;
+                }
+            }
+
             const combatState = this.getCombatState(game.combat);
 
             switch (combatState) {
@@ -113,8 +126,6 @@ export default class CombatCarousel extends Application {
         });
 
         this.splide.on("click", async slide => {
-            /*
-            // @todo think about whether players should ever be able to activate this
             const combatantId = slide.slide.dataset.combatantId;
             
             if (!combatantId) return;
@@ -124,12 +135,8 @@ export default class CombatCarousel extends Application {
             if (!combatant) return;
 
             const token = canvas.tokens.get(combatant.tokenId);
-
-            if (!token?.owner) return;
-            */
-            if (!game.user.isGM) return;
             
-            return await game.combat.update({turn: slide.index});
+            return await token.control();
         });
 
         this.splide.on("addCombatant", (element, index) => {
@@ -142,6 +149,17 @@ export default class CombatCarousel extends Application {
                     event.target.style.animationDelay = null;
                     //this.activateCombatantSlide();
                 });
+            }
+
+            const controlledTokens = canvas?.tokens?.controlled;
+            const controlledCombatants = game?.combat?.combatants?.filter(c => controlledTokens.some(t => c.tokenId === t.id));
+            const combatantId = $element.data().combatantId;
+
+            if (controlledCombatants.some(c => c._id === combatantId)) {
+                const combatant = controlledCombatants.find(c => c._id === combatantId);
+                const token = controlledTokens.find(t => t.id === combatant.tokenId);
+                const borderColor = PIXI.utils.hex2string(token._getBorderColor());
+                $element.css("border-color", borderColor);
             }
            
             const newElement = $element[0].outerHTML;
@@ -246,7 +264,8 @@ export default class CombatCarousel extends Application {
             hasPreviousRound,
             hasNextRound,
             hasPreviousTurn,
-            hasNextTurn
+            hasNextTurn,
+            canControlCombat
         }
     }
 
@@ -264,6 +283,7 @@ export default class CombatCarousel extends Application {
         const card = html.find(".splide__slide");
         const combatantControl = html.find("a.combatant-control");
         const combatControl = html.find(".combat-control a");
+        const encounterIcon = html.find(".encounter-info .encounter");
         
         moduleIcon.on("click", event => this._onModuleIconClick(event, html));
         moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
@@ -273,9 +293,12 @@ export default class CombatCarousel extends Application {
         initiativeInput.on("focusout", event => this._onInitiativeFocusOut(event, html));
         splide.on("mouseenter", event => this._onHoverSplide(event, html)).on("mouseleave", event => this._onHoverOutSplide(event, html));
         card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
+        card.on("contextmenu", event => this._onContextMenuCard(event, html));
         card.on("dblclick", event => this._onCardDoubleClick(event, html));
         combatantControl.on("click", event => this._onCombatantControl(event, html));
         combatControl.on("click", event => this._onCombatControlClick(event, html));
+        encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
+        encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
     }
 
     /* -------------------------------------------- */
@@ -405,7 +428,29 @@ export default class CombatCarousel extends Application {
         const card = event.currentTarget;
         const combatantId = card.dataset.combatantId;
         const token = getTokenFromCombatantId(combatantId);
+
+        if (!game.user.isGM || !token.owner) return;
+
         token.actor.sheet.render(true);
+    }
+
+    /**
+     * Handle card right-click
+     * @param event 
+     * @param html 
+     */
+    async _onContextMenuCard(event, html) {
+        const combatantId = event.currentTarget.dataset.combatantId;
+
+        if (!combatantId || !game.user.isGM) return;
+
+        const turn = game.combat.turns.find(t => t._id === combatantId);
+
+        if (!turn) return;
+
+        const turnIndex = game.combat.turns.indexOf(turn);
+
+        await game.combat.update({turn: turnIndex});
     }
 
     /**
@@ -501,6 +546,26 @@ export default class CombatCarousel extends Application {
 
         splideTrack.style.overflowX = "hidden";
         splideTrack.style.overflowY = "visible";
+    }
+
+    /**
+     * Context Encounter Icon handler
+     * @param event 
+     * @param html 
+     */
+    _onClickEncounterIcon(event, html) {
+        if (!game.user.isGM) return;
+
+        game.combat.endCombat();
+    }
+
+    /**
+     * Context Encounter Icon handler
+     * @param event 
+     * @param html 
+     */
+    _onEncounterIconContext(event, html) {
+        //game.combat.endCombat();
     }
 
     /* -------------------------------------------- */

@@ -100,10 +100,13 @@ CombatCarousel module
             * [._onHoverCard(event)](#module_combat-carousel..CombatCarousel+_onHoverCard)
             * [._onHoverOutCard(event, html)](#module_combat-carousel..CombatCarousel+_onHoverOutCard)
             * [._onCardDoubleClick(event, html)](#module_combat-carousel..CombatCarousel+_onCardDoubleClick)
+            * [._onContextMenuCard(event, html)](#module_combat-carousel..CombatCarousel+_onContextMenuCard)
             * [._onCombatantControl(event, html)](#module_combat-carousel..CombatCarousel+_onCombatantControl)
             * [._onCombatControlClick(event, html)](#module_combat-carousel..CombatCarousel+_onCombatControlClick)
             * [._onHoverSplide(event, html)](#module_combat-carousel..CombatCarousel+_onHoverSplide)
             * [._onHoverOutSplide(event, html)](#module_combat-carousel..CombatCarousel+_onHoverOutSplide)
+            * [._onClickEncounterIcon(event, html)](#module_combat-carousel..CombatCarousel+_onClickEncounterIcon)
+            * [._onEncounterIconContext(event, html)](#module_combat-carousel..CombatCarousel+_onEncounterIconContext)
             * [.safeRender()](#module_combat-carousel..CombatCarousel+safeRender)
             * [.toggleVisibility()](#module_combat-carousel..CombatCarousel+toggleVisibility)
             * [.expand()](#module_combat-carousel..CombatCarousel+expand)
@@ -140,10 +143,13 @@ Main app class
         * [._onHoverCard(event)](#module_combat-carousel..CombatCarousel+_onHoverCard)
         * [._onHoverOutCard(event, html)](#module_combat-carousel..CombatCarousel+_onHoverOutCard)
         * [._onCardDoubleClick(event, html)](#module_combat-carousel..CombatCarousel+_onCardDoubleClick)
+        * [._onContextMenuCard(event, html)](#module_combat-carousel..CombatCarousel+_onContextMenuCard)
         * [._onCombatantControl(event, html)](#module_combat-carousel..CombatCarousel+_onCombatantControl)
         * [._onCombatControlClick(event, html)](#module_combat-carousel..CombatCarousel+_onCombatControlClick)
         * [._onHoverSplide(event, html)](#module_combat-carousel..CombatCarousel+_onHoverSplide)
         * [._onHoverOutSplide(event, html)](#module_combat-carousel..CombatCarousel+_onHoverOutSplide)
+        * [._onClickEncounterIcon(event, html)](#module_combat-carousel..CombatCarousel+_onClickEncounterIcon)
+        * [._onEncounterIconContext(event, html)](#module_combat-carousel..CombatCarousel+_onEncounterIconContext)
         * [.safeRender()](#module_combat-carousel..CombatCarousel+safeRender)
         * [.toggleVisibility()](#module_combat-carousel..CombatCarousel+toggleVisibility)
         * [.expand()](#module_combat-carousel..CombatCarousel+expand)
@@ -296,6 +302,18 @@ Card double click handler
 | event | 
 | html | 
 
+<a name="module_combat-carousel..CombatCarousel+_onContextMenuCard"></a>
+
+#### combatCarousel.\_onContextMenuCard(event, html)
+Handle card right-click
+
+**Kind**: instance method of [<code>CombatCarousel</code>](#module_combat-carousel..CombatCarousel)  
+
+| Param |
+| --- |
+| event | 
+| html | 
+
 <a name="module_combat-carousel..CombatCarousel+_onCombatantControl"></a>
 
 #### combatCarousel.\_onCombatantControl(event, html)
@@ -336,6 +354,30 @@ Hover splide handler
 
 #### combatCarousel.\_onHoverOutSplide(event, html)
 Hover Out splide handler
+
+**Kind**: instance method of [<code>CombatCarousel</code>](#module_combat-carousel..CombatCarousel)  
+
+| Param |
+| --- |
+| event | 
+| html | 
+
+<a name="module_combat-carousel..CombatCarousel+_onClickEncounterIcon"></a>
+
+#### combatCarousel.\_onClickEncounterIcon(event, html)
+Context Encounter Icon handler
+
+**Kind**: instance method of [<code>CombatCarousel</code>](#module_combat-carousel..CombatCarousel)  
+
+| Param |
+| --- |
+| event | 
+| html | 
+
+<a name="module_combat-carousel..CombatCarousel+_onEncounterIconContext"></a>
+
+#### combatCarousel.\_onEncounterIconContext(event, html)
+Context Encounter Icon handler
 
 **Kind**: instance method of [<code>CombatCarousel</code>](#module_combat-carousel..CombatCarousel)  
 
@@ -642,7 +684,9 @@ Templates module
 <a name="module_templates.preloadHandlebarsTemplates"></a>
 
 ### templates.preloadHandlebarsTemplates ⇒ <code>Promise</code>
-Define a set of template paths to pre-loadPre-loaded templates are compiled and cached for fast access when renderingTaken from dnd5e system (see link)
+Define a set of template paths to pre-load
+Pre-loaded templates are compiled and cached for fast access when rendering
+Taken from dnd5e system (see link)
 
 **Kind**: static constant of [<code>templates</code>](#module_templates)  
 **Link**: https://gitlab.com/foundrynet/dnd5e/-/blob/master/module/templates.js  

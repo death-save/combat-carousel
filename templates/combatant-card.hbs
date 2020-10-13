@@ -1,4 +1,9 @@
 <li class="splide__slide card" data-combatant-id="{{combatant.id}}">
+    <div class="active-combatant-wrapper">
+        <div class="active-combatant">
+            <img src="modules/combat-carousel/icons/bookmark.svg" title="{{localize "COMBATANT_CARD.ActiveTurn"}}">
+        </div>
+    </div>
     <div class="name">
         {{#if combatant.carousel.isGM}}
         <div class="button-tray flexrow">
@@ -38,18 +43,18 @@
             </a>
         </div>
         {{/if}}
+        <div class="avatar">
+            {{#if combatant.carousel.overlayEffect}}
+            <img class="overlay-effect" src="{{combatant.carousel.overlayEffect}}"/>
+            {{/if}}
+            <img src="{{combatant.img}}" title="{{combatant.name}}"/>
+        </div>
         <div class="effects">
             {{#each combatant.carousel.effects}}
             <div class="effect">
                 <img src="{{this}}"/>
             </div>
             {{/each}}
-        </div>
-        <div class="avatar">
-            {{#if combatant.carousel.overlayEffect}}
-            <img class="overlay-effect" src="{{combatant.carousel.overlayEffect}}"/>
-            {{/if}}
-            <img src="{{combatant.img}}" title="{{combatant.name}}"/>
         </div>
     </div>
     {{#if combatant.carousel.showHealth}}
