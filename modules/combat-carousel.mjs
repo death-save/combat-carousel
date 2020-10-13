@@ -126,8 +126,6 @@ export default class CombatCarousel extends Application {
         });
 
         this.splide.on("click", async slide => {
-            /*
-            // @todo think about whether players should ever be able to activate this
             const combatantId = slide.slide.dataset.combatantId;
             
             if (!combatantId) return;
@@ -137,12 +135,8 @@ export default class CombatCarousel extends Application {
             if (!combatant) return;
 
             const token = canvas.tokens.get(combatant.tokenId);
-
-            if (!token?.owner) return;
-            */
-            if (!game.user.isGM) return;
             
-            return await game.combat.update({turn: slide.index});
+            return await token.control();
         });
 
         this.splide.on("addCombatant", (element, index) => {
@@ -299,6 +293,7 @@ export default class CombatCarousel extends Application {
         initiativeInput.on("focusout", event => this._onInitiativeFocusOut(event, html));
         splide.on("mouseenter", event => this._onHoverSplide(event, html)).on("mouseleave", event => this._onHoverOutSplide(event, html));
         card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
+        card.on("contextmenu", event => this._onContextMenuCard(event, html));
         card.on("dblclick", event => this._onCardDoubleClick(event, html));
         combatantControl.on("click", event => this._onCombatantControl(event, html));
         combatControl.on("click", event => this._onCombatControlClick(event, html));
@@ -437,6 +432,25 @@ export default class CombatCarousel extends Application {
         if (!game.user.isGM || !token.owner) return;
 
         token.actor.sheet.render(true);
+    }
+
+    /**
+     * Handle card right-click
+     * @param event 
+     * @param html 
+     */
+    async _onContextMenuCard(event, html) {
+        const combatantId = event.currentTarget.dataset.combatantId;
+
+        if (!combatantId || !game.user.isGM) return;
+
+        const turn = game.combat.turns.find(t => t._id === combatantId);
+
+        if (!turn) return;
+
+        const turnIndex = game.combat.turns.indexOf(turn);
+
+        await game.combat.update({turn: turnIndex});
     }
 
     /**
