@@ -63,11 +63,12 @@ export default class CombatCarousel extends Application {
         * Create a Splide instance and store it for later use
         */
         const splide = this.splide = new Splide(".splide", {
-            perMove: 0,
+            //perMove: 1,
+            perPage: 9,
             start: this.turn ?? 0,
-            focus: "center",
+            //focus: true,
             cover: true,
-            pagination: false,
+            pagination: true,
             arrows: false,
             keyboard: false,
             drag: false,
@@ -401,7 +402,6 @@ export default class CombatCarousel extends Application {
 
         // Hide scrollbars during a hover event
         const splideTrack = hoveredCard.closest(".splide__track");
-        splideTrack.style.overflow = "hidden";
     }
 
     /**
@@ -415,8 +415,6 @@ export default class CombatCarousel extends Application {
         if ( this._highlightedToken ) this._highlightedToken._onHoverOut(event);
 
         const splideTrack = hoveredCard.closest(".splide__track");
-        splideTrack.style.overflowX = "scroll";
-        splideTrack.style.overflowY = "visible";
     }
 
     /**
@@ -531,9 +529,6 @@ export default class CombatCarousel extends Application {
      */
     _onHoverSplide(event, html) {
         const splideTrack = event.currentTarget.querySelector(".splide__track");
-
-        splideTrack.style.overflowX = "scroll";
-        splideTrack.style.overflowY = "visible";
     }
 
     /**
@@ -543,9 +538,6 @@ export default class CombatCarousel extends Application {
      */
     _onHoverOutSplide(event, html) {
         const splideTrack = event.currentTarget.querySelector(".splide__track");
-
-        splideTrack.style.overflowX = "hidden";
-        splideTrack.style.overflowY = "visible";
     }
 
     /**

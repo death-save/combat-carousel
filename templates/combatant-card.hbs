@@ -14,7 +14,7 @@
         {{/if}}
         <h3 title="{{combatant.name}}">{{combatant.name}}</h3>
     </div>
-    <div class="splide__container">
+    <div class="container">
         {{#if combatant.carousel.owner}}
         <div class="overlay-hud">
             <span class="tracker-indicators">
@@ -43,7 +43,7 @@
             </a>
         </div>
         {{/if}}
-        <div class="avatar">
+        <div class="avatar splide__slide__container">
             {{#if combatant.carousel.overlayEffect}}
             <img class="overlay-effect" src="{{combatant.carousel.overlayEffect}}"/>
             {{/if}}
