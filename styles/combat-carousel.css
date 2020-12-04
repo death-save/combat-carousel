@@ -250,12 +250,13 @@
 
 #combat-carousel .is-active.card .active-combatant {
     display: block;
-    position: absolute;
-    top: -6px;
-    left: 0px;
-    width: 16px;
-    height: 16px;
-    z-index: 999;
+    width: 90%;
+    height: 20px;
+    background:red;
+    clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 50%, 0 100%);
+    margin-top: 6px;
+    margin-left: 5%;
+    /* clip-path: polygon(0% 0%, 100% 0, 100% 50%, 50% 100%, 0 50%); */
 }
 
 #combat-carousel .is-active.card .tracker-indicators {

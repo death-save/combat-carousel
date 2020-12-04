@@ -1,9 +1,4 @@
 <li class="splide__slide card" data-combatant-id="{{combatant.id}}">
-    <div class="active-combatant-wrapper">
-        <div class="active-combatant">
-            <img src="modules/combat-carousel/icons/bookmark.svg" title="{{localize "COMBATANT_CARD.ActiveTurn"}}">
-        </div>
-    </div>
     <div class="name">
         {{#if combatant.carousel.isGM}}
         <div class="button-tray flexrow">
@@ -68,4 +63,8 @@
         />
     </div>
     {{/if}}
+    <div class="active-combatant-wrapper">
+        <div class="active-combatant">
+        </div>
+    </div>
 </li>
