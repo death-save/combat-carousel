@@ -31,6 +31,18 @@ export default function registerSettings() {
         restricted: false
     });
 
+    game.settings.register(NAME, SETTING_KEYS.appPosition, {
+        name: "COMBAT_CAROUSEL.SETTINGS.AppPositionN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.AppPositionH",
+        scope: "client",
+        type: Object,
+        default: DEFAULT_CONFIG.appPosition,
+        config: false,
+        onChange: s => {
+
+        }
+    });
+
     game.settings.register(NAME, SETTING_KEYS.collapseNav, {
         name: "SETTINGS.CollapseNavN",
         hint: "SETTINGS.CollapseNavH",

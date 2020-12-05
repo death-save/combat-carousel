@@ -37,6 +37,7 @@ export const CAROUSEL_ICONS = {
  */
 export const SETTING_KEYS = {
     about: "about",
+    appPosition: "appPosition",
     overlayConfigMenu: "overlayConfigMenu",
     collapseNav: "collapseNav",
     showHealth: "showHealthBar",
@@ -77,5 +78,12 @@ export const DEFAULT_CONFIG = {
             token: "Use Token Setting",
             none: "None" 
         }
+    },
+    appPosition: {
+        left: 120,
+        top: 0,
+        width: null,
+        height: null,
+        scale: 1.0
     }
 }

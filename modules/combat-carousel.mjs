@@ -43,13 +43,19 @@ export default class CombatCarousel extends Application {
     async _render(force, options={}) {
         await super._render(force, options);
 
-        new FixedDraggable(this, this.element, this.element.find(".drag-handle")[0], this.options.resizeable);
+        new FixedDraggable(this, this.element, this.element.find(".drag-handle")[0], this.options.resizeable, {onDragMouseUp: this._onDragEnd});
 
         const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
 
         if (collapseNavSetting && game.combat) {
             ui.nav.collapse();
         }
+
+        // set position
+        this.element.css({
+            "top": `${options.top ?? 0}px`,
+            "left": `${options.left ?? 120}px`
+        });
 
         /*
         // Find the Scene Nav and ensure to render outside it
@@ -649,6 +655,20 @@ export default class CombatCarousel extends Application {
      */
     _onEncounterIconContext(event, html) {
         //game.combat.endCombat();
+    }
+
+    /**
+     * 
+     * @param event 
+     * @param finalPosition 
+     * @param initialPosition
+     */
+    _onDragMouseUp(event, finalPosition, initialPosition) {
+        // If position is unchanged, nothing to do
+        if (finalPosition == initialPosition) return;
+
+        // If position is changed, save to settings
+        game.settings.set(NAME, SETTING_KEYS.appPosition, finalPosition);
     }
 
     /* -------------------------------------------- */

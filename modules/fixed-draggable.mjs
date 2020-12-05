@@ -8,7 +8,6 @@
 export default class FixedDraggable extends Draggable {
     constructor(app, element, handle, resizable) {
         super(app, element, handle, resizable);
-
     }
 
     /* ----------------------------------------- */
@@ -29,6 +28,7 @@ export default class FixedDraggable extends Draggable {
             scale: this.app.position.scale ?? 1.0
         }
         
+        this.initialPosition = appPosition;
         this.position = duplicate(appPosition);
         this._initial = {x: event.clientX, y: event.clientY};
         // Add temporary handlers
@@ -49,27 +49,36 @@ export default class FixedDraggable extends Draggable {
         if ( (now - this._moveTime) < (1000/60) ) return;
         this._moveTime = now;
         // Update application position
+
         this.app.element.css({
-            "left": this.position.left + (event.clientX - this._initial.x),
-            "top": this.position.top + (event.clientY - this._initial.y)
+            "left": this.initialPosition.left + (event.clientX - this._initial.x),
+            "top": this.initialPosition.top + (event.clientY - this._initial.y)
         });
-    }
-      /* ----------------------------------------- */
-      /**
-       * Conclude the dragging behavior when the mouse is release, setting the final position and removing listeners
-       * @private
-       */
-      _onDragMouseUp(event) {
+
+        this.position.left = this.initialPosition.left + (event.clientX - this._initial.x);
+        this.position.top = this.initialPosition.top + (event.clientY - this._initial.y);
+	}
+	
+    /* ----------------------------------------- */
+    
+    /**
+     * Conclude the dragging behavior when the mouse is release, setting the final position and removing listeners
+     * @private
+     */
+    _onDragMouseUp(event) {
         event.preventDefault();
+        if (this.app._onDragMouseUp instanceof Function) this.app._onDragMouseUp(event, this.position, this.initialPosition);
         window.removeEventListener(...this.handlers.dragMove);
         window.removeEventListener(...this.handlers.dragUp);
-      }
-      /* ----------------------------------------- */
-      /**
-       * Handle the initial mouse click which activates dragging behavior for the application
-       * @private
-       */
-      _onResizeMouseDown(event) {
+	}
+	
+    /* ----------------------------------------- */
+	
+	/**
+	 * Handle the initial mouse click which activates dragging behavior for the application
+     * @private
+     */
+    _onResizeMouseDown(event) {
         event.preventDefault();
         // Limit dragging to 60 updates per second
         const now = Date.now();
@@ -83,28 +92,32 @@ export default class FixedDraggable extends Draggable {
         // Add temporary handlers
         window.addEventListener(...this.handlers.resizeMove);
         window.addEventListener(...this.handlers.resizeUp);
-      }
-      /* ----------------------------------------- */
-      /**
-       * Move the window with the mouse, bounding the movement to ensure the window stays within bounds of the viewport
-       * @private
-       */
-      _onResizeMouseMove(event) {
+	}
+	
+	/* ----------------------------------------- */
+	
+	/**
+     * Move the window with the mouse, bounding the movement to ensure the window stays within bounds of the viewport
+     * @private
+     */
+    _onResizeMouseMove(event) {
         event.preventDefault();
         this.app.setPosition({
-          width: this.position.width + (event.clientX - this._initial.x),
-          height: this.position.height + (event.clientY - this._initial.y)
+            width: this.position.width + (event.clientX - this._initial.x),
+            height: this.position.height + (event.clientY - this._initial.y)
         });
-      }
-      /* ----------------------------------------- */
-      /**
-       * Conclude the dragging behavior when the mouse is release, setting the final position and removing listeners
-       * @private
-       */
-      _onResizeMouseUp(event) {
+    }
+    
+    /* ----------------------------------------- */
+    
+    /**
+     * Conclude the dragging behavior when the mouse is release, setting the final position and removing listeners
+     * @private
+     */
+    _onResizeMouseUp(event) {
         event.preventDefault();
         window.removeEventListener(...this.handlers.resizeMove);
         window.removeEventListener(...this.handlers.resizeUp);
         this.app._onResize(event);
-      }
     }
+}

@@ -31,8 +31,9 @@ export default function registerHooks() {
      * Ready hook
      */
     Hooks.on("ready", () => {
+        const position = game.settings.get(NAME, SETTING_KEYS.appPosition);
         ui.combatCarousel = new CombatCarousel();
-        ui.combatCarousel.render(true);
+        ui.combatCarousel.render(true, position);
     });
 
     /* -------------------------------------------- */
@@ -191,7 +192,7 @@ export default function registerHooks() {
         if (!ui.combatCarousel) return;
 
         const collapsed = data?.collapsed || app?.data?.collapsed || null;
-
+        /*
         if (collapsed) {
             ui.combatCarousel.element.css({"top": "12px"});
             ui.combatCarousel.element.find(".carousel-icon").css({"top": "47px"});
@@ -199,6 +200,7 @@ export default function registerHooks() {
             ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
             ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
         }
+        */
     });
 
     /**
@@ -207,6 +209,7 @@ export default function registerHooks() {
     Hooks.on("collapseSceneNavigation", (app, collapsed) => {
         if (!ui.combatCarousel) return;
 
+        /**
         if (collapsed) {
             ui.combatCarousel.element.css({"top": "12px"});
             ui.combatCarousel.element.find(".carousel-icon").css({"top": "42px"});
@@ -214,6 +217,7 @@ export default function registerHooks() {
             ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
             ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
         }
+        */
     });
 
     Hooks.on("sidebarCollapse", (app, collapsed) => {
