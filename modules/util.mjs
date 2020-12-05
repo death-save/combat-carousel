@@ -81,3 +81,18 @@ export function setupTurn(combatant, scene=game.combat.scene) {
 
     return c;
 }
+
+/**
+ * Gets all the siblings of a given element
+ * Adapted from: https://stackoverflow.com/a/51670871/7351584
+ * @param {Element} element 
+ * @param {Element} [parent] 
+ * @returns {Array} siblings
+ */
+export function getAllElementSiblings(element, parent) {
+    if (!parent) parent = element.parentElement;
+
+    const children = [...parent.children];
+
+    return children.filter(child => child !== element);
+}

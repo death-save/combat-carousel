@@ -7,6 +7,7 @@ import CombatCarouselConfig from "./config-form.mjs";
 import { CAROUSEL_ICONS } from "./config.mjs";
 import { NAME, SETTING_KEYS } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
+import { getAllElementSiblings } from "./util.mjs";
 import { getKeyByValue } from "./util.mjs";
 import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 
@@ -89,6 +90,9 @@ export default class CombatCarousel extends Application {
                 1366: {
                     perPage: 6
                 }
+            },
+            classes: {
+                pagination: "splide__pagination combat-carousel-pagination hidden"
             }
         });
         
@@ -316,6 +320,7 @@ export default class CombatCarousel extends Application {
     activateListeners(html) {
         super.activateListeners(html);
 
+        const app = html;
         const header = html.find("header");
         const moduleIcon = html.find("a#combat-carousel-toggle");
         const splide = html.find(".splide").first();
@@ -325,6 +330,8 @@ export default class CombatCarousel extends Application {
         const combatantControl = html.find("a.combatant-control");
         const combatControl = html.find(".combat-control a");
         const encounterIcon = html.find(".encounter-info .encounter");
+
+        app.on("mouseenter", event => this._onHoverApp(event, html)).on("mouseleave", event => this._onHoverOutApp(event, html));
 
         moduleIcon.on("click", event => this._onModuleIconClick(event, html));
         moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
@@ -352,6 +359,32 @@ export default class CombatCarousel extends Application {
     /* -------------------------------------------- */
     /*                Event Handlers                */
     /* -------------------------------------------- */
+
+    /**
+     * Hover app handler
+     * @param event 
+     * @param html 
+     */
+    _onHoverApp(event, html) {
+        const appElement = event.currentTarget;
+
+        // Reveal hidden UI during hover
+        const encounterInfo = appElement.querySelector(".encounter-info");
+        encounterInfo.classList.add("visible");
+    }
+
+    /**
+     * Hover out app handler
+     * @param event 
+     * @param html 
+     */
+    _onHoverOutApp(event, html) {
+        const appElement = event.currentTarget;
+
+        // Hide UI after hover
+        const encounterInfo = appElement.querySelector(".encounter-info");
+        encounterInfo.classList.remove("visible");
+    }
 
     /**
      * Module Icon click handler
@@ -447,8 +480,11 @@ export default class CombatCarousel extends Application {
             this._highlightedToken = token;
         }
 
-        // Hide scrollbars during a hover event
-        const splideTrack = hoveredCard.closest(".splide__track");
+        // Hide pagination during a hover event
+        const splideSlider = hoveredCard.closest(".splide__slider");
+        const sliderSiblings = getAllElementSiblings(splideSlider);
+        const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
+        splidePagination.classList.remove("visible");
     }
 
     /**
@@ -461,7 +497,11 @@ export default class CombatCarousel extends Application {
 
         if ( this._highlightedToken ) this._highlightedToken._onHoverOut(event);
 
-        const splideTrack = hoveredCard.closest(".splide__track");
+        // Reveal pagination after a hover event
+        const splideSlider = hoveredCard.closest(".splide__slider");
+        const sliderSiblings = getAllElementSiblings(splideSlider);
+        const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
+        splidePagination.classList.add("visible");
     }
 
     /**
@@ -575,7 +615,9 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onHoverSplide(event, html) {
-        const splideTrack = event.currentTarget.querySelector(".splide__track");
+        // Reveal pagination during a hover event
+        const splidePagination = event.currentTarget.querySelector(".combat-carousel-pagination");
+        splidePagination.classList.add("visible");
     }
 
     /**
@@ -584,7 +626,9 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onHoverOutSplide(event, html) {
-        const splideTrack = event.currentTarget.querySelector(".splide__track");
+        // Hide pagination after a hover event
+        const splidePagination = event.currentTarget.querySelector(".combat-carousel-pagination");
+        splidePagination.classList.remove("visible");
     }
 
     /**

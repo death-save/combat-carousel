@@ -79,6 +79,7 @@
 }
 
 #combat-carousel .encounter-info {
+    display: none;
     position: absolute;
     right: 0px;
     top: 0px;
@@ -86,6 +87,10 @@
     background: rgba(0, 0, 0, 0.5);
     border: solid 1px black;
     border-radius: 3px;
+}
+
+#combat-carousel .encounter-info.visible {
+    display: block;
 }
 
 #combat-carousel a.encounter-control {
@@ -113,11 +118,17 @@
 }
 
 #combat-carousel .drag-handle {
+    display: none;
     position: absolute;
     left: 5px;
-    top: 30%;
+    top: 35%;
+    font-size: 1.5rem;
     color: grey;
     text-shadow: 1px 1px black;
+}
+
+#combat-carousel:hover .drag-handle {
+    display: block;
 }
 
 #combat-carousel .overlay.active {
@@ -512,6 +523,14 @@
     fill: #f0f0e0;
 }
 
+#combat-carousel .combat-control {
+    display: none;
+}
+
+#combat-carousel:hover .combat-control {
+    display: block;
+}
+
 #combat-carousel .combat-control .previous,
 #combat-carousel .splide__arrow--prev {
     left: 0px;
@@ -537,11 +556,11 @@
 }
 
 #combat-carousel .combat-control a.round {
-    top: calc(50% + 45px);
+    top: calc(50% + 50px);
 }
 
 #combat-carousel .combat-control a.turn {
-    top: calc(50% + 10px);
+    top: calc(50% + 15px);
 }
 
 #combat-carousel-about img {
@@ -592,4 +611,14 @@
 
 #combat-carousel-about .patreon img {
     flex: 0 0 100px;
+}
+
+/* SPLIDE */
+
+#combat-carousel .combat-carousel-pagination {
+    display: none;
+}
+
+#combat-carousel .combat-carousel-pagination.visible {
+    display: flex;
 }
