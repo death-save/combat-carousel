@@ -30,6 +30,8 @@
     
     "COMBAT_CAROUSEL.ToggleButtonTooltip": "Combat Carousel - toggle visibility",
 
+    "COMBAT_CAROUSEL.Carousel.DragTooltip": "Click and drag to move Combat Carousel, right-click to reset position",
+
     "WORDS.Save": "Save",
     "WORDS.Cancel": "Cancel",
     "WORDS.Hidden": "Hidden",

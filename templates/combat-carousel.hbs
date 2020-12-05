@@ -10,8 +10,8 @@
         <a id="combat-carousel-toggle" title="{{localize "CAROUSEL.ToggleHint"}}">
             <img src="{{carouselIcon}}">
             <i class="collapse-indicator fas fa-caret-down"></i>
-        </a> --}}
-    </div>
+        </a>
+    </div> --}}
     <div class="splide">
         <div class="splide__slider">
             <div class="combat-control">
@@ -36,10 +36,11 @@
                 </ul>
             </div>
         </div>
-        {{#if this.encounter}}
-    <div class="drag-handle">
+    </div>
+    <div class="drag-handle" title="{{localize "COMBAT_CAROUSEL.Carousel.DragTooltip"}}">
         <i class="fas fa-bars"></i>
     </div>
+    {{#if this.encounter}}
     <div class="encounter-info flexcol">
         <div class="encounter flexrow" title="{{localize "WORDS.Encounter"}} {{this.encounter}}">
             <span class="counter">{{this.encounter}}</span>
@@ -57,5 +58,4 @@
         </div>
     </div>
     {{/if}}
-    </div>
 </div>
