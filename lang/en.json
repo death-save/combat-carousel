@@ -25,6 +25,11 @@
 
     "ABOUT.Label": "About Combat Carousel",
 
+    "COMBAT_CAROUSEL.OverlayConfig.Title": "Combat Carousel | Overlay Config",
+    "COMBAT_CAROUSEL.OverlayConfig.Name": "Overlay Config",
+    
+    "COMBAT_CAROUSEL.ToggleButtonTooltip": "Combat Carousel - toggle visibility",
+
     "WORDS.Save": "Save",
     "WORDS.Cancel": "Cancel",
     "WORDS.Hidden": "Hidden",

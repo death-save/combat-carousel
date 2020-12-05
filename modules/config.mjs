@@ -14,6 +14,16 @@ export const NAME = "combat-carousel";
 export const TITLE = "Combat Carousel";
 
 /**
+ * Path to module
+ */
+export const PATH = "modules/combat-carousel";
+
+/**
+ * Path to templates
+ */
+export const TEMPLATE_PATH = `${PATH}/templates`;
+
+/**
  * Module Icon Paths
  */
 export const CAROUSEL_ICONS = {
@@ -27,6 +37,7 @@ export const CAROUSEL_ICONS = {
  */
 export const SETTING_KEYS = {
     about: "about",
+    overlayConfigMenu: "overlayConfigMenu",
     collapseNav: "collapseNav",
     showHealth: "showHealthBar",
     healthBarPermission: "playerHealthBarPermission",

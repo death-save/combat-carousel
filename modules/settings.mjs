@@ -4,6 +4,7 @@
  */
 
 import AboutApp from "./about.mjs";
+import CombatCarouselConfig from "./config-form.mjs";
 import { DEFAULT_CONFIG } from "./config.mjs";
 import { SETTING_KEYS } from "./config.mjs";
 import { NAME } from "./config.mjs";
@@ -18,6 +19,15 @@ export default function registerSettings() {
         hint: "SETTINGS.AboutH",
         icon: "fas fa-question",
         type: AboutApp,
+        restricted: false
+    });
+
+    game.settings.registerMenu(NAME, SETTING_KEYS.overlayConfigMenu, {
+        name: "COMBAT_CAROUSEL.OverlayConfig.Name",
+        label: "COMBAT_CAROUSEL.OverlayConfig.Name",
+        hint: "SETTINGS.OverlayConfigH",
+        icon: "fas fa-th-list",
+        type: CombatCarouselConfig,
         restricted: false
     });
 

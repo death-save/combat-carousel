@@ -3,7 +3,7 @@
  * @module config-form
  */
 
-import { NAME, SETTING_KEYS } from "./config.mjs";
+import { NAME, SETTING_KEYS, TEMPLATE_PATH } from "./config.mjs";
 
 /**
  * A form-app for setting the icons and properties to use in the Combat Carousel Overlay
@@ -25,8 +25,8 @@ export default class CombatCarouselConfig extends FormApplication {
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             id: "combat-carousel-config",
-            template: "modules/combat-carousel/templates/config-form.hbs",
-            title: "Combat Carousel - Overlay Config",
+            template: `${TEMPLATE_PATH}/config-form.hbs`,
+            title: "COMBAT_CAROUSEL.OverlayConfig.Title",
             width: 400,
             height: "auto",
             resizable: true,
