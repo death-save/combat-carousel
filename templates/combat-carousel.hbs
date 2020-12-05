@@ -1,9 +1,16 @@
 <div id="combat-carousel" class="wrapper">
-        <div class="carousel-icon">
+    <header class="header">
+        {{!-- {{#if this.encounter}}
+        <h3>
+            Encounter: {{this.encounter}} Round: {{this.round}}
+        </h3>
+        {{/if}} --}}
+    </header>
+        {{!-- <div class="carousel-icon">
         <a id="combat-carousel-toggle" title="{{localize "CAROUSEL.ToggleHint"}}">
             <img src="{{carouselIcon}}">
             <i class="collapse-indicator fas fa-caret-down"></i>
-        </a>
+        </a> --}}
     </div>
     <div class="splide">
         <div class="splide__slider">
@@ -30,6 +37,9 @@
             </div>
         </div>
         {{#if this.encounter}}
+    <div class="drag-handle">
+        <i class="fas fa-bars"></i>
+    </div>
     <div class="encounter-info flexcol">
         <div class="encounter flexrow" title="{{localize "WORDS.Encounter"}} {{this.encounter}}">
             <span class="counter">{{this.encounter}}</span>

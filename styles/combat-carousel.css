@@ -9,6 +9,24 @@
     border: none;
 }
 
+#combat-carousel header {
+    display: flex;
+    justify-content: center;
+    height: 10px;
+}
+
+#combat-carousel header h2 {
+    display: none;
+}
+
+#combat-carousel:hover header h2 {
+    display: inherit;
+}
+
+#combat-carousel:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
 #combat-carousel .info-bar {
     margin: 0px auto;
     display: flex;
@@ -19,11 +37,13 @@
 
 #combat-carousel .carousel-icon {
     display: flex;
+    position: absolute;
+    top: 50px;
+    right: 0px;
     color: white;
     background: rgba(0, 0, 0, 0.5);
     border: solid 1px black;
     border-radius: 2px;
-    position: absolute;
     height: 38px;
     width: 38px;
     z-index: 100;
@@ -90,6 +110,14 @@
 
 #combat-carousel .overlay {
     display: none;
+}
+
+#combat-carousel .drag-handle {
+    position: absolute;
+    left: 5px;
+    top: 30%;
+    color: grey;
+    text-shadow: 1px 1px black;
 }
 
 #combat-carousel .overlay.active {
@@ -240,25 +268,26 @@
     }
 }
 
-#combat-carousel .car .active-combatant-wrapper {
-    position: relative;
-}
-
 #combat-carousel .card .active-combatant {
     display: none;
 }
 
-#combat-carousel .is-active.card .active-combatant {
-    display: block;
-    width: 90%;
-    height: 20px;
-    background:red;
-    clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 50%, 0 100%);
-    margin-top: 6px;
-    margin-left: 5%;
+#combat-carousel .is-active-combatant.card .active-combatant {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    background:rgba(255,69,0,0.9);
+    /* border: 1px silver; */
+    bottom: 1px;
+    left: 0px;
+    /* clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 50%, 0 100%); */
     /* clip-path: polygon(0% 0%, 100% 0, 100% 50%, 50% 100%, 0 50%); */
+    /* clip-path: polygon(50% 0%, 100% 50%, 100% 100%, 0 100%, 0 50%); */
+    clip-path: polygon(0% 0%, 100% 0, 50% 80%);
 }
 
+/*
 #combat-carousel .is-active.card .tracker-indicators {
     margin-left: 20px;
 }
@@ -266,6 +295,7 @@
 #combat-carousel .is-active.card:hover .tracker-indicators {
     margin-left: unset;
 }
+*/
 
 #combat-carousel img {
     border: none;
@@ -273,6 +303,7 @@
 
 #combat-carousel .hp {
     text-align: center;
+    height: 15px;
 }
 
 #combat-carousel meter {
@@ -422,13 +453,16 @@
     display: flex;
 }
 
-#combat-carousel .is-active.card {
-    /* border: 1px solid orange; */
+#combat-carousel .is-active-combatant.card {
+    clip-path: polygon(0px -21px, 100% -21px, 100% 95%, 50% 100%, 0px 95%);
+    border-bottom: none;
 }
 
+/*
 #combat-carousel .splide__slide:hover .active-combatant {
     margin-top: -20px;
 }
+*/
 
 /*
 #combat-carousel .is-active.card .fa-dice-d20 {

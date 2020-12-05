@@ -2,11 +2,10 @@
  * Hooks module
  * @module hooks
  */
-
 import CombatCarousel from "./combat-carousel.mjs";
 import registerSettings from "./settings.mjs";
 import overrideMethods from "./overrides.mjs";
-import { NAME, SETTING_KEYS } from "./config.mjs";
+import { NAME, SETTING_KEYS, CAROUSEL_ICONS } from "./config.mjs";
 import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 import { preloadHandlebarsTemplates } from "./templates.mjs";
 
@@ -60,7 +59,7 @@ export default function registerHooks() {
         }
 
         if (hasProperty(update, "turn")) {
-            if (update.turn != ui.combatCarousel.turn) {
+            if (update.turn !== ui.combatCarousel.turn) {
                 //ui.combatCarousel.splide.refresh();
                 ui.combatCarousel.turn = update.turn;
                 ui.combatCarousel.splide.go(update.turn);
@@ -217,6 +216,19 @@ export default function registerHooks() {
         }
     });
 
+    Hooks.on("sidebarCollapse", (app, collapsed) => {
+        console.log(collapsed);
+
+        if (!ui.combatCarousel) return;
+
+        if (collapsed) {
+            ui.combatCarousel.element.css({"maxWidth": "calc(100% - 170px)"});
+        } else {
+            ui.combatCarousel.element.css({"maxWidth": "calc(100% - 430px)"});
+        }
+
+    });
+
     Hooks.on("renderCombatTracker", (app, html, data) => {
         //console.log("combat tracker rendered:", app, html, data);
     });
@@ -305,5 +317,17 @@ export default function registerHooks() {
             default:
                 return;
         }
+    });
+
+    Hooks.on("renderSceneControls", (app, html, data) => {
+        const combatState = CombatCarousel.getCombatState(game.combat);
+        const carouselIcon = CAROUSEL_ICONS[combatState];
+
+        const ccButtonHtml = `<li class="scene-control" data-control="combat-carousel" style="display: flex; height: 36px; width: 36px; justify-content: center; align-items: center;" title="${game.i18n.localize("COMBAT_CAROUSEL.ToggleButtonTooltip")}"><img src="${carouselIcon}" style="height: 32px; width: 32px; margin: 2px; border:none"></li>`
+        
+        html.append(ccButtonHtml);
+
+        const ccButton = html.find("li[data-control='combat-carousel']");
+        ccButton.on("click", event => ui.combatCarousel.toggleVisibility());
     });
 }

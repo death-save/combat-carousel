@@ -6,6 +6,7 @@
 import CombatCarouselConfig from "./config-form.mjs";
 import { CAROUSEL_ICONS } from "./config.mjs";
 import { NAME, SETTING_KEYS } from "./config.mjs";
+import FixedDraggable from "./fixed-draggable.mjs";
 import { getKeyByValue } from "./util.mjs";
 import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 
@@ -41,39 +42,54 @@ export default class CombatCarousel extends Application {
     async _render(force, options={}) {
         await super._render(force, options);
 
+        new FixedDraggable(this, this.element, this.element.find(".drag-handle")[0], this.options.resizeable);
+
         const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
 
         if (collapseNavSetting && game.combat) {
             ui.nav.collapse();
         }
 
+        /*
         // Find the Scene Nav and ensure to render outside it
         const sceneNav = ui.nav;
         const sceneNavHeight = sceneNav.element.height(); 
 
         if (sceneNav && sceneNav._collapsed) {
             this.element.css({"top":"12px"});
-            this.element.find(".carousel-icon").css({"top": "47px"});
+            //this.element.find(".carousel-icon").css({"top": "47px"});
         } else {
             this.element.css({"top":`${sceneNavHeight + 12 + 5}px`});
-            this.element.find(".carousel-icon").css({"top": "auto"});
+            //this.element.find(".carousel-icon").css({"top": "auto"});
         }
+        */
         
         /**
         * Create a Splide instance and store it for later use
         */
         const splide = this.splide = new Splide(".splide", {
             //perMove: 1,
-            perPage: 9,
+            perPage: 24,
             start: this.turn ?? 0,
-            //focus: true,
+            //focus: false,
             cover: true,
             pagination: true,
             arrows: false,
             keyboard: false,
             drag: false,
             height: 150,
-            fixedWidth: 100
+            fixedWidth: 100,
+            breakpoints: {
+                1920: {
+                    perPage: 12
+                },
+                1680: {
+                    perPage: 9
+                },
+                1366: {
+                    perPage: 6
+                }
+            }
         });
         
         /**
@@ -111,7 +127,12 @@ export default class CombatCarousel extends Application {
                 }
             }
 
-            const combatState = this.getCombatState(game.combat);
+            const slideIndex = this.getCombatantSlideIndex(game.combat.combatant);
+            const activeCombatantSlide = slides[slideIndex];
+            activeCombatantSlide.classList.add("is-active-combatant");
+            activeCombatantSlide.style.height = "158px";
+
+            const combatState = CombatCarousel.getCombatState(game.combat);
 
             switch (combatState) {
                 case "noCombat":
@@ -125,6 +146,24 @@ export default class CombatCarousel extends Application {
                     break;
             }
         });
+
+        // this.splide.on("pagination:updated", (data, prevItem, activeItem) => {
+        //     if (!prevItem) return;
+
+        //     //console.log("prev",prevItem, "active",activeItem);
+        // });
+
+        // this.splide.on("active", slide => {
+        //     //console.log(slide);
+        //     const $slide = $(slide.slide);
+        //     $slide.height("153px"); 
+        // });
+
+        // this.splide.on("inactive", slide => {
+        //     //console.log(slide);
+        //     const $slide = $(slide.slide);
+        //     $slide.height("150px"); 
+        // });
 
         this.splide.on("click", async slide => {
             const combatantId = slide.slide.dataset.combatantId;
@@ -243,7 +282,7 @@ export default class CombatCarousel extends Application {
         //@todo use util method to setup turns -- need to filter out non-visible turns
         const turns = game.combat?.turns ? calculateTurns(game.combat).map(t => CombatCarousel.prepareTurnData(t)): [];
         
-        const combatState = this.getCombatState(game.combat);
+        const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
                 
         this.turn = turns.length ? game.combat.turn : null;
@@ -277,6 +316,7 @@ export default class CombatCarousel extends Application {
     activateListeners(html) {
         super.activateListeners(html);
 
+        const header = html.find("header");
         const moduleIcon = html.find("a#combat-carousel-toggle");
         const splide = html.find(".splide").first();
         const rollInit = html.find("a.roll-init");
@@ -285,19 +325,26 @@ export default class CombatCarousel extends Application {
         const combatantControl = html.find("a.combatant-control");
         const combatControl = html.find(".combat-control a");
         const encounterIcon = html.find(".encounter-info .encounter");
-        
+
         moduleIcon.on("click", event => this._onModuleIconClick(event, html));
         moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
+
         rollInit.on("click", this._onRollInitiative);
         rollInit.on("contextmenu", event => this._onEditInitiative(event, html));
+
         initiativeInput.on("change", event => this._onInitiativeChange(event, html));
         initiativeInput.on("focusout", event => this._onInitiativeFocusOut(event, html));
+
         splide.on("mouseenter", event => this._onHoverSplide(event, html)).on("mouseleave", event => this._onHoverOutSplide(event, html));
+
         card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
         card.on("contextmenu", event => this._onContextMenuCard(event, html));
         card.on("dblclick", event => this._onCardDoubleClick(event, html));
+
         combatantControl.on("click", event => this._onCombatantControl(event, html));
+
         combatControl.on("click", event => this._onCombatControlClick(event, html));
+
         encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
         encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
     }
@@ -642,7 +689,7 @@ export default class CombatCarousel extends Application {
      * Gets the state of a combat instance
      * @param combat 
      */
-    getCombatState(combat) {
+    static getCombatState(combat) {
         const hasCombat = !!combat;
         const turns = hasCombat ? combat.turns : null;
         
@@ -670,7 +717,7 @@ export default class CombatCarousel extends Application {
     setToggleIcon(combatState=null) {
         const $icon = this.element.find(".carousel-icon img").first();
         const img = $icon.attr("src");
-        combatState = combatState ? combatState : this.getCombatState(game?.combat);
+        combatState = combatState ? combatState : CombatCarousel.getCombatState(game?.combat);
 
         $icon.attr("src", CAROUSEL_ICONS[combatState]);
     }
