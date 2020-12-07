@@ -50,13 +50,20 @@ export default class FixedDraggable extends Draggable {
         this._moveTime = now;
         // Update application position
 
+        /*
         this.app.element.css({
             "left": this.initialPosition.left + (event.clientX - this._initial.x),
             "top": this.initialPosition.top + (event.clientY - this._initial.y)
         });
+        */
 
         this.position.left = this.initialPosition.left + (event.clientX - this._initial.x);
         this.position.top = this.initialPosition.top + (event.clientY - this._initial.y);
+
+        this.app.setPosition({
+            left: this.position.left,
+            top: this.position.top
+        });
 	}
 	
     /* ----------------------------------------- */

@@ -82,8 +82,6 @@ export const DEFAULT_CONFIG = {
     appPosition: {
         left: 120,
         top: 0,
-        width: null,
-        height: null,
         scale: 1.0
     }
 }

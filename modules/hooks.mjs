@@ -8,6 +8,8 @@ import overrideMethods from "./overrides.mjs";
 import { NAME, SETTING_KEYS, CAROUSEL_ICONS } from "./config.mjs";
 import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
 import { preloadHandlebarsTemplates } from "./templates.mjs";
+import { DEFAULT_CONFIG } from "./config.mjs";
+import { TEMPLATE_PATH } from "./config.mjs";
 
 /**
  * Registers hooks needed throughout the module
@@ -32,8 +34,8 @@ export default function registerHooks() {
      */
     Hooks.on("ready", () => {
         const position = game.settings.get(NAME, SETTING_KEYS.appPosition);
-        ui.combatCarousel = new CombatCarousel();
-        ui.combatCarousel.render(true, position);
+        ui.combatCarousel = new CombatCarousel(position);
+        ui.combatCarousel.render(true);
     });
 
     /* -------------------------------------------- */
@@ -225,11 +227,13 @@ export default function registerHooks() {
 
         if (!ui.combatCarousel) return;
 
+        /*
         if (collapsed) {
             ui.combatCarousel.element.css({"maxWidth": "calc(100% - 170px)"});
         } else {
             ui.combatCarousel.element.css({"maxWidth": "calc(100% - 430px)"});
         }
+        */
 
     });
 
@@ -323,15 +327,21 @@ export default function registerHooks() {
         }
     });
 
-    Hooks.on("renderSceneControls", (app, html, data) => {
+    Hooks.on("renderSceneControls", async (app, html, data) => {
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
 
-        const ccButtonHtml = `<li class="scene-control" data-control="combat-carousel" style="display: flex; height: 36px; width: 36px; justify-content: center; align-items: center;" title="${game.i18n.localize("COMBAT_CAROUSEL.ToggleButtonTooltip")}"><img src="${carouselIcon}" style="height: 32px; width: 32px; margin: 2px; border:none"></li>`
+        const ccButtonHtml = await renderTemplate(`${TEMPLATE_PATH}/combat-carousel-button.hbs`,{carouselIcon});
         
         html.append(ccButtonHtml);
 
         const ccButton = html.find("li[data-control='combat-carousel']");
-        ccButton.on("click", event => ui.combatCarousel.toggleVisibility());
+        ccButton
+            .on("click", event => ui.combatCarousel.toggleVisibility())
+            .on("contextmenu", event => {
+                ui.combatCarousel.setPosition(DEFAULT_CONFIG.appPosition);
+                ui.combatCarousel._savePosition();
+            }
+        );
     });
 }

@@ -4,7 +4,7 @@
  */
 
 import CombatCarouselConfig from "./config-form.mjs";
-import { CAROUSEL_ICONS } from "./config.mjs";
+import { CAROUSEL_ICONS, DEFAULT_CONFIG } from "./config.mjs";
 import { NAME, SETTING_KEYS } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
 import { getAllElementSiblings } from "./util.mjs";
@@ -31,7 +31,9 @@ export default class CombatCarousel extends Application {
         return mergeObject(super.defaultOptions, {
             id: "combat-carousel",
             template: "modules/combat-carousel/templates/combat-carousel.hbs",
-            popOut: false
+            popOut: false,
+            top: 0,
+            left: 0
         });
     }
 
@@ -51,11 +53,13 @@ export default class CombatCarousel extends Application {
             ui.nav.collapse();
         }
 
+        /*
         // set position
         this.element.css({
             "top": `${options.top ?? 0}px`,
             "left": `${options.left ?? 120}px`
         });
+        */
 
         /*
         // Find the Scene Nav and ensure to render outside it
@@ -137,11 +141,13 @@ export default class CombatCarousel extends Application {
                 }
             }
 
-            const slideIndex = this.getCombatantSlideIndex(game.combat.combatant);
-            const activeCombatantSlide = slides[slideIndex];
-            activeCombatantSlide.classList.add("is-active-combatant");
-            activeCombatantSlide.style.height = "158px";
-
+            if (game?.combat?.combatant) {
+                const slideIndex = this.getCombatantSlideIndex(game.combat.combatant);
+                const activeCombatantSlide = slides[slideIndex];
+                activeCombatantSlide.classList.add("is-active-combatant");
+                activeCombatantSlide.style.height = "158px";
+            }
+            
             const combatState = CombatCarousel.getCombatState(game.combat);
 
             switch (combatState) {
@@ -216,9 +222,13 @@ export default class CombatCarousel extends Application {
 
             // add the element in the new position
             this.splide.add(newElement, index);
+            this.setPosition({width: this._getMinimumWidth()});
         });
 
-        return await this.splide.mount();
+        await this.splide.mount();
+
+        // const splideWidth = this.splide
+        this.setPosition({width: this._getMinimumWidth()});
     }
 
     /**
@@ -329,6 +339,7 @@ export default class CombatCarousel extends Application {
         const app = html;
         const header = html.find("header");
         const moduleIcon = html.find("a#combat-carousel-toggle");
+        const dragHandle = html.find(".drag-handle");
         const splide = html.find(".splide").first();
         const rollInit = html.find("a.roll-init");
         const initiativeInput = html.find(".initiative input");
@@ -341,6 +352,8 @@ export default class CombatCarousel extends Application {
 
         moduleIcon.on("click", event => this._onModuleIconClick(event, html));
         moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
+
+        dragHandle.on("contextmenu", event => this._onContextDragHandle(event));
 
         rollInit.on("click", this._onRollInitiative);
         rollInit.on("contextmenu", event => this._onEditInitiative(event, html));
@@ -360,6 +373,8 @@ export default class CombatCarousel extends Application {
 
         encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
         encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
+
+        //this._contextMenu(html);
     }
 
     /* -------------------------------------------- */
@@ -376,6 +391,9 @@ export default class CombatCarousel extends Application {
 
         // Reveal hidden UI during hover
         const encounterInfo = appElement.querySelector(".encounter-info");
+
+        if (!encounterInfo) return;
+
         encounterInfo.classList.add("visible");
     }
 
@@ -389,6 +407,9 @@ export default class CombatCarousel extends Application {
 
         // Hide UI after hover
         const encounterInfo = appElement.querySelector(".encounter-info");
+
+        if (!encounterInfo) return;
+
         encounterInfo.classList.remove("visible");
     }
 
@@ -410,6 +431,17 @@ export default class CombatCarousel extends Application {
     _onModuleIconContext(event, html) {
         event.preventDefault();
         new CombatCarouselConfig().render(true);
+    }
+
+    /**
+     * Drag Handle context click handler
+     * @param event 
+     * @param html 
+     */
+    _onContextDragHandle(event, html) {
+        event.preventDefault();
+        this.setPosition(DEFAULT_CONFIG.appPosition);
+        this._savePosition();
     }
 
     /**
@@ -668,7 +700,17 @@ export default class CombatCarousel extends Application {
         if (finalPosition == initialPosition) return;
 
         // If position is changed, save to settings
-        game.settings.set(NAME, SETTING_KEYS.appPosition, finalPosition);
+        this._savePosition();
+    }
+
+    /**
+     * Context menu handler
+     * @param html 
+     */
+    _contextMenu(html) {
+        const encounterOptions = this._getEncounterContextOptions();
+
+        if (encounterOptions) new ContextMenu(html, ".encounter-info", encounterOptions);
     }
 
     /* -------------------------------------------- */
@@ -798,7 +840,140 @@ export default class CombatCarousel extends Application {
         const activeCombatantIndex = this.getCombatantSlideIndex(combatant);
         this.splide.go(activeCombatantIndex);
     }
-    
+
+    /**
+     * Returns Encounter Info context menu options
+     */
+    _getEncounterContextOptions() {
+        return [
+            {
+              name: "COMBAT_CAROUSEL.EncounterOptions.Create",
+              icon: '<i class="fas fa-plus"></i>',
+              condition: () => game.user.isGM,
+              callback: event => ui.combat._onCombatCreate(event)
+            }
+        ]
+    }
+
+    /**
+     * Set app position
+     * @param left 
+     * @param top 
+     * @param width 
+     * @param height 
+     * @param scale 
+     * @returns {Object} newPosition
+     * @override
+     */
+    setPosition({left, top, width, height, scale}={}) {
+        //if ( !this.popOut ) return; // Only configure position for popout apps
+        const el = this.element[0];
+        const p = this.position;
+        const pop = this.popOut;
+        const styles = window.getComputedStyle(el);
+
+        // If Height is "auto" unset current preference
+        if ( (height === "auto") || (this.options.height === "auto") ) {
+            el.style.height = "";
+            height = null;
+        }
+
+        const availableWidth = this._getAvailableWidth({left});
+        if (!el.style.maxWidth || parseInt(el.style.maxWidth) > availableWidth) {
+            el.style.maxWidth = `${availableWidth}px`;
+        }
+
+        const minimumWidth = this._getMinimumWidth();
+        if (!el.style.minWidth || parseInt(el.style.minWidth) > availableWidth) el.style.minWidth = `${minimumWidth}px`;
+
+        // Update width if an explicit value is passed, or if no width value is set on the element
+        if ( !el.style.width || width ) {
+            const tarW = width || el.offsetWidth;
+            const minW = parseInt(el.style.minWidth) || (pop ? MIN_WINDOW_WIDTH : 0);
+            const maxW = parseInt(el.style.maxWidth) || window.innerWidth;
+            p.width = width = Math.clamped(tarW, minW, maxW);
+            el.style.width = width+"px";
+            if ( (width + p.left) > window.innerWidth ) left = p.left;
+        }
+        width = el.offsetWidth;
+
+        // Update height if an explicit value is passed, or if no height value is set on the element
+        if ( !el.style.height || height ) {
+            const tarH = height || (el.offsetHeight + 1);
+            const minH = parseInt(styles.minHeight) || (pop ? MIN_WINDOW_HEIGHT : 0);
+            const maxH = styles.maxHeight || window.innerHeight;
+            p.height = height = Math.clamped(tarH, minH, maxH);
+            el.style.height = height+"px";
+            if ( (height + p.top) > window.innerHeight ) top = p.top;
+        }
+        height = el.offsetHeight;
+
+        // Update Left
+        if ( (pop && !el.style.left) || Number.isFinite(left) ) {
+            const tarL = Number.isFinite(left) ? left : (window.innerWidth - width) / 2;
+            const maxL = Math.max(window.innerWidth - width, 0);
+            p.left = left = Math.clamped(tarL, 0, maxL);
+            el.style.left = left+"px";
+        }
+
+        // Update Top
+        if ( (pop && !el.style.top) || Number.isFinite(top) ) {
+            const tarT = Number.isFinite(top) ? top : (window.innerHeight - height) / 2;
+            const maxT = Math.max(window.innerHeight - height, 0);
+            p.top = top = Math.clamped(tarT, 0, maxT);
+            el.style.top = p.top+"px";
+        }
+
+        // Update Scale
+        if ( scale ) {
+            p.scale = Math.max(scale, 0);
+            if ( scale === 1 ) el.style.transform = "";
+            else el.style.transform = `scale(${scale})`;
+        }
+
+        // Return the updated position object
+        return p;
+    }
+
+    /**
+     * Calculates the width space available for the Carousel accounting for the sidebar
+     * @param {Number} [sidebarWidth]
+     * @param {Number} [left] 
+     */
+    _getAvailableWidth({sidebarWidth=null, left=null}={}) {
+        // If no sidebarWidth is provided, calculate its width including any positional buffer
+        sidebarWidth = sidebarWidth ?? (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()));
+        const carouselLeft = left ?? this.element.offset().left;
+        const availableWidth = Math.floor(window.innerWidth - (carouselLeft + sidebarWidth));
+
+        return availableWidth;
+    }
+
+    /**
+     * Calculates the minimum width that should be used
+     */
+    _getMinimumWidth() {
+        // the lesser of (number of cards * 100 + ui) or available width
+        // always leave room for 1 card (for dropzone)
+        const numCards = this?.splide?.length || 1;
+        // Multiply number of cards by card width, add UI buffer, add scale buffer
+        const desiredWidth = (numCards * 100) + 110 + 20;
+        const availableWidth = this._getAvailableWidth();
+        const minimumWidth = desiredWidth <= availableWidth ? desiredWidth : availableWidth;
+        
+        return minimumWidth;
+    }
+
+    /**
+     * Saves the current position of the Combat Carousel to storage
+     */
+    _savePosition() {
+        const safePosition = duplicate(this.position);
+        delete safePosition.width;
+        delete safePosition.height;
+
+        game.settings.set(NAME, SETTING_KEYS.appPosition, safePosition);
+    }
 
     /* -------------------------------------------- */
     /*                 Data Methods                 */

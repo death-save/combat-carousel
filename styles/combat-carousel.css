@@ -2,7 +2,9 @@
     position: fixed;
     /* top: 0;
     left: 120px; */
-    max-width: calc(100% - 430px);
+    min-width: 210px;
+    /* max-width: fit-content; */
+    min-height: 170px;
     margin: 0;
     padding: 0;
     box-shadow: none;
@@ -33,6 +35,21 @@
     justify-content: center;
     width: calc(100% * 0.8);
     height: 25px;
+}
+
+li.scene-control[data-control="combat-carousel"] {
+    display: flex;
+    height: 36px;
+    width: 36px;
+    justify-content: center;
+    align-items: center;
+}
+
+li.scene-control img.carousel-icon {
+    height: 32px;
+    width: 32px;
+    margin: 2px;
+    border: none;
 }
 
 #combat-carousel .carousel-icon {
@@ -94,23 +111,65 @@
 }
 
 #combat-carousel a.encounter-control {
+    display: none;
     text-align: center;
+    flex: 0;
+}
+
+#combat-carousel .encounter-info:hover .encounter-control {
+    display: flex;
+}
+
+#combat-carousel a.encounter-control.create-remove {
+    display: flex;
+    margin-left: 5px;
 }
 
 #combat-carousel .encounter-info .flexrow {
     align-items: center;
+    min-width: 50px;
+}
+
+#combat-carousel .encounter-info .round {
+    /* padding-left: 5.25px; */
 }
 
 #combat-carousel .encounter-info span {
-    width: 30px;
+    /* max-width: fit-content; */
 }
 
 #combat-carousel .encounter-info i.fas {
+    flex: 0;
     text-align: center;
 }
 
 #combat-carousel .encounter-info .counter {
-    text-align: right;
+    text-align: center;
+}
+
+#combat-carousel .initiative-control {
+    display: none;
+    flex-wrap: wrap;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 50px;
+    height: 36px;
+    padding: 0px 4px;
+    color: #f0f0f0;
+    background: rgba(0,0,0,0.5);
+    border: solid 1px black;
+    border-radius: 3px;
+}
+
+#combat-carousel:hover .initiative-control {
+    display: flex;
+}
+
+#combat-carousel .initiative-control a {
+    display: flex;
+    flex: 1;
+    justify-content: center;
 }
 
 #combat-carousel .overlay {
@@ -394,7 +453,7 @@
     padding-top: 5px;
 }
 #combat-carousel .splide__slider {
-    padding: 0px 50px;
+    padding: 0px 55px;
 }
 
 #combat-carousel .splide__slide.token-hover-neutral {
