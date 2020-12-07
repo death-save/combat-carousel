@@ -28,9 +28,9 @@
     "COMBAT_CAROUSEL.OverlayConfig.Title": "Combat Carousel | Overlay Config",
     "COMBAT_CAROUSEL.OverlayConfig.Name": "Overlay Config",
     
-    "COMBAT_CAROUSEL.ToggleButtonTooltip": "Combat Carousel - toggle visibility",
+    "COMBAT_CAROUSEL.ToggleButton.Tooltip": "Combat Carousel - click to toggle visibility, right-click to reset position",
 
-    "COMBAT_CAROUSEL.Carousel.DragTooltip": "Click and drag to move Combat Carousel, right-click to reset position",
+    "COMBAT_CAROUSEL.Carousel.DragTooltip": "Click and drag to move, right-click to reset position",
 
     "WORDS.Save": "Save",
     "WORDS.Cancel": "Cancel",
