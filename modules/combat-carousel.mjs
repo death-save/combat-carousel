@@ -440,8 +440,8 @@ export default class CombatCarousel extends Application {
      */
     _onContextDragHandle(event, html) {
         event.preventDefault();
-        this.setPosition(DEFAULT_CONFIG.appPosition);
-        this._savePosition();
+
+        this.resetPosition();
     }
 
     /**
@@ -733,10 +733,10 @@ export default class CombatCarousel extends Application {
         const collapseIndicator = this.element.find("i.collapse-indicator");
 
         return new Promise(resolve => {
-            const $splide = $(this.splide.root);
+            const $el = this.element;
 
             if (forceCollapse) {
-                $splide.slideUp(200, () => {
+                $el.slideUp(200, () => {
                     collapseIndicator.removeClass("fa-caret-down").addClass("fa-caret-up");
                     this._collapsed = true;
                 });
@@ -744,7 +744,7 @@ export default class CombatCarousel extends Application {
                 return resolve(true);
             }
 
-            $(this.splide.root).slideToggle(200, () => {
+            $el.slideToggle(200, () => {
                 const currentDirection = collapseIndicator.hasClass("fa-caret-down") ? "down" : "up";
                 const newDirection = currentDirection ? (currentDirection === "down" ? "up" : "down") : null;
 
@@ -878,13 +878,16 @@ export default class CombatCarousel extends Application {
             height = null;
         }
 
+        const originalWidth = el.offsetWidth;
         const availableWidth = this._getAvailableWidth({left});
-        if (!el.style.maxWidth || parseInt(el.style.maxWidth) > availableWidth) {
+
+        if (!el.style.maxWidth || (parseInt(el.style.maxWidth) > availableWidth)) {
             el.style.maxWidth = `${availableWidth}px`;
         }
 
         const minimumWidth = this._getMinimumWidth();
-        if (!el.style.minWidth || parseInt(el.style.minWidth) > availableWidth) el.style.minWidth = `${minimumWidth}px`;
+
+        if (!el.style.minWidth || (parseInt(el.style.minWidth) > availableWidth) || (parseInt(el.style.minWidth) < minimumWidth)) el.style.minWidth = `${minimumWidth}px`;
 
         // Update width if an explicit value is passed, or if no width value is set on the element
         if ( !el.style.width || width ) {
@@ -896,6 +899,7 @@ export default class CombatCarousel extends Application {
             if ( (width + p.left) > window.innerWidth ) left = p.left;
         }
         width = el.offsetWidth;
+        if (width != originalWidth) this._setSplidePagination();
 
         // Update height if an explicit value is passed, or if no height value is set on the element
         if ( !el.style.height || height ) {
@@ -936,6 +940,20 @@ export default class CombatCarousel extends Application {
     }
 
     /**
+     * Resets Carousel to its default position and sets width based on contents
+     */
+    resetPosition() {
+        const defaultPosition = mergeObject(DEFAULT_CONFIG.appPosition, {
+            width: this._getMinimumWidth()
+        });
+
+        this.setPosition(defaultPosition);
+        this._setSplidePagination();
+        this._savePosition();
+    }
+    
+
+    /**
      * Calculates the width space available for the Carousel accounting for the sidebar
      * @param {Number} [sidebarWidth]
      * @param {Number} [left] 
@@ -956,12 +974,13 @@ export default class CombatCarousel extends Application {
         // the lesser of (number of cards * 100 + ui) or available width
         // always leave room for 1 card (for dropzone)
         const numCards = this?.splide?.length || 1;
+        const absoluteMinimum = 230;
         // Multiply number of cards by card width, add UI buffer, add scale buffer
         const desiredWidth = (numCards * 100) + 110 + 20;
         const availableWidth = this._getAvailableWidth();
-        const minimumWidth = desiredWidth <= availableWidth ? desiredWidth : availableWidth;
+        const minimumWidth = (desiredWidth <= availableWidth) ? desiredWidth : availableWidth;
         
-        return minimumWidth;
+        return (minimumWidth > absoluteMinimum) ? minimumWidth : absoluteMinimum;
     }
 
     /**
@@ -973,6 +992,20 @@ export default class CombatCarousel extends Application {
         delete safePosition.height;
 
         game.settings.set(NAME, SETTING_KEYS.appPosition, safePosition);
+    }
+
+    /**
+     * Sets the number of slides per page based on the width of the Carousel
+     */
+    _setSplidePagination() {
+        if (!this.splide) return;
+
+        const width = this.element.outerWidth();
+        const uiBuffer = 110;
+        const slideWidth = 100;
+        const numSlides = Number.isFinite(width) ? Math.floor((width - uiBuffer) / slideWidth) : 0;
+
+        this.splide.options = { perPage: numSlides }
     }
 
     /* -------------------------------------------- */

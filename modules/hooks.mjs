@@ -227,13 +227,7 @@ export default function registerHooks() {
 
         if (!ui.combatCarousel) return;
 
-        /*
-        if (collapsed) {
-            ui.combatCarousel.element.css({"maxWidth": "calc(100% - 170px)"});
-        } else {
-            ui.combatCarousel.element.css({"maxWidth": "calc(100% - 430px)"});
-        }
-        */
+        ui.combatCarousel.setPosition();
 
     });
 
@@ -338,10 +332,6 @@ export default function registerHooks() {
         const ccButton = html.find("li[data-control='combat-carousel']");
         ccButton
             .on("click", event => ui.combatCarousel.toggleVisibility())
-            .on("contextmenu", event => {
-                ui.combatCarousel.setPosition(DEFAULT_CONFIG.appPosition);
-                ui.combatCarousel._savePosition();
-            }
-        );
+            .on("contextmenu", event => ui.combatCarousel.resetPosition());
     });
 }
