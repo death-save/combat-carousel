@@ -48,15 +48,8 @@ export default class FixedDraggable extends Draggable {
         const now = Date.now();
         if ( (now - this._moveTime) < (1000/60) ) return;
         this._moveTime = now;
+        
         // Update application position
-
-        /*
-        this.app.element.css({
-            "left": this.initialPosition.left + (event.clientX - this._initial.x),
-            "top": this.initialPosition.top + (event.clientY - this._initial.y)
-        });
-        */
-
         this.position.left = this.initialPosition.left + (event.clientX - this._initial.x);
         this.position.top = this.initialPosition.top + (event.clientY - this._initial.y);
 

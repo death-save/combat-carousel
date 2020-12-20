@@ -39,10 +39,17 @@ export const SETTING_KEYS = {
     about: "about",
     appPosition: "appPosition",
     overlayConfigMenu: "overlayConfigMenu",
+    applyGMOverlayToPlayers: "applyGMOverlayToPlayers",
     collapseNav: "collapseNav",
-    showHealth: "showHealthBar",
-    healthBarPermission: "playerHealthBarPermission",
-    overlaySettings: "overlaySettings"
+    collapsed: "carouselCollapsed",
+    showBar1: "showBar1",
+    bar1Permission: "playerBar1Permission",
+    bar1Attribute: "bar1Attribute",
+    bar1Title: "bar1Title",
+    overlaySettings: "overlaySettings",
+    carouselSize: "carouselSize",
+    showInitiative: "showInitiative",
+    showInitiativeIcon: "showInitiativeIcon"
 }
 
 /**
@@ -72,16 +79,49 @@ export const DEFAULT_CONFIG = {
             value: ""
         }
     ],
-    healthBarPermission: {
+    applyGMOverlayToPlayers: true,
+    bar1Permission: {
         choices: {
             owner: "All Owned",
             token: "Use Token Setting",
             none: "None" 
         }
     },
+    bar1Attribute: "attributes.hp",
+    bar1Title: "HP",
     appPosition: {
         left: 120,
         top: 0,
         scale: 1.0
+    },
+    carouselSize: {
+        choices: {
+            xs: "Extra Small",
+            sm: "Small",
+            med: "Medium",
+            lg: "Large"
+        },
+        sizeScaleMap: {
+            xs: 0.5,
+            sm: 0.8,
+            med: 1,
+            lg: 1.2
+        }
+    },
+    showInitiative: {
+        choices: {
+            never: "Never",
+            onHover: "On Hover",
+            activeCombatant: "Active Combatant",
+            always: "Always"
+        }
+    },
+    showInitiativeIcon: {
+        choices: {
+            never: "Never",
+            onHover: "On Hover",
+            activeCombatant: "Active Combatant",
+            always: "Always"
+        }
     }
 }

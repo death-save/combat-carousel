@@ -9,7 +9,7 @@ import { NAME, SETTING_KEYS } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
 import { getAllElementSiblings } from "./util.mjs";
 import { getKeyByValue } from "./util.mjs";
-import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
+import { getTokenFromCombatantId } from "./util.mjs";
 
 /**
  * Main app class
@@ -21,6 +21,7 @@ export default class CombatCarousel extends Application {
 
         this.turn = null;
         this._collapsed = false;
+        this.slides = null;
     }
 
     /**
@@ -43,37 +44,19 @@ export default class CombatCarousel extends Application {
     * @override
     */
     async _render(force, options={}) {
+        // Render the super first to create the element
         await super._render(force, options);
 
+        // Instantiate the Fixed Draggable to make this app draggable
         new FixedDraggable(this, this.element, this.element.find(".drag-handle")[0], this.options.resizeable, {onDragMouseUp: this._onDragEnd});
 
+        // If set, collapse the Nav bar
         const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
 
-        if (collapseNavSetting && game.combat) {
-            ui.nav.collapse();
-        }
+        if (collapseNavSetting && game.combat) ui.nav.collapse();
 
-        /*
-        // set position
-        this.element.css({
-            "top": `${options.top ?? 0}px`,
-            "left": `${options.left ?? 120}px`
-        });
-        */
-
-        /*
-        // Find the Scene Nav and ensure to render outside it
-        const sceneNav = ui.nav;
-        const sceneNavHeight = sceneNav.element.height(); 
-
-        if (sceneNav && sceneNav._collapsed) {
-            this.element.css({"top":"12px"});
-            //this.element.find(".carousel-icon").css({"top": "47px"});
-        } else {
-            this.element.css({"top":`${sceneNavHeight + 12 + 5}px`});
-            //this.element.find(".carousel-icon").css({"top": "auto"});
-        }
-        */
+        const sizeSetting = game.settings.get(NAME, SETTING_KEYS.carouselSize);
+        const scale = sizeSetting ? DEFAULT_CONFIG.carouselSize.sizeScaleMap[sizeSetting] : 1;
         
         /**
         * Create a Splide instance and store it for later use
@@ -82,25 +65,14 @@ export default class CombatCarousel extends Application {
             //perMove: 1,
             perPage: 24,
             start: this.turn ?? 0,
-            //focus: false,
+            // focus: 0,
             cover: true,
             pagination: true,
             arrows: false,
             keyboard: false,
             drag: false,
-            height: 150,
-            fixedWidth: 100,
-            breakpoints: {
-                1920: {
-                    perPage: 12
-                },
-                1680: {
-                    perPage: 9
-                },
-                1366: {
-                    perPage: 6
-                }
-            },
+            fixedHeight: 150 * scale,
+            fixedWidth: 100 * scale,
             classes: {
                 pagination: "splide__pagination combat-carousel-pagination hidden"
             }
@@ -110,20 +82,22 @@ export default class CombatCarousel extends Application {
          * Hook on mount to add animation
          */
         this.splide.on("mounted", () => {
-            const slides = document.querySelectorAll(".splide__slide");
-            
+            const slides = this.slides = document.querySelectorAll(".splide__slide");
             const $slides = $(slides);
+            const $track = this.element.find(".splide__track");
 
             if (force || this._rendered === false) {
                 for (let i = 0; i < slides.length; i++) {
-                    
                     slides[i].classList.add("fly");
-                    slides[i].style.animationDelay = `${0.1 * i}s`;
+                    slides[i].style.animationDelay = `${0.1 * (i ? i : 1)}s`;
 
                     slides[i].addEventListener("animationend", event => {
                         event.target.classList.remove("fly");
                         event.target.style.animationDelay = null;
-                        if (i === slides.length - 1) this.activateCombatantSlide();
+
+                        if (i === slides.length - 1) {
+                            this.activateCombatantSlide();
+                        }
                     });
                 }
             }
@@ -142,10 +116,7 @@ export default class CombatCarousel extends Application {
             }
 
             if (game?.combat?.combatant) {
-                const slideIndex = this.getCombatantSlideIndex(game.combat.combatant);
-                const activeCombatantSlide = slides[slideIndex];
-                activeCombatantSlide.classList.add("is-active-combatant");
-                activeCombatantSlide.style.height = "158px";
+                this.setActiveCombatant(game.combat.combatant);
             }
             
             const combatState = CombatCarousel.getCombatState(game.combat);
@@ -163,38 +134,9 @@ export default class CombatCarousel extends Application {
             }
         });
 
-        // this.splide.on("pagination:updated", (data, prevItem, activeItem) => {
-        //     if (!prevItem) return;
-
-        //     //console.log("prev",prevItem, "active",activeItem);
-        // });
-
-        // this.splide.on("active", slide => {
-        //     //console.log(slide);
-        //     const $slide = $(slide.slide);
-        //     $slide.height("153px"); 
-        // });
-
-        // this.splide.on("inactive", slide => {
-        //     //console.log(slide);
-        //     const $slide = $(slide.slide);
-        //     $slide.height("150px"); 
-        // });
-
-        this.splide.on("click", async slide => {
-            const combatantId = slide.slide.dataset.combatantId;
-            
-            if (!combatantId) return;
-
-            const combatant = game.combat.getCombatant(combatantId);
-
-            if (!combatant) return;
-
-            const token = canvas.tokens.get(combatant.tokenId);
-            
-            return await token.control();
-        });
-
+        /**
+         * Handle adding a new combatant
+         */
         this.splide.on("addCombatant", (element, index) => {
             const $element = $(element);
             
@@ -227,8 +169,9 @@ export default class CombatCarousel extends Application {
 
         await this.splide.mount();
 
-        // const splideWidth = this.splide
-        this.setPosition({width: this._getMinimumWidth()});
+        this.setPosition({width: this._getMinimumWidth(), height: 205 * scale});
+        //this.setPosition({width: this._getMinimumWidth()});
+        //this._setActiveCombatantHeight(scale);
     }
 
     /**
@@ -238,32 +181,71 @@ export default class CombatCarousel extends Application {
      */
     static prepareTurnData(turn) {
         const token = canvas.tokens.get(turn.tokenId);
-        const hp = token?.actor?.data?.data?.attributes?.hp || null;
+
+        if (!token) return null;
+
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
-        const showHealthSetting = game.settings.get(NAME, SETTING_KEYS.showHealth);
-        const healthBarPermissionSetting = game.settings.get(NAME, SETTING_KEYS.healthBarPermission);
-        let showHealth = (game.user.isGM && showHealthSetting) ? true : false;
+        const showBar1Setting = game.settings.get(NAME, SETTING_KEYS.showBar1);
+        let bar1 = null;
+        let showBar1 = false;
 
-        if (showHealthSetting === true && !game.user.isGM) {
-            switch (healthBarPermissionSetting) {
-                case "owner":
-                    showHealth = token.owner;
-                    break;
+        if (showBar1Setting) {
+            const bar1AttributeSetting = game.settings.get(NAME, SETTING_KEYS.bar1Attribute);
+            bar1 = bar1AttributeSetting ? token.getBarAttribute("bar1", {alternative: bar1AttributeSetting}) : null;
+            const bar1PermissionSetting = game.settings.get(NAME, SETTING_KEYS.bar1Permission);
+            showBar1 = (game.user.isGM && showBar1Setting && bar1) ? true : false;
 
-                case "token":
-                    showHealth = token._canViewMode(token.data.displayBars);
-                    break;
+            if (showBar1Setting === true && bar1 && !game.user.isGM) {
+                switch (bar1PermissionSetting) {
+                    case "owner":
+                        showBar1 = token.owner;
+                        break;
+
+                    case "token":
+                        showBar1 = token._canViewMode(token.data.displayBars);
+                        break;
     
-                case "none":
-                default:
-                    break;
+                    case "none":
+                        default:
+                        break;
+                }
             }
+
+            if (bar1) {
+                bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
+
+                if (bar1?.type === "bar") {
+                    bar1.low = bar1.max * 0.34;
+                    bar1.high = bar1.max * 0.6;
+                    bar1.optimum = bar1.max * 0.9;
+                }
+            }
+            
+        }
+        
+        const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
+        const showInitiativeIconSetting = game.settings.get(NAME, SETTING_KEYS.showInitiativeIcon);
+        let showInitiative = false;
+        let showInitiativeIcon = false;
+
+        switch (showInitiativeSetting) {
+            case "always":
+                showInitiative = true;
+                break;
+            
+            case "never":
+            default:
+                break;
         }
 
-        if (hp) {
-            hp.low = hp.max * 0.34;
-            hp.high = hp.max * 0.6;
-            hp.optimum = hp.max * 0.9;
+        switch (showInitiativeIconSetting) {
+            case "always":
+                showInitiativeIcon = true;
+                break;
+            
+            case "never":
+            default:
+                break;
         }
 
         const preparedData = {
@@ -276,11 +258,13 @@ export default class CombatCarousel extends Application {
             carousel: {
                 isGM: game.user.isGM,
                 owner: token.owner,
-                showHealth,
-                hp,
+                showBar1,
+                bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
-                effects: token?.data?.effects || null
+                effects: token?.data?.effects || null,
+                showInitiative,
+                showInitiativeIcon
             }
         }
 
@@ -300,7 +284,7 @@ export default class CombatCarousel extends Application {
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
         //@todo use util method to setup turns -- need to filter out non-visible turns
-        const turns = game.combat?.turns ? calculateTurns(game.combat).map(t => CombatCarousel.prepareTurnData(t)): [];
+        const turns = game?.combat?.turns.map(t => CombatCarousel.prepareTurnData(t)) ?? [];
         
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
@@ -312,7 +296,8 @@ export default class CombatCarousel extends Application {
         const hasPreviousTurn = canControlCombat && Number.isNumeric(this.turn) && turns.length;
         const hasNextTurn = (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
         const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
-        const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
+        const hasNextRound = canControlCombat && Number.isNumeric(nextRound);              
+
         
         return {
             carouselIcon,
@@ -364,6 +349,7 @@ export default class CombatCarousel extends Application {
         splide.on("mouseenter", event => this._onHoverSplide(event, html)).on("mouseleave", event => this._onHoverOutSplide(event, html));
 
         card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
+        card.on("click", event => this._onClickCard(event, html));
         card.on("contextmenu", event => this._onContextMenuCard(event, html));
         card.on("dblclick", event => this._onCardDoubleClick(event, html));
 
@@ -523,6 +509,10 @@ export default class CombatCarousel extends Application {
         const sliderSiblings = getAllElementSiblings(splideSlider);
         const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
         splidePagination.classList.remove("visible");
+
+        // Grow the track
+        const splideTrack = hoveredCard.closest(".splide__track");
+        splideTrack.style.height = `${splideTrack.offsetHeight * 1.2}px`;
     }
 
     /**
@@ -540,6 +530,30 @@ export default class CombatCarousel extends Application {
         const sliderSiblings = getAllElementSiblings(splideSlider);
         const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
         splidePagination.classList.add("visible");
+
+        // Reset the track height
+        const splideTrack = hoveredCard.closest(".splide__track");
+        splideTrack.style.height = "";
+    }
+
+    /**
+     * Card click handler
+     * @param event 
+     * @param html 
+     */
+    async _onClickCard(event, html) {
+        const card = event.currentTarget;
+        const combatantId = card.dataset.combatantId;
+            
+        if (!combatantId) return;
+
+        const combatant = game.combat.getCombatant(combatantId);
+
+        if (!combatant) return;
+
+        const token = canvas.tokens.get(combatant.tokenId);
+            
+        return await token.control();
     }
 
     /**
@@ -586,7 +600,11 @@ export default class CombatCarousel extends Application {
         event.stopPropagation();
         const button = event.currentTarget;
         const li = button.closest(".card");
-        const combatant = game.combat.getCombatant(li.dataset.combatantId);
+        const combat = game?.combat;
+
+        if (!combat) return;
+
+        const combatant = combat.getCombatant(li.dataset.combatantId);
 
         // Switch control action
         switch (button.dataset.control) {
@@ -598,13 +616,14 @@ export default class CombatCarousel extends Application {
     
             // Toggle combatant defeated flag
             case "toggleDefeated":
-                let isDefeated = !combatant.defeated;
-                await game.combat.updateCombatant({_id: combatant._id, defeated: isDefeated});
-                const token = canvas.tokens.get(combatant.tokenId);
-                if ( token ) {
-                    if ( isDefeated && !token.data.overlayEffect ) token.toggleOverlay(CONFIG.controlIcons.defeated);
-                    else if ( !isDefeated && token.data.overlayEffect === CONFIG.controlIcons.defeated ) token.toggleOverlay(null);
-                }
+                // let isDefeated = !combatant.defeated;
+                // await game.combat.updateCombatant({_id: combatant._id, defeated: isDefeated});
+                // const token = canvas.tokens.get(combatant.tokenId);
+                // if ( token ) {
+                //     if ( isDefeated && !token.data.overlayEffect ) token.toggleOverlay(CONFIG.controlIcons.defeated);
+                //     else if ( !isDefeated && token.data.overlayEffect === CONFIG.controlIcons.defeated ) token.toggleOverlay(null);
+                // }
+                ui?.combat?._onToggleDefeatedStatus(combatant);
                 break;
     
             // Roll combatant initiative
@@ -730,7 +749,7 @@ export default class CombatCarousel extends Application {
      * Toggles visibility of the carousel
      */
     async toggleVisibility(forceCollapse=false) {
-        const collapseIndicator = this.element.find("i.collapse-indicator");
+        const collapseIndicator = ui.controls.element.find("i.collapse-indicator");
 
         return new Promise(resolve => {
             const $el = this.element;
@@ -829,6 +848,21 @@ export default class CombatCarousel extends Application {
     }
 
     /**
+     * Sets the Active Combatant, applying style to the combatant's card
+     * @param combatant 
+     */
+    setActiveCombatant(combatant=null) {
+        combatant = combatant ?? game?.combat?.combatant;
+        
+        if (!combatant) return;
+
+        const slideIndex = this.getCombatantSlideIndex(combatant);
+        const activeCombatantSlide = this.slides[slideIndex];
+        activeCombatantSlide.classList.add("is-active-combatant");
+        this.splide.go(slideIndex);
+    }
+
+    /**
      * Activates the given combatant's slide
      * @param combatant 
      */
@@ -839,6 +873,18 @@ export default class CombatCarousel extends Application {
 
         const activeCombatantIndex = this.getCombatantSlideIndex(combatant);
         this.splide.go(activeCombatantIndex);
+    }
+
+    /**
+     * Sets the Active Combatant's card to be a bit bigger to allow for the indicator
+     * @param scale 
+     */
+    _setActiveCombatantHeight(scale=null) {
+        if (!scale) scale = this.position.scale ?? 1;
+
+        const $el = this.element;
+        const activeCombatantSlide = $el.find("li.is-active-combatant");
+        activeCombatantSlide.outerHeight(158 * scale);
     }
 
     /**
@@ -887,7 +933,8 @@ export default class CombatCarousel extends Application {
 
         const minimumWidth = this._getMinimumWidth();
 
-        if (!el.style.minWidth || (parseInt(el.style.minWidth) > availableWidth) || (parseInt(el.style.minWidth) < minimumWidth)) el.style.minWidth = `${minimumWidth}px`;
+        // if (!el.style.minWidth || (parseInt(el.style.minWidth) > availableWidth) || (parseInt(el.style.minWidth) < minimumWidth)) el.style.minWidth = `${minimumWidth}px`;
+        if (!el.style.minWidth || (parseInt(el.style.minWidth) != minimumWidth)) el.style.minWidth = `${minimumWidth}px`;
 
         // Update width if an explicit value is passed, or if no width value is set on the element
         if ( !el.style.width || width ) {
@@ -905,7 +952,7 @@ export default class CombatCarousel extends Application {
         if ( !el.style.height || height ) {
             const tarH = height || (el.offsetHeight + 1);
             const minH = parseInt(styles.minHeight) || (pop ? MIN_WINDOW_HEIGHT : 0);
-            const maxH = styles.maxHeight || window.innerHeight;
+            const maxH = Number.isFinite(parseInt(styles.maxHeight)) ? parseInt(styles.maxHeight) : window.innerHeight;
             p.height = height = Math.clamped(tarH, minH, maxH);
             el.style.height = height+"px";
             if ( (height + p.top) > window.innerHeight ) top = p.top;

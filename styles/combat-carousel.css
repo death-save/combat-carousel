@@ -69,6 +69,17 @@ li.scene-control img.carousel-icon {
     align-items: center;
 }
 
+#combat-carousel .resize-handle {
+    width: 18px;
+    height: 18px;
+    color: beige;
+    background:rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 40%;
+    right: 0;
+    padding: 2px;
+}
+
 #combat-carousel .carousel-icon .encounter {
     position: absolute;
     font-size: 9px;
@@ -228,10 +239,14 @@ li.scene-control img.carousel-icon {
     text-overflow: ellipsis;
 }
 
+#combat-carousel .container {
+    height: 85%;
+}
+
 #combat-carousel .avatar {
     display: flex;
     align-items: center;
-    height: 125px;
+    height: 100%;
     vertical-align: middle;
     overflow: hidden;
 }
@@ -252,6 +267,14 @@ li.scene-control img.carousel-icon {
     border-radius: 60%;
     z-index: 20;
 }
+
+#combat-carousel .initiative .hidden {
+    display: none;
+}
+
+/* #combat-carousel .card:hover .initiative {
+    display: block;
+} */
 
 #combat-carousel .initiative .fa-2x {
     font-size: 1em;
@@ -298,16 +321,6 @@ li.scene-control img.carousel-icon {
     width: 15px;
 }
 
-#combat-carousel .combatant {
-    /* line-height: 32px;
-    padding: 0 8px;
-    margin: 0 8px 8px 0;
-    border: 1px solid #000;
-    border-radius: 3px;
-    position: relative;
-    */
-}
-
 #combat-carousel .card {
     border-radius: 3px;
     border: 1px solid black;
@@ -320,72 +333,110 @@ li.scene-control img.carousel-icon {
     animation: fly-in 500ms both;
 }
 
-/*
-@keyframes fly-in {
-    0% {
-        transform: translate(200%, 200%) skew(10deg, 10deg);
-    }
-
-    100% {
-        transform: translate(0%, 0%) skew(0deg, 0deg);
-    }
-}
-*/
-
 @keyframes fly-in {
     from {
-        transform: translate(200%, 200%) skew(10deg, 10deg);
+        transform: skew(-10deg, -10deg) rotateX(90deg) scale(0.1);
+        opacity: 0;
     }
 }
 
-#combat-carousel .card .active-combatant {
+#combat-carousel .card .active-combatant-wrapper {
     display: none;
+}
+
+#combat-carousel .is-active-combatant.card .active-combatant-wrapper {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    background: url("/ui/denim075.png");
+    width: 99%;
+    height: 6%;
 }
 
 #combat-carousel .is-active-combatant.card .active-combatant {
     display: inline-block;
     position: absolute;
     width: 100%;
-    height: 10px;
+    height: 100%;
     background:rgba(255,69,0,0.9);
     /* border: 1px silver; */
-    bottom: 1px;
-    left: 0px;
+    /* bottom: 1px;
+    left: 0px; */
     /* clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 50%, 0 100%); */
     /* clip-path: polygon(0% 0%, 100% 0, 100% 50%, 50% 100%, 0 50%); */
     /* clip-path: polygon(50% 0%, 100% 50%, 100% 100%, 0 100%, 0 50%); */
-    clip-path: polygon(0% 0%, 100% 0, 50% 80%);
+    clip-path: polygon(10% 0%, 90% 0, 50% 75%);
 }
-
-/*
-#combat-carousel .is-active.card .tracker-indicators {
-    margin-left: 20px;
-}
-
-#combat-carousel .is-active.card:hover .tracker-indicators {
-    margin-left: unset;
-}
-*/
 
 #combat-carousel img {
     border: none;
 }
 
-#combat-carousel .hp {
+#combat-carousel .bar1 {
     text-align: center;
-    height: 15px;
+    height: 10%;
 }
 
 #combat-carousel meter {
+    --background: rgba(0, 0, 0, 0.5);
+    --optimum: greenyellow;
+    --sub-optimum: darkorange;
+    --sub-sub-optimum: crimson; 
+
+    display: block;
+    /* The gray background in Firefox */
     width: 98%;
     text-align: center;
 }
 
-#combat-carousel meter[value="0"] {
+@supports(-moz-appearance:none) {
+    #combat-carousel meter  {
+        background: var(--background);
+    }
+}
+
+#combat-carousel meter::-moz-meter-bar {
+    height: 25%;
+    margin-top: 0.25em;
+    background: var(--background);
+    border: 2px solid black;
+    /* box-shadow: 0 2px 2px -2px #333 inset; */
+}
+
+#combat-carousel meter:-moz-meter-optimum::-moz-meter-bar {
+    background: var(--optimum);
+}
+
+#combat-carousel meter:-moz-meter-sub-optimum::-moz-meter-bar {
+    background: var(--sub-optimum);
+}
+
+#combat-carousel meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+    background: var(--sub-sub-optimum);
+}
+
+#combat-carousel meter::-webkit-meter-bar {
+    background: var(--background);
+    border: 2px solid black;
+    /* box-shadow: 0 2px 2px -2px #333 inset; */
+    height: 100%;
+}
+
+#combat-carousel meter::-webkit-meter-optimum-value {
+    background: var(--optimum);
+}
+
+#combat-carousel meter::-webkit-meter-suboptimum-value {
+    background:var(--sub-optimum);
+}
+
+/* #combat-carousel meter[value="0"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     background: rgba(0,0,0,0.9);
-}
+} */
 
 #combat-carousel .combat-round .description {
     display: none;
@@ -445,17 +496,6 @@ li.scene-control img.carousel-icon {
     margin: 3px;
 }
 
-#combat-carousel .splide {
-    height: 177px;
-}
-
-#combat-carousel .splide__track {
-    padding-top: 5px;
-}
-#combat-carousel .splide__slider {
-    padding: 0px 55px;
-}
-
 #combat-carousel .splide__slide.token-hover-neutral {
     border: 1px solid aqua;
 }
@@ -490,12 +530,6 @@ li.scene-control img.carousel-icon {
     z-index: 100;
 }
 
-/*
-#combat-carousel .name:hover {
-    display: none;
-}
-*/
-
 #combat-carousel .name:hover .button-tray {
     display: flex;
     padding: 0px 10px;
@@ -524,31 +558,14 @@ li.scene-control img.carousel-icon {
 }
 
 #combat-carousel .is-active-combatant.card {
-    clip-path: polygon(0px -21px, 100% -21px, 100% 95%, 50% 100%, 0px 95%);
+    /* clip-path: polygon(0px -21px, 100% -21px, 100% 95%, 50% 100%, 0px 95%); */
     border-bottom: none;
+    /* height: 83% !important; */
 }
 
-/*
-#combat-carousel .splide__slide:hover .active-combatant {
-    margin-top: -20px;
+#combat-carousel .is-active-combatant.card .container {
+    /* height: 80%; */
 }
-*/
-
-/*
-#combat-carousel .is-active.card .fa-dice-d20 {
-    color: red;
-}
-*/
-
-/*
-#combat-carousel .splide__slide:hover .effects {
-    display: flex;
-    background: url("/ui/denim075.png") repeat;
-    border: 1px solid black;
-    position: absolute;
-    top: 150px;
-}
-*/
 
 #combat-carousel .fa-dice-d20:hover {
     animation: spin 0.3s linear;
@@ -566,20 +583,6 @@ li.scene-control img.carousel-icon {
     100% {
         transform: rotate(360deg);
     }
-}
-
-#combat-carousel .splide__slider {
-    height: 170px;
-}
-
-#combat-carousel .splide__arrow {
-    top: calc(50% + 30px);
-    border-radius: 2%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-#combat-carousel .splide__arrow svg {
-    fill: #f0f0e0;
 }
 
 #combat-carousel .combat-control {
@@ -621,6 +624,46 @@ li.scene-control img.carousel-icon {
 #combat-carousel .combat-control a.turn {
     top: calc(50% + 15px);
 }
+
+/* SPLIDE */
+
+#combat-carousel .splide {
+    height: 95%;
+}
+
+#combat-carousel .splide__slider {
+    height: 100%;
+    padding: 0px 55px;
+}
+
+#combat-carousel .splide__track {
+    height: 100%;
+    padding-top: 5px;
+}
+
+#combat-carousel .splide__list {
+    height: 100%;
+}
+
+#combat-carousel .splide__arrow {
+    top: calc(50% + 30px);
+    border-radius: 2%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#combat-carousel .splide__arrow svg {
+    fill: #f0f0e0;
+}
+
+#combat-carousel .combat-carousel-pagination {
+    display: none;
+}
+
+#combat-carousel .combat-carousel-pagination.visible {
+    display: flex;
+}
+
+/* ABOUT APP */
 
 #combat-carousel-about img {
     border: none;
@@ -670,14 +713,4 @@ li.scene-control img.carousel-icon {
 
 #combat-carousel-about .patreon img {
     flex: 0 0 100px;
-}
-
-/* SPLIDE */
-
-#combat-carousel .combat-carousel-pagination {
-    display: none;
-}
-
-#combat-carousel .combat-carousel-pagination.visible {
-    display: flex;
 }

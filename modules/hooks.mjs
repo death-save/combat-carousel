@@ -6,7 +6,7 @@ import CombatCarousel from "./combat-carousel.mjs";
 import registerSettings from "./settings.mjs";
 import overrideMethods from "./overrides.mjs";
 import { NAME, SETTING_KEYS, CAROUSEL_ICONS } from "./config.mjs";
-import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
+import { getTokenFromCombatantId } from "./util.mjs";
 import { preloadHandlebarsTemplates } from "./templates.mjs";
 import { DEFAULT_CONFIG } from "./config.mjs";
 import { TEMPLATE_PATH } from "./config.mjs";
@@ -63,9 +63,12 @@ export default function registerHooks() {
 
         if (hasProperty(update, "turn")) {
             if (update.turn !== ui.combatCarousel.turn) {
-                //ui.combatCarousel.splide.refresh();
+                const combatant = combat.turns[update.turn];
+
+                if (!combatant) return;
+
                 ui.combatCarousel.turn = update.turn;
-                ui.combatCarousel.splide.go(update.turn);
+                ui.combatCarousel.setActiveCombatant(combatant);
                 return ui.combatCarousel.render();
             }
 
@@ -99,7 +102,7 @@ export default function registerHooks() {
         //console.log("create combatantant:", {combat, createData, options, userId});
         
         // calculate the new turn order
-        const newTurns = calculateTurns(combat);
+        const newTurns = combat.setupTurns();
 
         // grab the new combatant
         const turn = newTurns.find(t => t._id === createData._id);
@@ -159,6 +162,7 @@ export default function registerHooks() {
         if (index < 0) return;
 
         ui.combatCarousel.splide.remove(index);
+        ui.combatCarousel.setPosition({width: ui.combatCarousel._getMinimumWidth()});
     });
 
     /* ------------------- Actor ------------------ */

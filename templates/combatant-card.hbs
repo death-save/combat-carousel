@@ -22,20 +22,24 @@
             </span>
             <div class="overlay-properties">
                 {{#each combatant.carousel.overlayProperties}}
-                <div class="property">
-                    <img class="icon" src="{{this.img}}" title="{{this.name}}"/>
-                    <span class="value" title="{{this.value}}">{{this.value}}</span>
+                <div class="property" title="{{this.name}}: {{this.value}}">
+                    <img class="icon" src="{{this.img}}"/>
+                    <span class="value">{{this.value}}</span>
                 </div>
                 {{/each}}
             </div>
         </div>
         <div class="initiative">
+            {{#if combatant.carousel.showInitiativeIcon}}
             <a class="roll-init">
+            {{/if}}
                 <span class="fa-stack fa-2x">
-                <i class="fas fa-dice-d20 fa-stack-2x" title="{{localize COMBATANT_CARD.RollInitiative}}"></i>
-                <input type="text" class="fa-stack-1x fa-inverse" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}{{localize "COMBATANT_CARD.RollInitiative"}}" value="{{combatant.initiative}}" disabled/>
+                <i class="fas fa-dice-d20 fa-stack-2x {{#unless combatant.carousel.showInitiativeIcon}}hidden{{/unless}}" title="{{localize COMBATANT_CARD.RollInitiative}}"></i>
+                <input type="text" class="fa-stack-1x fa-inverse {{#unless combatant.carousel.showInitiative}}hidden{{/unless}}" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}{{localize "COMBATANT_CARD.RollInitiative"}}" value="{{combatant.initiative}}" disabled/>
             </span>
+            {{#if combatant.carousel.showInitiativeIcon}}
             </a>
+            {{/if}}
         </div>
         {{/if}}
         <div class="avatar splide__slide__container">
@@ -52,16 +56,30 @@
             {{/each}}
         </div>
     </div>
-    {{#if combatant.carousel.showHealth}}
-    <div class="hp" width="100%">
+    {{#if combatant.carousel.showBar1}}
+    <div class="bar1" width="100%">
         <meter 
-            value="{{combatant.carousel.hp.value}}" 
-            min="0" max="{{combatant.carousel.hp.max}}" 
-            title="{{combatant.carousel.hp.value}}/{{combatant.carousel.hp.max}}" 
-            optimum="{{combatant.carousel.hp.optimum}}" low="{{combatant.carousel.hp.low}}" 
-            high="{{combatant.carousel.hp.high}}"
+            value="{{combatant.carousel.bar1.value}}" 
+            min="0" 
+            max="{{combatant.carousel.bar1.max}}" 
+            title="{{combatant.carousel.bar1.title}}: {{combatant.carousel.bar1.value}}{{#if combatant.carousel.bar1.max}}/{{combatant.carousel.bar1.max}}{{/if}}" 
+            optimum="{{combatant.carousel.bar1.optimum}}" low="{{combatant.carousel.bar1.low}}" 
+            high="{{combatant.carousel.bar1.high}}"
         />
     </div>
     {{/if}}
-    <div class="active-combatant"></div>
+    <div class="active-combatant-wrapper">
+        <div class="active-combatant"></div>
+    </div>
+    {{!-- <div style="position: absolute; top: 100%; width: 100%; height: 5%;">
+        <svg height="100%" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="display: block;">
+            <defs>
+                <pattern id="denim075" width="94" height="94" patternUnits="userSpaceOnUse">
+                    <image x="0" y="0" width="94" height="94" href="ui/denim075.png"></image>
+                </pattern>
+            </defs>
+            <polygon points="0,0 100,0 50,100 0,0" class="triangle" style="fill: url(#denim075);"></polygon>
+            <polyline points="0,0 50,100 100,0 100,0" fill="none" stroke="black"></polyline>
+        </svg>
+    </div> --}}
 </li>
