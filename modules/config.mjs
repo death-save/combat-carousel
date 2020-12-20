@@ -39,7 +39,8 @@ export const SETTING_KEYS = {
     about: "about",
     appPosition: "appPosition",
     overlayConfigMenu: "overlayConfigMenu",
-    applyGMOverlayToPlayers: "applyGMOverlayToPlayers",
+    showOverlay: "showOverlay",
+    overlayPermission: "overlayPermission",
     collapseNav: "collapseNav",
     collapsed: "carouselCollapsed",
     showBar1: "showBar1",
@@ -49,7 +50,8 @@ export const SETTING_KEYS = {
     overlaySettings: "overlaySettings",
     carouselSize: "carouselSize",
     showInitiative: "showInitiative",
-    showInitiativeIcon: "showInitiativeIcon"
+    showInitiativeIcon: "showInitiativeIcon",
+    imageType: "imageType"
 }
 
 /**
@@ -79,9 +81,17 @@ export const DEFAULT_CONFIG = {
             value: ""
         }
     ],
-    applyGMOverlayToPlayers: true,
+    overlayPermission: {
+        choices: {
+            all: "All",
+            owned: "Owned Actors",
+            observed: "Observed Actors",
+            none: "None" 
+        }
+    },
     bar1Permission: {
         choices: {
+            all: "All",
             owner: "All Owned",
             token: "Use Token Setting",
             none: "None" 
@@ -122,6 +132,13 @@ export const DEFAULT_CONFIG = {
             onHover: "On Hover",
             activeCombatant: "Active Combatant",
             always: "Always"
+        }
+    },
+    imageType: {
+        choices: {
+            actor: "Actor",
+            tokenActor: "Token Actor",
+            token: "Token"
         }
     }
 }

@@ -87,7 +87,13 @@ li.scene-control img.carousel-icon {
     left: 1px;
 }
 
-#combat-carousel .carousel-icon .collapse-indicator {
+li[data-control="combat-carousel"] div.wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+li[data-control="combat-carousel"] i.collapse-indicator {
     position: absolute;
     font-size: 9px;
     top: 1px;

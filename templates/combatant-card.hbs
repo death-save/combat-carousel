@@ -10,16 +10,18 @@
         <h3 title="{{combatant.name}}">{{combatant.name}}</h3>
     </div>
     <div class="container">
-        {{#if combatant.carousel.owner}}
         <div class="overlay-hud">
             <span class="tracker-indicators">
                 {{#if combatant.defeated}}
                 <i class="fas fa-skull" title="{{localize "WORDS.Defeated"}}"></i>
                 {{/if}}
+                {{#if combatant.carousel.owner}}
                 {{#if combatant.hidden}}
                 <i class="fas fa-eye-slash" title="{{localize "WORDS.Hidden"}}"></i>
                 {{/if}}
+                {{/if}}
             </span>
+            {{#if combatant.carousel.showOverlay}}
             <div class="overlay-properties">
                 {{#each combatant.carousel.overlayProperties}}
                 <div class="property" title="{{this.name}}: {{this.value}}">
@@ -28,20 +30,24 @@
                 </div>
                 {{/each}}
             </div>
+            {{/if}}
         </div>
         <div class="initiative">
             {{#if combatant.carousel.showInitiativeIcon}}
             <a class="roll-init">
             {{/if}}
-                <span class="fa-stack fa-2x">
+            {{#if combatant.carousel.showInitiativeBackground}}
+            <span class="fa-stack fa-2x">
+            {{/if}}
                 <i class="fas fa-dice-d20 fa-stack-2x {{#unless combatant.carousel.showInitiativeIcon}}hidden{{/unless}}" title="{{localize COMBATANT_CARD.RollInitiative}}"></i>
                 <input type="text" class="fa-stack-1x fa-inverse {{#unless combatant.carousel.showInitiative}}hidden{{/unless}}" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}{{localize "COMBATANT_CARD.RollInitiative"}}" value="{{combatant.initiative}}" disabled/>
+            {{#if combatant.carousel.showInitiativeBackground}}
             </span>
+            {{/if}}
             {{#if combatant.carousel.showInitiativeIcon}}
             </a>
             {{/if}}
         </div>
-        {{/if}}
         <div class="avatar splide__slide__container">
             {{#if combatant.carousel.overlayEffect}}
             <img class="overlay-effect" src="{{combatant.carousel.overlayEffect}}"/>

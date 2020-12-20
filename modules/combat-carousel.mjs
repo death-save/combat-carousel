@@ -185,6 +185,29 @@ export default class CombatCarousel extends Application {
         if (!token) return null;
 
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
+        const showOverlaySetting = game.settings.get(NAME, SETTING_KEYS.showOverlay);
+        const overlayPermission = game.settings.get(NAME, SETTING_KEYS.overlayPermission);
+
+        let showOverlay = showOverlaySetting && game.user.isGM;
+        
+        if (showOverlaySetting && !game.user.isGM) {
+            switch (overlayPermission) {
+                case "all":
+                    showOverlay = true;
+                    break;
+                
+                case "owned":
+                    showOverlay = token.owner;
+
+                case "observed":
+                    showOverlay = token.actor.hasPerm(game.user, CONST.ENTITY_PERMISSIONS.OBSERVER);
+                
+                case "none":
+                default:
+                    break;
+            }
+        }
+
         const showBar1Setting = game.settings.get(NAME, SETTING_KEYS.showBar1);
         let bar1 = null;
         let showBar1 = false;
@@ -220,7 +243,6 @@ export default class CombatCarousel extends Application {
                     bar1.optimum = bar1.max * 0.9;
                 }
             }
-            
         }
         
         const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
@@ -248,10 +270,36 @@ export default class CombatCarousel extends Application {
                 break;
         }
 
+        // Always show the initiative icon if the initiative value is not set
+        if (!Number.isFinite(turn.initiative) && token.owner) showInitiativeIcon = true;
+
+        const imageTypeSetting = game.settings.get(NAME, SETTING_KEYS.imageType);
+        let img = turn.img;
+
+        switch (imageTypeSetting) {
+            case "actor":
+                const actorId = token.data.actorId;
+                const actor = game.actors.get(actorId);
+                img = actor?.img ?? turn.img;
+                break;
+
+            case "tokenActor":
+                const tokenActor = token.actor;
+                img = tokenActor?.img ?? turn.img;
+                break;
+
+            case "token":
+                img = token.data.img ?? turn.img;
+                break;
+
+            default:
+                break;
+        }
+
         const preparedData = {
             id: turn._id,
             name: turn.name,
-            img: token.actor.img ?? turn.img,
+            img,
             initiative: turn.initiative,
             hidden: turn.hidden,
             defeated: turn.defeated,
@@ -263,8 +311,10 @@ export default class CombatCarousel extends Application {
                 overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
                 effects: token?.data?.effects || null,
+                showInitiativeBackground: showInitiativeIcon || (showInitiative && Number.isFinite(turn.initiative)),
                 showInitiative,
-                showInitiativeIcon
+                showInitiativeIcon,
+                showOverlay
             }
         }
 
@@ -296,8 +346,8 @@ export default class CombatCarousel extends Application {
         const hasPreviousTurn = canControlCombat && Number.isNumeric(this.turn) && turns.length;
         const hasNextTurn = (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
         const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
-        const hasNextRound = canControlCombat && Number.isNumeric(nextRound);              
-
+        const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
+        const showOverlay = game.settings.get(NAME, SETTING_KEYS.showOverlay);
         
         return {
             carouselIcon,
@@ -783,10 +833,11 @@ export default class CombatCarousel extends Application {
      */
     async expand() {
         return new Promise(resolve => {
-            const $splide = $(this.splide.root);
-            const collapseIndicator = this.element.find("i.collapse-indicator");
+            // const $splide = $(this.splide.root);
+            const $el = this.element;
+            const collapseIndicator = ui.controls.element.find("i.collapse-indicator");
 
-            $splide.slideDown(200, () => {
+            $el.slideDown(200, () => {
                 this._collapsed = false;
                 collapseIndicator.removeClass("fa-caret-down").addClass("fa-caret-up");
                 resolve(true);
@@ -799,10 +850,11 @@ export default class CombatCarousel extends Application {
      */
     async collapse() {
         return new Promise(resolve => {
-            const $splide = $(this.splide.root);
-            const collapseIndicator = this.element.find("i.collapse-indicator");
+            // const $splide = $(this.splide.root);
+            const $el = this.element;
+            const collapseIndicator = ui.controls.element.find("i.collapse-indicator");
 
-            $splide.slideUp(200, () => {
+            $el.slideUp(200, () => {
                 this._collapsed = true;
                 collapseIndicator.removeClass("fa-caret-up").addClass("fa-caret-down");
                 resolve(true);

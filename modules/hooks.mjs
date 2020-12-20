@@ -47,8 +47,14 @@ export default function registerHooks() {
     /**
      * Create Combat hook
      */
-    Hooks.on("createCombat", (combat, createData, options, userId) => {
+    Hooks.on("createCombat", (combat, options, userId) => {
         ui.combatCarousel.render(true);
+        
+        const hasTurns = combat?.turns?.length;
+        const carouselImg = ui?.controls?.element.find("img.carousel-icon");
+        const newImgSrc = hasTurns ? CAROUSEL_ICONS.hasTurns : CAROUSEL_ICONS.noTurns;
+        
+        carouselImg.attr("src", newImgSrc);
     });
 
     /**
@@ -89,8 +95,12 @@ export default function registerHooks() {
     /**
      * Delete Combat hook
      */
-    Hooks.on("deleteCombat", (combat, options, userId) => {
-        ui.combatCarousel.render(true);
+    Hooks.on("deleteCombat", async (combat, options, userId) => {
+        await ui.combatCarousel.render(true);
+        ui.combatCarousel.collapse();
+
+        const carouselImg = ui.controls.element.find("img.carousel-icon");
+        carouselImg.attr("src", CAROUSEL_ICONS.noCombat);
     });
     
     /* ----------------- Combatant ---------------- */
@@ -127,6 +137,10 @@ export default function registerHooks() {
         }
 
         ui.combatCarousel.render();
+
+        const carouselImg = ui.controls.element.find("img.carousel-icon");
+
+        if (carouselImg.attr("src") != CAROUSEL_ICONS.hasTurns) carouselImg.attr("src", CAROUSEL_ICONS.hasTurns);
     });
     
     /**
@@ -163,12 +177,18 @@ export default function registerHooks() {
 
         ui.combatCarousel.splide.remove(index);
         ui.combatCarousel.setPosition({width: ui.combatCarousel._getMinimumWidth()});
+
+        const combatHasTurns = combat?.turns?.length;
+
+        const carouselImg = ui.controls.element.find("img.carousel-icon");
+
+        if (!combatHasTurns) carouselImg.attr("src", CAROUSEL_ICONS.noTurns);
     });
 
     /* ------------------- Actor ------------------ */
 
     Hooks.on("updateActor", (actor, update, options, userId) => {
-        if (!hasProperty(update, "data.attributes.hp.value")) return;
+        if (!hasProperty(update, "data.attributes.hp.value") && !hasProperty(update, "img")) return;
         // find any matching combat carousel combatants
         
         // update their hp bar
@@ -180,7 +200,13 @@ export default function registerHooks() {
 
     Hooks.on("updateToken", (scene, token, update, options, userId) => {
         //console.log("token update:", scene,token,update,options,userId);
-        if (!hasProperty(update, "effects") && !hasProperty(update, "overlayEffect") && !hasProperty(update, "actorData.data.attributes.hp.value")) return;
+        if (
+            !hasProperty(update, "effects") 
+            && !hasProperty(update, "overlayEffect") 
+            && !hasProperty(update, "actorData.data.attributes.hp.value") 
+            && !hasProperty(update, "img")
+            && !hasProperty(update, "actorData.img")
+        ) return;
         // find any matching combat carousel combatants
         
         // update their hp bar and effects
@@ -325,6 +351,9 @@ export default function registerHooks() {
         }
     });
 
+    /**
+     * Render Scene Controls Hook
+     */
     Hooks.on("renderSceneControls", async (app, html, data) => {
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];

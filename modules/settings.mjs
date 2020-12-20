@@ -29,18 +29,33 @@ export default function registerSettings() {
         hint: "SETTINGS.OverlayConfigH",
         icon: "fas fa-th-list",
         type: CombatCarouselConfig,
-        restricted: false
+        restricted: true
     });
 
-    game.settings.register(NAME, SETTING_KEYS.applyGMOverlayToPlayers, {
-        name: "SETTINGS.ApplyGMOverlayToPlayersN",
-        hint: "SETTINGS.ApplyGMOverlayToPlayersH",
-        scope: "world",
+    game.settings.register(NAME, SETTING_KEYS.showOverlay, {
+        name: "SETTINGS.ShowOverlayN",
+        hint: "SETTINGS.ShowOverlayH",
+        scope: "client",
         type: Boolean,
-        default: false,
+        default: true,
         config: true,
         onChange: s => {
-            if (!game.user.isGM) ui.combatCarousel.render(true);
+            ui.combatCarousel.render(true);
+        }
+    });
+
+    game.settings.register(NAME, SETTING_KEYS.overlayPermission, {
+        name: "SETTINGS.OverlayPermissionN",
+        hint: "SETTINGS.OverlayPermissionH",
+        scope: "world",
+        type: String,
+        default: "owner",
+        choices: DEFAULT_CONFIG.overlayPermission.choices,
+        config: true,
+        onChange: s => {
+            if (!game.user.isGM) {
+                ui.combatCarousel.render(true);
+            }
         }
     });
 
@@ -177,6 +192,19 @@ export default function registerSettings() {
         type: String,
         default: "always",
         choices: DEFAULT_CONFIG.showInitiativeIcon.choices,
+        config: true,
+        onChange: s => {
+            ui.combatCarousel.render(true);
+        }
+    });
+
+    game.settings.register(NAME, SETTING_KEYS.imageType, {
+        name: "SETTINGS.ImageTypeN",
+        hint: "SETTINGS.ImageTypeH",
+        scope: "world",
+        type: String,
+        default: "actor",
+        choices: DEFAULT_CONFIG.imageType.choices,
         config: true,
         onChange: s => {
             ui.combatCarousel.render(true);
