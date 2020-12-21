@@ -10,16 +10,16 @@
         <div class="splide__slider">
             <div class="combat-control">
                 {{#if this.hasPreviousTurn}}
-                <a class="previous turn" title="{{localize "CAROUSEL.PreviousTurn"}}" data-action="previousTurn"><i class="fas fa-chevron-left"></i></a>
+                <a class="previous turn" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.PreviousTurn"}}" data-action="previousTurn"><i class="fas fa-chevron-left"></i></a>
                 {{/if}}
                 {{#if this.hasPreviousRound}}
-                <a class="previous round" title="{{localize "CAROUSEL.PreviousRound"}}" data-action="previousRound"><i class="fas fa-step-backward"></i></a>
+                <a class="previous round" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.PreviousRound"}}" data-action="previousRound"><i class="fas fa-step-backward"></i></a>
                 {{/if}}
                 {{#if this.hasNextTurn}}
-                <a class="next turn" title="{{localize "CAROUSEL.NextTurn"}}" data-action="nextTurn"><i class="fas fa-chevron-right"></i></a>
+                <a class="next turn" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.NextTurn"}}" data-action="nextTurn"><i class="fas fa-chevron-right"></i></a>
                 {{/if}}
                 {{#if this.hasNextRound}}
-                <a class="next round" title="{{localize "CAROUSEL.NextRound"}}" data-action="nextRound"><i class="fas fa-step-forward"></i></a>
+                <a class="next round" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.NextRound"}}" data-action="nextRound"><i class="fas fa-step-forward"></i></a>
                 {{/if}}
             </div>
             <div class="splide__track">
@@ -31,12 +31,12 @@
             </div>
         </div>
     </div>
-    <div class="drag-handle" title="{{localize "COMBAT_CAROUSEL.Carousel.DragTooltip"}}">
+    <div class="drag-handle" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.DragTooltip"}}">
         <i class="fas fa-bars"></i>
     </div>
     {{#if this.encounter}}
     <div class="encounter-info flexcol">
-        <div class="encounter flexrow" title="{{localize "WORDS.Encounter"}} {{this.encounter}}">
+        <div class="encounter flexrow" title="{{localize "COMBAT_CAROUSEL.WORDS.Encounter"}} {{this.encounter}}">
             {{#if canControlCombat}}
             <a class="encounter-control previous" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.PreviousEncounter"}}">
                 <i class="fas fa-caret-left"></i>
@@ -56,7 +56,7 @@
             </a>
             {{/if}}
         </div>
-        <div class="round flexrow" title="{{localize "WORDS.Round"}} {{this.round}}">
+        <div class="round flexrow" title="{{localize "COMBAT_CAROUSEL.WORDS.Round"}} {{this.round}}">
             {{!-- <a class="round-previous">
                 <i class="fas fa-caret-left"></i>
             </a> --}}

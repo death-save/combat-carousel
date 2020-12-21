@@ -62,15 +62,16 @@ export default class CombatCarousel extends Application {
         * Create a Splide instance and store it for later use
         */
         const splide = this.splide = new Splide(".splide", {
-            //perMove: 1,
+            perMove: 1,
             perPage: 24,
             start: this.turn ?? 0,
-            // focus: 0,
+            //focus: false,
             cover: true,
             pagination: true,
             arrows: false,
             keyboard: false,
             drag: false,
+            //trimSpace: false,
             fixedHeight: 150 * scale,
             fixedWidth: 100 * scale,
             classes: {
@@ -170,8 +171,6 @@ export default class CombatCarousel extends Application {
         await this.splide.mount();
 
         this.setPosition({width: this._getMinimumWidth(), height: 205 * scale});
-        //this.setPosition({width: this._getMinimumWidth()});
-        //this._setActiveCombatantHeight(scale);
     }
 
     /**
@@ -602,7 +601,9 @@ export default class CombatCarousel extends Application {
         if (!combatant) return;
 
         const token = canvas.tokens.get(combatant.tokenId);
-            
+        const index = this.getCombatantSlideIndex(combatant);
+        if (Number.isFinite(index)) this.splide.go(index);
+
         return await token.control();
     }
 
@@ -925,18 +926,6 @@ export default class CombatCarousel extends Application {
 
         const activeCombatantIndex = this.getCombatantSlideIndex(combatant);
         this.splide.go(activeCombatantIndex);
-    }
-
-    /**
-     * Sets the Active Combatant's card to be a bit bigger to allow for the indicator
-     * @param scale 
-     */
-    _setActiveCombatantHeight(scale=null) {
-        if (!scale) scale = this.position.scale ?? 1;
-
-        const $el = this.element;
-        const activeCombatantSlide = $el.find("li.is-active-combatant");
-        activeCombatantSlide.outerHeight(158 * scale);
     }
 
     /**

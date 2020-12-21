@@ -74,8 +74,9 @@ export default function registerHooks() {
                 if (!combatant) return;
 
                 ui.combatCarousel.turn = update.turn;
-                ui.combatCarousel.setActiveCombatant(combatant);
+                
                 return ui.combatCarousel.render();
+                //return ui.combatCarousel.setActiveCombatant(combatant);
             }
 
             //ui.combatCarousel.render();
