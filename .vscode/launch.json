@@ -5,26 +5,32 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Edge",
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://192.168.1.69:59999",
+            "pathMapping": {
+                "/modules/combat-carousel": "${workspaceFolder}"
+            },
+            "skipFiles": [
+                "${workspaceFolder}/libs/**",
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "name": "Launch Edge",
             "request": "launch",
             "type": "edge",
-            "url": "http://192.168.1.69:59999"
-            // "pathMapping": {
-            //     "/modules/combat-carousel": "${workspaceFolder}"
-            // }
+            "url": "http://192.168.1.69:59999",
+            "pathMapping": {
+                "/modules/combat-carousel": "${workspaceFolder}"
+            }
         },
         {
             "name": "Attach to Edge",
             "request": "attach",
             "type": "edge",
             "port":50080,
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://192.168.1.69:59999",
             "webRoot": "${workspaceFolder}"
         }
     ]
