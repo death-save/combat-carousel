@@ -4,12 +4,9 @@
  */
 
 import CombatCarouselConfig from "./config-form.mjs";
-import { CAROUSEL_ICONS, DEFAULT_CONFIG } from "./config.mjs";
-import { NAME, SETTING_KEYS } from "./config.mjs";
+import { CAROUSEL_ICONS, DEFAULT_CONFIG, NAME, SETTING_KEYS } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
-import { getAllElementSiblings } from "./util.mjs";
-import { getKeyByValue } from "./util.mjs";
-import { getTokenFromCombatantId } from "./util.mjs";
+import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId } from "./util.mjs";
 
 /**
  * Main app class
@@ -20,8 +17,9 @@ export default class CombatCarousel extends Application {
         super(options);
 
         this.turn = null;
-        this._collapsed = false;
+        this._collapsed = game.settings.get(NAME, SETTING_KEYS.collapsed) ?? false;
         this.slides = null;
+        this.sizeFactor = 1;
     }
 
     /**
@@ -56,7 +54,7 @@ export default class CombatCarousel extends Application {
         if (collapseNavSetting && game.combat) ui.nav.collapse();
 
         const sizeSetting = game.settings.get(NAME, SETTING_KEYS.carouselSize);
-        const scale = sizeSetting ? DEFAULT_CONFIG.carouselSize.sizeScaleMap[sizeSetting] : 1;
+        const scale = this.sizeFactor = sizeSetting ? DEFAULT_CONFIG.carouselSize.sizeScaleMap[sizeSetting] : 1;
         
         /**
         * Create a Splide instance and store it for later use
@@ -183,11 +181,16 @@ export default class CombatCarousel extends Application {
 
         if (!token) return null;
 
+        const isActiveTurn = game.combat.turn === game.combat.turns.indexOf(turn);
+
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
         const showOverlaySetting = game.settings.get(NAME, SETTING_KEYS.showOverlay);
         const overlayPermission = game.settings.get(NAME, SETTING_KEYS.overlayPermission);
 
-        let showOverlay = showOverlaySetting && game.user.isGM;
+        const showOverlayAlways = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.always);
+        const showOverlayActive = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.active);
+
+        let showOverlay = (showOverlaySetting === showOverlayAlways) || ((showOverlaySetting === showOverlayActive) && isActiveTurn);
         
         if (showOverlaySetting && !game.user.isGM) {
             switch (overlayPermission) {
@@ -197,9 +200,11 @@ export default class CombatCarousel extends Application {
                 
                 case "owned":
                     showOverlay = token.owner;
+                    break;
 
                 case "observed":
                     showOverlay = token.actor.hasPerm(game.user, CONST.ENTITY_PERMISSIONS.OBSERVER);
+                    break;
                 
                 case "none":
                 default:
@@ -452,10 +457,30 @@ export default class CombatCarousel extends Application {
      * Module Icon click handler
      * @param event 
      * @param html 
-     * @todo #6 #5 add visual indicator of collapse state on icon
      */
-    _onModuleIconClick(event, html) {
-        this.toggleVisibility();
+    async _onModuleIconClick(event, html) {
+        event.preventDefault();
+        //this.toggleVisibility();
+        const newState = this._state == 2 ? "closed" : (this._state <= 0 ? "open" : "unknown");
+        let newSettingValue = null;
+
+        switch (newState) {
+            case "closed":
+                newSettingValue = true;
+                await this.close();
+                break;
+            
+            case "open":
+                newSettingValue = false;
+                await this.render(true);
+                break;
+
+            default:
+                break;
+        }
+        
+        if (newSettingValue !== null) await game.settings.set(NAME, SETTING_KEYS.collapsed, newSettingValue);
+        if (newState != "unknown") this.setToggleIconIndicator(newState);
     }
 
     /**
@@ -562,6 +587,10 @@ export default class CombatCarousel extends Application {
         // Grow the track
         const splideTrack = hoveredCard.closest(".splide__track");
         splideTrack.style.height = `${splideTrack.offsetHeight * 1.2}px`;
+
+        // Unhide the overlay if that setting is selected
+        const showOverlay = this._shouldShowOverlay(hoveredCard);
+        if (showOverlay) this._toggleOverlayVisibility(hoveredCard, {show: true});
     }
 
     /**
@@ -583,6 +612,10 @@ export default class CombatCarousel extends Application {
         // Reset the track height
         const splideTrack = hoveredCard.closest(".splide__track");
         splideTrack.style.height = "";
+
+        // Rehide the overlay if that setting is selected
+        const showOverlay = this._shouldShowOverlay(hoveredCard);
+        if (!showOverlay) this._toggleOverlayVisibility(hoveredCard, {hide: true});
     }
 
     /**
@@ -1059,12 +1092,14 @@ export default class CombatCarousel extends Application {
      * Calculates the minimum width that should be used
      */
     _getMinimumWidth() {
+        const scale = this.sizeFactor;
+
         // the lesser of (number of cards * 100 + ui) or available width
         // always leave room for 1 card (for dropzone)
         const numCards = this?.splide?.length || 1;
         const absoluteMinimum = 230;
         // Multiply number of cards by card width, add UI buffer, add scale buffer
-        const desiredWidth = (numCards * 100) + 110 + 20;
+        const desiredWidth = (numCards * (100 * scale)) + 110 + 20;
         const availableWidth = this._getAvailableWidth();
         const minimumWidth = (desiredWidth <= availableWidth) ? desiredWidth : availableWidth;
         
@@ -1094,6 +1129,117 @@ export default class CombatCarousel extends Application {
         const numSlides = Number.isFinite(width) ? Math.floor((width - uiBuffer) / slideWidth) : 0;
 
         this.splide.options = { perPage: numSlides }
+    }
+
+    /**
+     * Determines if a particular Combatant Card's overlay should be shown or not
+     */
+    _shouldShowOverlay(card, user=game.user) {
+        const showOverlaySetting = game.settings.get(NAME, SETTING_KEYS.showOverlay);
+
+        const showAlways = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.always);
+        const showHover = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.hover);
+        const showActive = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.active);
+        const showNever = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.never);
+
+        // If the overlay should never be shown, return false
+        if (showOverlaySetting === showNever) return false;
+
+        const cardElement = this._getCardElement(card);
+
+        // determine if card is hovered, or active combatant
+        const isHovered = cardElement.matches(":hover");
+        const isActive = cardElement.classList.contains("is-active-combatant");
+        
+        // next find the overlay
+        const overlay = cardElement.querySelector(".overlay-properties");
+        
+        if (!overlay) throw "Overlay element not found";
+
+        // get the combatant and determine if the user is an owner of its token
+        const combatant = this._getCombatantFromCard(card);
+        const tokenData = combatant?.token;
+        const actor = game.actors.get(tokenData.actorId);
+
+        const overlayPermissionSetting = game.settings.get(NAME, SETTING_KEYS.overlayPermission);
+
+        const permAll = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.always);
+        const permOwner = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.hover);
+        const permObserver = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.active);
+        const permNone = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.never);
+
+        const hasPerm = game.user.isGM 
+            || (overlayPermissionSetting === permAll) 
+            || ((overlayPermissionSetting === permOwner) && hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((overlayPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+
+        switch (showOverlaySetting) {
+            case showAlways:
+                return hasPerm;
+
+            case showHover:
+                if (isHovered) return hasPerm;
+                return false;
+
+            case showActive:
+                if (isActive) return hasPerm;
+                return false;
+        
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Toggles visibility of the overlay
+     * @param card 
+     */
+    _toggleOverlayVisibility(card, {show=false, hide=false}={}) {
+        const cardElement = this._getCardElement(card);
+        const overlayElement = cardElement.querySelector(".overlay-properties");
+        const isHidden = overlayElement.classList.contains("hidden");
+
+        switch (isHidden) {
+            case true:
+                if (!hide) return overlayElement.classList.remove("hidden");
+                return true;
+            
+            case false:
+                if (!show) return overlayElement.classList.add("hidden");
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Returns the Element of a given DOM Element or Jquery Object
+     * @param card 
+     */
+    _getCardElement(card) {
+        // Ensure the card param is usable
+        if (!card) throw "Card Not Provided";
+        if (!(card instanceof Element) && !(card instanceof $)) throw "Card is not an Element or JQuery Element";
+
+        return card instanceof $ ? card[0] : card;
+    }
+
+    /**
+     * Set the indicator on the toggle button
+     */
+    setToggleIconIndicator(state) {
+        const $indicator = ui.controls.element.find("i.collapse-indicator");
+        const currentDirection = $indicator.hasClass("fa-caret-down") ? "down" : "up";
+        let newDirection = null;
+
+        if (!state) return;
+        
+        newDirection = state === "open" ? "up" : "down"; 
+
+        if(newDirection && newDirection !== currentDirection) {
+            $indicator.removeClass(`fa-caret-${currentDirection}`).addClass(`fa-caret-${newDirection}`)
+        }
     }
 
     /* -------------------------------------------- */
@@ -1137,6 +1283,25 @@ export default class CombatCarousel extends Application {
         const index = combatantIds.indexOf(combatant._id);
 
         return index;
+    }
+
+    /**
+     * Returns the combatant (if any) for a given card element
+     * @param card 
+     * @param [combat]  
+     */
+    _getCombatantFromCard(card, combat=game.combat) {
+        const cardElement = this._getCardElement(card);
+
+        if (!cardElement) return null;
+
+        const combatantId = cardElement.dataset.combatantId;
+
+        if (!combatantId) return null;
+
+        const combatant = combat.getCombatant(combatantId);
+
+        return combatant ?? null;
     }
 }
 

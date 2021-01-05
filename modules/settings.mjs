@@ -36,8 +36,9 @@ export default function registerSettings() {
         name: "COMBAT_CAROUSEL.SETTINGS.ShowOverlayN",
         hint: "COMBAT_CAROUSEL.SETTINGS.ShowOverlayH",
         scope: "client",
-        type: Boolean,
-        default: true,
+        type: String,
+        default: getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.hover),
+        choices: DEFAULT_CONFIG.showOverlay.choices,
         config: true,
         onChange: s => {
             ui.combatCarousel.render(true);
@@ -163,7 +164,7 @@ export default function registerSettings() {
         hint: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeH",
         scope: "client",
         type: String,
-        default: getKeyByValue(DEFAULT_CONFIG.carouselSize.sizeScaleMap.med),
+        default: getKeyByValue(DEFAULT_CONFIG.carouselSize.choices, DEFAULT_CONFIG.carouselSize.choices.med),
         choices: DEFAULT_CONFIG.carouselSize.choices,
         config: true,
         onChange: async s => {

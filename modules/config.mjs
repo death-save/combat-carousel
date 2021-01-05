@@ -81,6 +81,14 @@ export const DEFAULT_CONFIG = {
             value: ""
         }
     ],
+    showOverlay: {
+        choices: {
+            never: "Never",
+            hover: "On Hover",
+            active: "Active Combatant",
+            always: "Always"
+        }
+    },
     overlayPermission: {
         choices: {
             all: "All",
@@ -121,16 +129,16 @@ export const DEFAULT_CONFIG = {
     showInitiative: {
         choices: {
             never: "Never",
-            onHover: "On Hover",
-            activeCombatant: "Active Combatant",
+            hover: "On Hover",
+            active: "Active Combatant",
             always: "Always"
         }
     },
     showInitiativeIcon: {
         choices: {
             never: "Never",
-            onHover: "On Hover",
-            activeCombatant: "Active Combatant",
+            hover: "On Hover",
+            active: "Active Combatant",
             always: "Always"
         }
     },

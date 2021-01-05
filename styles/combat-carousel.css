@@ -190,7 +190,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 }
 
 #combat-carousel .overlay {
-    display: none;
+    /* display: none; */
 }
 
 #combat-carousel .drag-handle {
@@ -227,10 +227,6 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 }
  
 #combat-carousel .overlay-properties {
-    display: none;
-}
-
-#combat-carousel .splide__slide:hover .overlay-properties {
     display: flex;
     flex-direction: column;
     background: rgba(0,0,0,0.5);
@@ -274,7 +270,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     z-index: 20;
 }
 
-#combat-carousel .initiative .hidden {
+#combat-carousel .hidden {
     display: none;
 }
 
@@ -301,10 +297,6 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     pointer-events: none;
     background: none;
     border: none;
-}
-
-#combat-carousel .initiative .hidden {
-    display: none;
 }
 
 #combat-carousel .fa-dice-d20 {
@@ -387,13 +379,14 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 
 #combat-carousel meter {
     --background: rgba(0, 0, 0, 0.5);
-    --optimum: greenyellow;
+    --optimum: limegreen;
     --sub-optimum: darkorange;
     --sub-sub-optimum: crimson; 
 
     display: block;
     /* The gray background in Firefox */
     width: 98%;
+    height: 1.2em;
     text-align: center;
 }
 
@@ -485,14 +478,15 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     position: relative;
     content: attr(value) "/" attr(max);
     top: -15px;
-    text-shadow: 1px 1px black;
+    /* text-shadow: 1px 1px black; */
+    background:rgba(0, 0, 0, 0.7);
 }
 
-#combat-carousel .splide__slide:hover meter[value="0"]::after {
+/* #combat-carousel .splide__slide:hover meter[value="0"]::after {
     position: inherit;
     content: attr(value) "/" attr(max);
     top: -15px;
-}
+} */
 
 #combat-carousel-config img.icon {
     width: 40px;

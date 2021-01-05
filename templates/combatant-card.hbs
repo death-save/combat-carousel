@@ -21,8 +21,8 @@
                 {{/if}}
                 {{/if}}
             </span>
-            {{#if combatant.carousel.showOverlay}}
-            <div class="overlay-properties">
+            
+            <div class="overlay-properties {{#unless combatant.carousel.showOverlay}}hidden{{/unless}}">
                 {{#each combatant.carousel.overlayProperties}}
                 <div class="property" title="{{this.name}}: {{this.value}}">
                     <img class="icon" src="{{this.img}}"/>
@@ -30,7 +30,6 @@
                 </div>
                 {{/each}}
             </div>
-            {{/if}}
         </div>
         <div class="initiative">
             {{#if combatant.carousel.showInitiativeIcon}}

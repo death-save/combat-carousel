@@ -34,8 +34,12 @@ export default function registerHooks() {
      */
     Hooks.on("ready", () => {
         const position = game.settings.get(NAME, SETTING_KEYS.appPosition);
+        
         ui.combatCarousel = new CombatCarousel(position);
-        ui.combatCarousel.render(true);
+
+        const collapsed = ui.combatCarousel._collapsed;
+
+        if (!collapsed) ui.combatCarousel.render(true);
     });
 
     /* -------------------------------------------- */
@@ -48,7 +52,9 @@ export default function registerHooks() {
      * Create Combat hook
      */
     Hooks.on("createCombat", (combat, options, userId) => {
-        ui.combatCarousel.render(true);
+        const collapsed = ui.combatCarousel._collapsed;
+
+        if (!collapsed) ui.combatCarousel.render(true);
         
         const hasTurns = combat?.turns?.length;
         const carouselImg = ui?.controls?.element.find("img.carousel-icon");
@@ -222,18 +228,17 @@ export default function registerHooks() {
      * SceneNavigation render hook
      */
     Hooks.on("renderSceneNavigation", (app, html, data) => {
-        if (!ui.combatCarousel) return;
+        // if (!ui.combatCarousel) return;
 
-        const collapsed = data?.collapsed || app?.data?.collapsed || null;
-        /*
-        if (collapsed) {
-            ui.combatCarousel.element.css({"top": "12px"});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "47px"});
-        } else {
-            ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
-        }
-        */
+        // const collapsed = data?.collapsed || app?.data?.collapsed || null;
+        
+        // if (collapsed) {
+        //     ui.combatCarousel.element.css({"top": "12px"});
+        //     ui.combatCarousel.element.find(".carousel-icon").css({"top": "47px"});
+        // } else {
+        //     ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
+        //     ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
+        // }
     });
 
     /**
@@ -263,6 +268,16 @@ export default function registerHooks() {
     });
 
     Hooks.on("renderCombatTracker", (app, html, data) => {
+        const rendered = ui.combatCarousel.rendered;
+        const collapsed = ui.combatCarousel._collapsed;
+
+        if (!data?.hasCombat && rendered) {
+            ui.combatCarousel.close();
+        }
+
+        if (data?.hasCombat && !collapsed) {
+            ui.combatCarousel.render(true);
+        }
         //console.log("combat tracker rendered:", app, html, data);
     });
 
@@ -365,7 +380,7 @@ export default function registerHooks() {
 
         const ccButton = html.find("li[data-control='combat-carousel']");
         ccButton
-            .on("click", event => ui.combatCarousel.toggleVisibility())
-            .on("contextmenu", event => ui.combatCarousel.resetPosition());
+            .on("click", event => ui.combatCarousel._onModuleIconClick(event))
+            .on("contextmenu", event => ui.combatCarousel.resetPosition(event));
     });
 }
