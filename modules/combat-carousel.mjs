@@ -926,7 +926,7 @@ export default class CombatCarousel extends Application {
      * @param {String} combatState
      */
     setToggleIcon(combatState=null) {
-        const $icon = this.element.find(".carousel-icon img").first();
+        const $icon = ui.controls.element.find(".carousel-icon").first();
         const img = $icon.attr("src");
         combatState = combatState ? combatState : CombatCarousel.getCombatState(game?.combat);
 

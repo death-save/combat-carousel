@@ -68,7 +68,10 @@ export default function registerHooks() {
      */
     Hooks.on("updateCombat", (combat, update, options, userId) => {
         //console.log("combat update", {combat, update, options, userId});
+        const collapsed = ui.combatCarousel._collapsed;
         
+        if (collapsed) return;
+
         if (getProperty(update, "active") === true || hasProperty(update, "round")) {
             return ui.combatCarousel.render(true);
         }
@@ -103,8 +106,14 @@ export default function registerHooks() {
      * Delete Combat hook
      */
     Hooks.on("deleteCombat", async (combat, options, userId) => {
-        await ui.combatCarousel.render(true);
-        ui.combatCarousel.collapse();
+        const collapsed = ui.combatCarousel._collapsed;
+        const hasCombat = game.combats.entities?.length;
+        if (!collapsed && !hasCombat) {
+            ui.combatCarousel.close();
+            //await ui.combatCarousel.render(true);
+            //ui.combatCarousel.collapse();
+        }
+
 
         const carouselImg = ui.controls.element.find("img.carousel-icon");
         carouselImg.attr("src", CAROUSEL_ICONS.noCombat);
@@ -278,6 +287,8 @@ export default function registerHooks() {
         if (data?.hasCombat && !collapsed) {
             ui.combatCarousel.render(true);
         }
+
+        ui.combatCarousel.setToggleIcon();
         //console.log("combat tracker rendered:", app, html, data);
     });
 
