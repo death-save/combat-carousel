@@ -119,7 +119,7 @@ export default class CombatCarousel extends Application {
             }
             
             const combatState = CombatCarousel.getCombatState(game.combat);
-
+            /*
             switch (combatState) {
                 case "noCombat":
                 case "noTurns":
@@ -131,6 +131,7 @@ export default class CombatCarousel extends Application {
                     this.expand();
                     break;
             }
+            */
         });
 
         /**
@@ -386,6 +387,7 @@ export default class CombatCarousel extends Application {
         const combatantControl = html.find("a.combatant-control");
         const combatControl = html.find(".combat-control a");
         const encounterIcon = html.find(".encounter-info .encounter");
+        const encounterControlsToggle = html.find(".encounter-info .encounter-controls-toggle");
 
         app.on("mouseenter", event => this._onHoverApp(event, html)).on("mouseleave", event => this._onHoverOutApp(event, html));
 
@@ -411,9 +413,10 @@ export default class CombatCarousel extends Application {
 
         combatControl.on("click", event => this._onCombatControlClick(event, html));
 
-        encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
-        encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
+        // encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
+        // encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
 
+        encounterControlsToggle.on("click", event => this._onClickEncounterControlsToggle(event, html));
         //this._contextMenu(html);
     }
 
@@ -466,12 +469,12 @@ export default class CombatCarousel extends Application {
 
         switch (newState) {
             case "closed":
-                newSettingValue = true;
+                this._collapsed = newSettingValue = true;
                 await this.close();
                 break;
             
             case "open":
-                newSettingValue = false;
+                this._collapsed = newSettingValue = false;
                 await this.render(true);
                 break;
 
@@ -789,7 +792,23 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onEncounterIconContext(event, html) {
+        event.preventDefault();
+        this._contextMenu(html);
         //game.combat.endCombat();
+    }
+
+    /**
+     * Click encounter controls handler
+     * @param event 
+     * @param html 
+     */
+    _onClickEncounterControlsToggle(event, html) {
+        event.preventDefault();
+        const button = event.currentTarget;
+        const encounterInfo = button.closest(".encounter-info");
+        const encounterControls = encounterInfo.querySelector(".encounter-controls");
+
+        encounterControls.classList.add("visible");
     }
 
     /**
@@ -968,9 +987,15 @@ export default class CombatCarousel extends Application {
         return [
             {
               name: "COMBAT_CAROUSEL.EncounterOptions.Create",
-              icon: '<i class="fas fa-plus"></i>',
+              icon: `<i class="fas fa-plus"></i>`,
               condition: () => game.user.isGM,
               callback: event => ui.combat._onCombatCreate(event)
+            },
+            {
+                name: "COMBAT_CAROUSEL.EncounterOptions.Delete",
+                icon: `<i class="fas fa-trash"></i>`,
+                condition: () => game.user.isGM,
+                callback: event => ui.combat._onCombatDelete(event)
             }
         ]
     }
@@ -1081,7 +1106,7 @@ export default class CombatCarousel extends Application {
      */
     _getAvailableWidth({sidebarWidth=null, left=null}={}) {
         // If no sidebarWidth is provided, calculate its width including any positional buffer
-        sidebarWidth = sidebarWidth ?? (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()));
+        sidebarWidth = sidebarWidth ?? (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()) + 5);
         const carouselLeft = left ?? this.element.offset().left;
         const availableWidth = Math.floor(window.innerWidth - (carouselLeft + sidebarWidth));
 
@@ -1229,7 +1254,7 @@ export default class CombatCarousel extends Application {
      * Set the indicator on the toggle button
      */
     setToggleIconIndicator(state) {
-        const $indicator = ui.controls.element.find("i.collapse-indicator");
+        const $indicator = ui.controls.element.find("li[data-control='combat-carousel'] i.collapse-indicator");
         const currentDirection = $indicator.hasClass("fa-caret-down") ? "down" : "up";
         let newDirection = null;
 
@@ -1237,7 +1262,7 @@ export default class CombatCarousel extends Application {
         
         newDirection = state === "open" ? "up" : "down"; 
 
-        if(newDirection && newDirection !== currentDirection) {
+        if(newDirection && (newDirection !== currentDirection)) {
             $indicator.removeClass(`fa-caret-${currentDirection}`).addClass(`fa-caret-${newDirection}`)
         }
     }

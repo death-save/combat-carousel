@@ -37,11 +37,9 @@
     {{#if this.encounter}}
     <div class="encounter-info flexcol">
         <div class="encounter flexrow" title="{{localize "COMBAT_CAROUSEL.WORDS.Encounter"}} {{this.encounter}}">
-            {{#if canControlCombat}}
             <a class="encounter-control previous" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.PreviousEncounter"}}">
                 <i class="fas fa-caret-left"></i>
             </a>
-            {{/if}}
             <span class="counter">{{this.encounter}}</span>
             {{#if canControlCombat}}
             <a class="encounter-control next" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.NextEncounter"}}">
@@ -49,7 +47,7 @@
             </a>
             {{/if}}
             {{#if canControlCombat}}
-            <a class="encounter-control create-remove" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.CreateRemoveEncounter"}}">
+            <a class="encounter-controls-toggle">
             {{/if}}
                 <i class="fas fa-fist-raised"></i>
             {{#if canControlCombat}}
@@ -69,6 +67,12 @@
     </div>
     {{#if canControlCombat}}
     <div class="initiative-control">
+        <a class="encounter-control create" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.CreateEncounter"}}">
+                <i class="fas fa-plus"></i>
+            </a>
+            <a class="encounter-control delete" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.DeleteEncounter"}}">
+                <i class="fas fa-trash"></i>
+            </a>
         <a title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.RollAll"}}" data-control="rollAll">
             <i class="fas fa-users"></i>
         </a>
@@ -78,10 +82,24 @@
         <a title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.ResetAll"}}" data-control="resetAll">
             <i class="fas fa-undo"></i>
         </a>
+        <a class="encounter-control config" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.EncounterConfig"}}">
+                <i class="fas fa-cog"></i>
+            </a>
     </div>
     {{/if}}
     {{/if}}
     {{!-- <div class="resize-handle">
         <i class="fas fa-arrows-alt-h"></i>
     </div> --}}
+    <div class="encounter-controls flexrow">
+            <a class="encounter-control create" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.CreateEncounter"}}">
+                <i class="fas fa-plus"></i>
+            </a>
+            <a class="encounter-control delete" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.DeleteEncounter"}}">
+                <i class="fas fa-trash"></i>
+            </a>
+            <a class="encounter-control config" title="{{localize "COMBAT_CAROUSEL.Carousel.Controls.EncounterConfig"}}">
+                <i class="fas fa-cog"></i>
+            </a>
+        </div>
 </div>

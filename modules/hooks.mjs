@@ -38,6 +38,8 @@ export default function registerHooks() {
         ui.combatCarousel = new CombatCarousel(position);
 
         const collapsed = ui.combatCarousel._collapsed;
+        const state = collapsed ? "closed" : "open";
+        ui.combatCarousel.setToggleIconIndicator(state);
 
         if (!collapsed) ui.combatCarousel.render(true);
     });
@@ -277,14 +279,14 @@ export default function registerHooks() {
     });
 
     Hooks.on("renderCombatTracker", (app, html, data) => {
-        const rendered = ui.combatCarousel.rendered;
-        const collapsed = ui.combatCarousel._collapsed;
+        const rendered = ui?.combatCarousel?.rendered;
+        const collapsed = ui?.combatCarousel?._collapsed;
 
         if (!data?.hasCombat && rendered) {
             ui.combatCarousel.close();
         }
 
-        if (data?.hasCombat && !collapsed) {
+        if (data?.hasCombat && collapsed === false) {
             ui.combatCarousel.render(true);
         }
 
@@ -390,8 +392,9 @@ export default function registerHooks() {
         html.append(ccButtonHtml);
 
         const ccButton = html.find("li[data-control='combat-carousel']");
+        
         ccButton
             .on("click", event => ui.combatCarousel._onModuleIconClick(event))
-            .on("contextmenu", event => ui.combatCarousel.resetPosition(event));
+            .on("contextmenu", event => ui.combatCarousel.resetPosition(event))
     });
 }
