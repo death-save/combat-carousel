@@ -123,6 +123,11 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     border-radius: 3px;
 }
 
+#combat-carousel .encounter-info .icon {
+    text-align: center;
+    flex: 0 0 30%;
+}
+
 #combat-carousel .encounter-info.visible {
     display: block;
 }
@@ -130,10 +135,12 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 #combat-carousel .encounter-controls {
     display: none;
     position: absolute;
-    right: 0;
-    top: 25%;
+    left: 0;
+    top: 0;
+    /* right: 0;
+    top: 25%; */
     width: 50px;
-    height: 40px;
+    height: 65px;
     text-align: center;
     color: white;
     background: rgba(0, 0, 0, 0.5);
@@ -608,25 +615,25 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     }
 }
 
-#combat-carousel .combat-control {
+#combat-carousel .combat-controls {
     display: none;
 }
 
-#combat-carousel:hover .combat-control {
+#combat-carousel:hover .combat-controls {
     display: block;
 }
 
-#combat-carousel .combat-control .previous,
+#combat-carousel .combat-controls .previous,
 #combat-carousel .splide__arrow--prev {
     left: 0px;
 }
 
-#combat-carousel .combat-control .next,
+#combat-carousel .combat-controls .next,
 #combat-carousel .splide__arrow--next {
     right: 0px;
 }
 
-#combat-carousel .combat-control a {
+#combat-carousel .combat-controls a {
     position: absolute;
     width: 32px;
     height: 32px;
@@ -640,11 +647,11 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     color: white;
 }
 
-#combat-carousel .combat-control a.round {
+#combat-carousel .combat-controls a.round {
     top: calc(50% + 50px);
 }
 
-#combat-carousel .combat-control a.turn {
+#combat-carousel .combat-controls a.turn {
     top: calc(50% + 15px);
 }
 

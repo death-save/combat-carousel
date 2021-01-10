@@ -287,7 +287,7 @@ export default function registerHooks() {
         }
 
         if (data?.hasCombat && collapsed === false) {
-            ui.combatCarousel.render(true);
+            ui.combatCarousel.render(!rendered);
         }
 
         ui.combatCarousel.setToggleIcon();

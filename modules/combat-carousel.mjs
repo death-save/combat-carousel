@@ -16,6 +16,7 @@ export default class CombatCarousel extends Application {
     constructor(options={}) {
         super(options);
 
+        this.combat = null;
         this.turn = null;
         this._collapsed = game.settings.get(NAME, SETTING_KEYS.collapsed) ?? false;
         this.slides = null;
@@ -334,7 +335,11 @@ export default class CombatCarousel extends Application {
         const combats = view ? game.combats.entities.filter(c => c.data.scene === view._id) : [];
         const currentCombatIdx = combats.findIndex(c => c === game.combat);
         const hasCombat = currentCombatIdx > -1;
+        const combat = this.combat = hasCombat ? game.combat : null;
+        const encounterCount = combats?.length ?? 0;
         const encounter = hasCombat ? currentCombatIdx + 1 : null;
+        const previousEncounter = encounter > 1 ? encounter - 1 : null;
+        const nextEncounter = encounter < encounterCount ? encounter + 1 : null;
         const round = game.combat ? game.combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
@@ -353,11 +358,14 @@ export default class CombatCarousel extends Application {
         const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
         const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
         const showOverlay = game.settings.get(NAME, SETTING_KEYS.showOverlay);
+        const canAdvanceEncounter = !!(canControlCombat && nextEncounter);
+        const canReverseEncounter = !!(canControlCombat && previousEncounter);
         
         return {
             carouselIcon,
             turns,
             encounter,
+            encounterCount,
             round,
             previousRound,
             nextRound,
@@ -365,7 +373,9 @@ export default class CombatCarousel extends Application {
             hasNextRound,
             hasPreviousTurn,
             hasNextTurn,
-            canControlCombat
+            canControlCombat,
+            canAdvanceEncounter,
+            canReverseEncounter
         }
     }
 
@@ -385,7 +395,8 @@ export default class CombatCarousel extends Application {
         const initiativeInput = html.find(".initiative input");
         const card = html.find(".splide__slide");
         const combatantControl = html.find("a.combatant-control");
-        const combatControl = html.find(".combat-control a");
+        const combatControls = html.find(".combat-controls a");
+        const encounterControls = html.find(".encounter-controls a");
         const encounterIcon = html.find(".encounter-info .encounter");
         const encounterControlsToggle = html.find(".encounter-info .encounter-controls-toggle");
 
@@ -411,7 +422,9 @@ export default class CombatCarousel extends Application {
 
         combatantControl.on("click", event => this._onCombatantControl(event, html));
 
-        combatControl.on("click", event => this._onCombatControlClick(event, html));
+        combatControls.on("click", event => this._onCombatControlClick(event, html));
+
+        encounterControls.on("click", event => this._onClickEncounterControls(event, html));
 
         // encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
         // encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
@@ -728,7 +741,7 @@ export default class CombatCarousel extends Application {
      * @param event 
      * @param html 
      */
-    _onCombatControlClick(event, html) {
+    _onClickCombatControls(event, html) {
         const action = event.currentTarget.dataset.action;
 
         switch (action) {
@@ -747,6 +760,45 @@ export default class CombatCarousel extends Application {
             case "previousRound":
                 game.combat.previousRound();
                 break;
+
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Combat Control click handler
+     * @param event 
+     * @param html 
+     */
+    async _onClickEncounterControls(event, html) {
+        event.preventDefault();
+        const action = event.currentTarget.dataset.action;
+
+        switch (action) {
+            case "create":
+                await ui.combat._onCombatCreate(event);
+                break;
+            
+            case "delete":
+                await this.combat.delete();
+                break;
+
+            case "config":
+                new CombatTrackerConfig().render(true);
+                break;
+
+            case "rollAll":
+                this.combat.rollAll()
+                break;
+
+            case "rollNPC":
+                this.combat.rollNPC();
+                break;
+
+            case "resetAll":
+                this.combat.resetAll();
+            break;
 
             default:
                 break;
