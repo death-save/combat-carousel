@@ -422,7 +422,7 @@ export default class CombatCarousel extends Application {
 
         combatantControl.on("click", event => this._onCombatantControl(event, html));
 
-        combatControls.on("click", event => this._onCombatControlClick(event, html));
+        combatControls.on("click", event => this._onClickCombatControls(event, html));
 
         encounterControls.on("click", event => this._onClickEncounterControls(event, html));
 

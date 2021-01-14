@@ -253,41 +253,21 @@ export default function registerHooks() {
     });
 
     /**
-     * SceneNavigation collapse/expand hook
+     * Combat Tracker Render hook
      */
-    Hooks.on("collapseSceneNavigation", (app, collapsed) => {
-        if (!ui.combatCarousel) return;
-
-        /**
-        if (collapsed) {
-            ui.combatCarousel.element.css({"top": "12px"});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "42px"});
-        } else {
-            ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
-        }
-        */
-    });
-
-    Hooks.on("sidebarCollapse", (app, collapsed) => {
-        console.log(collapsed);
-
-        if (!ui.combatCarousel) return;
-
-        ui.combatCarousel.setPosition();
-
-    });
-
     Hooks.on("renderCombatTracker", (app, html, data) => {
         const rendered = ui?.combatCarousel?.rendered;
         const collapsed = ui?.combatCarousel?._collapsed;
+        const trackerCombat = ui.combat.combat;
+        const carouselCombat = ui.combatCarousel.combat;
+        const combatMatch = trackerCombat?.id === carouselCombat?.id;
 
         if (!data?.hasCombat && rendered) {
             ui.combatCarousel.close();
         }
 
-        if (data?.hasCombat && collapsed === false) {
-            ui.combatCarousel.render(!rendered);
+        if (data?.hasCombat && !combatMatch && collapsed === false) {
+            ui.combatCarousel.render(true);
         }
 
         ui.combatCarousel.setToggleIcon();
@@ -304,6 +284,35 @@ export default function registerHooks() {
     /* -------------------------------------------- */
     /*              Miscellaneous Hooks             */
     /* -------------------------------------------- */
+
+    /**
+     * SceneNavigation collapse/expand hook
+     */
+    Hooks.on("collapseSceneNavigation", (app, collapsed) => {
+        if (!ui.combatCarousel) return;
+
+        /**
+        if (collapsed) {
+            ui.combatCarousel.element.css({"top": "12px"});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "42px"});
+        } else {
+            ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
+        }
+        */
+    });
+
+    /**
+     * Sidebar Collapse Hook
+     */
+    Hooks.on("sidebarCollapse", (app, collapsed) => {
+        console.log(collapsed);
+
+        if (!ui.combatCarousel) return;
+
+        ui.combatCarousel.setPosition();
+
+    });
 
     /**
      * Hover Token hook
@@ -356,6 +365,9 @@ export default function registerHooks() {
         */
     });
 
+    /**
+     * Control Token hook
+     */
     Hooks.on("controlToken", (token, controlled) => {
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
