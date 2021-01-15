@@ -64,13 +64,13 @@ export default class CombatCarousel extends Application {
             perMove: 1,
             perPage: 24,
             start: this.turn ?? 0,
-            //focus: false,
+            focus: 0,
             cover: true,
             pagination: true,
             arrows: false,
             keyboard: false,
             drag: false,
-            //trimSpace: false,
+            trimSpace: true,
             fixedHeight: 150 * scale,
             fixedWidth: 100 * scale,
             classes: {
@@ -133,6 +133,22 @@ export default class CombatCarousel extends Application {
                     break;
             }
             */
+        });
+
+        this.splide.on("active", async (slide) => {
+            const card = slide.slide;
+            const combatantId = card.dataset.combatantId;
+            
+            if (!combatantId) return;
+
+            const combatant = game.combat.getCombatant(combatantId);
+
+            if (!combatant) return;
+
+            const token = canvas.tokens.get(combatant.tokenId);
+            const index = this.getCombatantSlideIndex(combatant);
+
+            return await token.control();
         });
 
         /**
