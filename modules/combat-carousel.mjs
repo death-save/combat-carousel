@@ -407,6 +407,7 @@ export default class CombatCarousel extends Application {
         const moduleIcon = html.find("a#combat-carousel-toggle");
         const dragHandle = html.find(".drag-handle");
         const splide = html.find(".splide").first();
+        const initSpan = html.find("div.initiative > span")
         const rollInit = html.find("a.roll-init");
         const initiativeInput = html.find(".initiative input");
         const card = html.find(".splide__slide");
@@ -416,25 +417,30 @@ export default class CombatCarousel extends Application {
         const encounterIcon = html.find(".encounter-info .encounter");
         const encounterControlsToggle = html.find(".encounter-info .encounter-controls-toggle");
 
-        app.on("mouseenter", event => this._onHoverApp(event, html)).on("mouseleave", event => this._onHoverOutApp(event, html));
+        app.on("mouseenter", event => this._onHoverApp(event, html))
+            .on("mouseleave", event => this._onHoverOutApp(event, html));
 
-        moduleIcon.on("click", event => this._onModuleIconClick(event, html));
-        moduleIcon.on("contextmenu", event => this._onModuleIconContext(event, html));
+        moduleIcon.on("click", event => this._onModuleIconClick(event, html))
+            .on("contextmenu", event => this._onModuleIconContext(event, html));
 
         dragHandle.on("contextmenu", event => this._onContextDragHandle(event));
 
         rollInit.on("click", this._onRollInitiative);
-        rollInit.on("contextmenu", event => this._onEditInitiative(event, html));
+        initSpan.on("click", event => this._onEditInitiative(event, html))
+            .on("contextmenu", event => this._onContextInitiative(event, html));
 
-        initiativeInput.on("change", event => this._onInitiativeChange(event, html));
-        initiativeInput.on("focusout", event => this._onInitiativeFocusOut(event, html));
+        initiativeInput.on("change", event => this._onInitiativeChange(event, html))
+            .on("focusout", event => this._onInitiativeFocusOut(event, html));
 
-        splide.on("mouseenter", event => this._onHoverSplide(event, html)).on("mouseleave", event => this._onHoverOutSplide(event, html));
+        splide.on("mouseenter", event => this._onHoverSplide(event, html))
+            .on("mouseleave", event => this._onHoverOutSplide(event, html));
 
-        card.on("mouseenter", event => this._onHoverCard(event, html)).on("mouseleave", event => this._onHoverOutCard(event, html));
-        card.on("click", event => this._onClickCard(event, html));
-        card.on("contextmenu", event => this._onContextMenuCard(event, html));
-        card.on("dblclick", event => this._onCardDoubleClick(event, html));
+        card.on("mouseenter", event => this._onHoverCard(event, html))
+            .on("mouseleave", event => this._onHoverOutCard(event, html))
+            .on("click", event => this._onClickCard(event, html))
+            .on("contextmenu", event => this._onContextMenuCard(event, html))
+            .on("dblclick", event => this._onCardDoubleClick(event, html));
+
 
         combatantControl.on("click", event => this._onCombatantControl(event, html));
 
@@ -563,7 +569,11 @@ export default class CombatCarousel extends Application {
      * @param html 
      */
     _onEditInitiative(event, html) {
+        event.preventDefault();
+        event.stopPropagation();
+
         if (!game.user.isGM) return;
+
         const input = event.currentTarget.querySelector("input");
         const $input = $(input);
 
@@ -583,6 +593,25 @@ export default class CombatCarousel extends Application {
         input.setAttribute("disabled", "disabled");
         const init = parseFloat(input.value);
         game.combat.setInitiative(combatantId, Math.round(init * 100) / 100);
+    }
+
+    /**
+     * Initiative context click handler
+     * @param event 
+     * @param html 
+     */
+    async _onContextInitiative(event, html) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!game.user.isGM) return;
+
+        const parentLi = event.currentTarget.closest("li");
+        const combatantId = parentLi.dataset.combatantId;
+        
+        if (!combatantId) return;
+
+        await game.combat.updateCombatant({_id: combatantId, initiative: null});
     }
 
     /**
@@ -665,6 +694,19 @@ export default class CombatCarousel extends Application {
 
         if (!combatant) return;
 
+        const isCtrl = game.keyboard.isCtrl(event);
+
+        if (isCtrl && game.user.isGM) {
+            
+            const turn = game.combat.turns.find(t => t._id === combatantId);
+
+            if (!turn) return;
+
+            const turnIndex = game.combat.turns.indexOf(turn);
+
+            return await game.combat.update({turn: turnIndex});
+        }
+
         const token = canvas.tokens.get(combatant.tokenId);
         const index = this.getCombatantSlideIndex(combatant);
         if (Number.isFinite(index)) this.splide.go(index);
@@ -695,15 +737,7 @@ export default class CombatCarousel extends Application {
     async _onContextMenuCard(event, html) {
         const combatantId = event.currentTarget.dataset.combatantId;
 
-        if (!combatantId || !game.user.isGM) return;
-
-        const turn = game.combat.turns.find(t => t._id === combatantId);
-
-        if (!turn) return;
-
-        const turnIndex = game.combat.turns.indexOf(turn);
-
-        await game.combat.update({turn: turnIndex});
+        
     }
 
     /**
