@@ -1,5 +1,5 @@
 # Combat Carousel
-![https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.6.3=>0.7.6-green](https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.7.6=>0.7.7-green)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+![https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.6.3=>0.7.6-green](https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.6.3=>0.7.6-green)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
