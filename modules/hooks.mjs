@@ -259,7 +259,7 @@ export default function registerHooks() {
         const rendered = ui?.combatCarousel?.rendered;
         const collapsed = ui?.combatCarousel?._collapsed;
         const trackerCombat = ui.combat.combat;
-        const carouselCombat = ui.combatCarousel.combat;
+        const carouselCombat = ui.combatCarousel?.combat;
         const combatMatch = trackerCombat?.id === carouselCombat?.id;
 
         if (!data?.hasCombat && rendered) {
