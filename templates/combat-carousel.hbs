@@ -24,7 +24,7 @@
             </div>
             <div class="splide__track">
                 <ul class="splide__list">
-                    {{#each turns}}
+                    {{#each visibleTurns}}
                         {{> "modules/combat-carousel/templates/combatant-card.hbs" combatant=this}}
                     {{/each}}
                 </ul>

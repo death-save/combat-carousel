@@ -253,6 +253,7 @@ export default class CombatCarousel extends Application {
             img,
             initiative: turn.initiative,
             hidden: turn.hidden,
+            visible: turn.visible,
             defeated: turn.defeated,
             carousel: {
                 isGM: game.user.isGM,
@@ -290,7 +291,8 @@ export default class CombatCarousel extends Application {
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
         //@todo use util method to setup turns -- need to filter out non-visible turns
         const turns = game?.combat?.turns.map(t => this.prepareTurnData(t)) ?? [];
-        
+        const visibleTurns = turns.filter(t => t.visible);
+
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
                 
@@ -302,13 +304,13 @@ export default class CombatCarousel extends Application {
         const hasNextTurn = (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
         const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
         const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
-        const showOverlay = game.settings.get(NAME, SETTING_KEYS.showOverlay);
         const canAdvanceEncounter = !!(canControlCombat && nextEncounter);
         const canReverseEncounter = !!(canControlCombat && previousEncounter);
         
         return {
             carouselIcon,
             turns,
+            visibleTurns,
             encounter,
             encounterCount,
             round,
@@ -671,6 +673,7 @@ export default class CombatCarousel extends Application {
         const index = this.getCombatantSlideIndex(combatant);
         if (Number.isFinite(index)) this.splide.go(index);
 
+        await canvas.animatePan({x: token.x, y: token.y});
         return await token.control();
     }
 
@@ -1021,7 +1024,7 @@ export default class CombatCarousel extends Application {
     setActiveCombatant(combatant=null) {
         combatant = combatant ?? game?.combat?.combatant;
         
-        if (!combatant) return;
+        if (!combatant || !combatant?.visible) return;
 
         const slideIndex = this.getCombatantSlideIndex(combatant);
         const activeCombatantSlide = this.slides[slideIndex];
@@ -1290,7 +1293,7 @@ export default class CombatCarousel extends Application {
         const permObserver = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.observed);
         const permNone = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.none);
 
-        const actor = game.actors.get(token.actorId);
+        const actor = token?.actor ?? game.actors.get(token.actorId);
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
             || ((overlayPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
@@ -1339,7 +1342,7 @@ export default class CombatCarousel extends Application {
         const permObserver = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
         const permNone = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.none);
 
-        const actor = game.actors.get(token.actorId);
+        const actor = token?.actor ?? game.actors.get(token.actorId);
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
             || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
@@ -1386,7 +1389,7 @@ export default class CombatCarousel extends Application {
         const initiativeShown = this._calculateInitiativeValueVisibility(token, user);
         
         // get the combatant and determine if the user is an owner of its token
-        const actor = game.actors.get(token.actorId);
+        const actor = token?.actor ?? game.actors.get(token.actorId);
         const tokenId = token?.id ?? token?._id;
         const combatant = game?.combat?.combatants.find(c => c.tokenId === tokenId);
         const unrolledCombatant = combatant?.initiative === null;
@@ -1429,7 +1432,7 @@ export default class CombatCarousel extends Application {
      * @param token 
      * @param barName 
      */
-    _calculateBarVisibility(token, barName, {isActive=false, isHovered=false}={}) {
+    _calculateBarVisibility(token, barName, {user=game.user, isActive=false, isHovered=false}={}) {
         if (!token || !barName) return false;
 
         const titledBarName = typeof barName === "string" ? toTitleCase(barName) : null;
@@ -1450,13 +1453,13 @@ export default class CombatCarousel extends Application {
 
         const barPermissionSetting = game.settings.get(NAME, SETTING_KEYS[`${barName}Permission`]);
 
-        const actor = game.actors.get(token.actorId);
+        const actor = token?.actor ?? game.actors.get(token.actorId);
         const combatant = game?.combat?.combatants.find(c => c.tokenId === token._id);
 
-        const permAll = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.all);
-        const permOwner = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.owned);
-        const permObserver = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
-        const permNone = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.none);
+        const permAll = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.all);
+        const permOwner = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.owned);
+        const permObserver = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.observed);
+        const permNone = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.none);
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 

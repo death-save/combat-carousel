@@ -165,6 +165,7 @@ export default function registerHooks() {
      * Update Combatant hook
      */
     Hooks.on("updateCombatant", async (combat, update, options, userId) => {
+        
         //console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
         //ui.combatCarousel.splide.refresh();
@@ -176,6 +177,11 @@ export default function registerHooks() {
         cardToReplace.replaceWith(template);
         ui.combatCarousel.splide.refresh();
         */
+        
+        if (update?.hidden && !game.user.isGM) {
+            return ui.combatCarousel.render(true);
+        }
+
         const safeRender = debounce(() => {
             ui.combatCarousel.render(), 100
         });
@@ -270,7 +276,7 @@ export default function registerHooks() {
             ui.combatCarousel.render(true);
         }
 
-        ui.combatCarousel.setToggleIcon();
+        ui?.combatCarousel?.setToggleIcon();
         //console.log("combat tracker rendered:", app, html, data);
     });
 
