@@ -6,6 +6,7 @@
 import CombatCarouselConfig from "./config-form.mjs";
 import { CAROUSEL_ICONS, DEFAULT_CONFIG, NAME, SETTING_KEYS } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
+import { toTitleCase } from "./util.mjs";
 import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId } from "./util.mjs";
 
 /**
@@ -194,106 +195,20 @@ export default class CombatCarousel extends Application {
      * @param {Turn | Object} turn  the combat turn object
      * @returns {Object} preparedData  data ready for template
      */
-    static prepareTurnData(turn) {
+    prepareTurnData(turn) {
         const token = canvas.tokens.get(turn.tokenId);
 
         if (!token) return null;
 
         const isActiveTurn = game.combat.turn === game.combat.turns.indexOf(turn);
 
+        const showOverlay = this._calculateOverlayVisibility(token, {isActive: isActiveTurn});
+
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
-        const showOverlaySetting = game.settings.get(NAME, SETTING_KEYS.showOverlay);
-        const overlayPermission = game.settings.get(NAME, SETTING_KEYS.overlayPermission);
-
-        const showOverlayAlways = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.always);
-        const showOverlayActive = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.active);
-
-        let showOverlay = (showOverlaySetting === showOverlayAlways) || ((showOverlaySetting === showOverlayActive) && isActiveTurn);
         
-        if (showOverlaySetting && !game.user.isGM) {
-            switch (overlayPermission) {
-                case "all":
-                    showOverlay = true;
-                    break;
-                
-                case "owned":
-                    showOverlay = token.owner;
-                    break;
-
-                case "observed":
-                    showOverlay = token.actor.hasPerm(game.user, CONST.ENTITY_PERMISSIONS.OBSERVER);
-                    break;
-                
-                case "none":
-                default:
-                    break;
-            }
-        }
-
-        const showBar1Setting = game.settings.get(NAME, SETTING_KEYS.showBar1);
-        let bar1 = null;
-        let showBar1 = false;
-
-        if (showBar1Setting) {
-            const bar1AttributeSetting = game.settings.get(NAME, SETTING_KEYS.bar1Attribute);
-            bar1 = bar1AttributeSetting ? token.getBarAttribute("bar1", {alternative: bar1AttributeSetting}) : null;
-            const bar1PermissionSetting = game.settings.get(NAME, SETTING_KEYS.bar1Permission);
-            showBar1 = (game.user.isGM && showBar1Setting && bar1) ? true : false;
-
-            if (showBar1Setting === true && bar1 && !game.user.isGM) {
-                switch (bar1PermissionSetting) {
-                    case "owner":
-                        showBar1 = token.owner;
-                        break;
-
-                    case "token":
-                        showBar1 = token._canViewMode(token.data.displayBars);
-                        break;
-    
-                    case "none":
-                        default:
-                        break;
-                }
-            }
-
-            if (bar1) {
-                bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
-
-                if (bar1?.type === "bar") {
-                    bar1.low = bar1.max * 0.34;
-                    bar1.high = bar1.max * 0.6;
-                    bar1.optimum = bar1.max * 0.9;
-                }
-            }
-        }
-        
-        const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
-        const showInitiativeIconSetting = game.settings.get(NAME, SETTING_KEYS.showInitiativeIcon);
-        let showInitiative = false;
-        let showInitiativeIcon = false;
-
-        switch (showInitiativeSetting) {
-            case "always":
-                showInitiative = true;
-                break;
-            
-            case "never":
-            default:
-                break;
-        }
-
-        switch (showInitiativeIconSetting) {
-            case "always":
-                showInitiativeIcon = true;
-                break;
-            
-            case "never":
-            default:
-                break;
-        }
-
-        // Always show the initiative icon if the initiative value is not set
-        if (!Number.isFinite(turn.initiative) && token.owner) showInitiativeIcon = true;
+        const showInitiativeValue = this._calculateInitiativeValueVisibility(token, {isActive: isActiveTurn});
+        const showInitiativeIcon = this._calculateInitiativeIconVisibility(token, {isActive: isActiveTurn});
+        const showInitiative = showInitiativeValue || showInitiativeIcon;
 
         const imageTypeSetting = game.settings.get(NAME, SETTING_KEYS.imageType);
         let img = turn.img;
@@ -318,6 +233,20 @@ export default class CombatCarousel extends Application {
                 break;
         }
 
+        const showBar1 = this._calculateBarVisibility(token, "bar1", {isActive: isActiveTurn});
+        let bar1 = {};
+
+        const bar1AttributeSetting = game.settings.get(NAME, SETTING_KEYS.bar1Attribute);
+        bar1 = bar1AttributeSetting ? token.getBarAttribute("bar1", {alternative: bar1AttributeSetting}) : null;
+          
+        bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
+
+        if (bar1?.type === "bar") {
+                bar1.low = bar1.max * 0.34;
+                bar1.high = bar1.max * 0.6;
+                bar1.optimum = bar1.max * 0.9;
+        }
+
         const preparedData = {
             id: turn._id,
             name: turn.name,
@@ -333,9 +262,9 @@ export default class CombatCarousel extends Application {
                 overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
                 effects: token?.data?.effects || null,
-                showInitiativeBackground: showInitiativeIcon || (showInitiative && Number.isFinite(turn.initiative)),
-                showInitiative,
+                showInitiativeValue,
                 showInitiativeIcon,
+                showInitiative,
                 showOverlay
             }
         }
@@ -360,7 +289,7 @@ export default class CombatCarousel extends Application {
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
         //@todo use util method to setup turns -- need to filter out non-visible turns
-        const turns = game?.combat?.turns.map(t => CombatCarousel.prepareTurnData(t)) ?? [];
+        const turns = game?.combat?.turns.map(t => this.prepareTurnData(t)) ?? [];
         
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
@@ -425,9 +354,11 @@ export default class CombatCarousel extends Application {
 
         dragHandle.on("contextmenu", event => this._onContextDragHandle(event));
 
-        rollInit.on("click", this._onRollInitiative);
+        
         initSpan.on("click", event => this._onEditInitiative(event, html))
             .on("contextmenu", event => this._onContextInitiative(event, html));
+        
+        rollInit.on("click", this._onRollInitiative);
 
         initiativeInput.on("change", event => this._onInitiativeChange(event, html))
             .on("focusout", event => this._onInitiativeFocusOut(event, html));
@@ -560,7 +491,7 @@ export default class CombatCarousel extends Application {
         
         if (!token.owner) return;
 
-        game.combat.rollInitiative(combatantId);
+        if (!combatant.initiative) game.combat.rollInitiative(combatantId);
     }
 
     /**
@@ -571,6 +502,7 @@ export default class CombatCarousel extends Application {
     _onEditInitiative(event, html) {
         event.preventDefault();
         event.stopPropagation();
+        event.stopImmediatePropagation();
 
         if (!game.user.isGM) return;
 
@@ -649,9 +581,23 @@ export default class CombatCarousel extends Application {
         const splideTrack = hoveredCard.closest(".splide__track");
         splideTrack.style.height = `${splideTrack.offsetHeight * 1.2}px`;
 
-        // Unhide the overlay if that setting is selected
-        const showOverlay = this._shouldShowOverlay(hoveredCard);
-        if (showOverlay) this._toggleOverlayVisibility(hoveredCard, {show: true});
+        // Unhide elements based on settings
+        const overlaySelector = ".overlay-properties";
+        const initiativeDivSelector = "div.initiative";
+        const initiativeValueSelector = `${initiativeDivSelector} input`;
+        const initiativeIconSelector = `${initiativeDivSelector} i.fas`;
+        const bar1Selector = ".bar1";
+
+        const showOverlay = this._shouldShowElement(hoveredCard, "overlay", overlaySelector);
+        const showInitiativeValue = this._shouldShowElement(hoveredCard, "initiativeValue", initiativeValueSelector);
+        const showInitiativeIcon = this._shouldShowElement(hoveredCard, "initiativeIcon", initiativeIconSelector);
+        const showBar1 = this._shouldShowElement(hoveredCard, "bar", bar1Selector);
+
+        if (showOverlay) this._toggleElementVisibility(hoveredCard, overlaySelector, {show: true});
+        if (showInitiativeValue) this._toggleElementVisibility(hoveredCard, initiativeValueSelector, {show: true});
+        if (showInitiativeIcon) this._toggleElementVisibility(hoveredCard, initiativeIconSelector, {show: true});
+        if (showInitiativeValue || showInitiativeIcon) this._toggleElementVisibility(hoveredCard, initiativeDivSelector, {show: true});
+        if (showBar1) this._toggleElementVisibility(hoveredCard, bar1Selector, {show: true});
     }
 
     /**
@@ -674,9 +620,23 @@ export default class CombatCarousel extends Application {
         const splideTrack = hoveredCard.closest(".splide__track");
         splideTrack.style.height = "";
 
-        // Rehide the overlay if that setting is selected
-        const showOverlay = this._shouldShowOverlay(hoveredCard);
-        if (!showOverlay) this._toggleOverlayVisibility(hoveredCard, {hide: true});
+        // Rehide any elements if those setting is selected
+        const overlaySelector = ".overlay-properties";
+        const initiativeDivSelector = "div.initiative";
+        const initiativeValueSelector = `${initiativeDivSelector} input`;
+        const initiativeIconSelector = `${initiativeDivSelector} i.fas`;
+        const bar1Selector = ".bar1";
+
+        const showOverlay = this._shouldShowElement(hoveredCard, "overlay", overlaySelector);
+        const showInitiativeValue = this._shouldShowElement(hoveredCard, "initiativeValue", initiativeValueSelector);
+        const showInitiativeIcon = this._shouldShowElement(hoveredCard, "initiativeIcon", initiativeIconSelector);
+        const showBar1 = this._shouldShowElement(hoveredCard, "bar", bar1Selector);
+
+        if (!showOverlay) this._toggleElementVisibility(hoveredCard, overlaySelector, {hide: true});
+        if (!showInitiativeValue) this._toggleElementVisibility(hoveredCard, initiativeValueSelector, {hide: true});
+        if (!showInitiativeIcon) this._toggleElementVisibility(hoveredCard, initiativeIconSelector, {hide: true});
+        if (!showInitiativeValue && !showInitiativeIcon) this._toggleElementVisibility(hoveredCard, initiativeDivSelector, {hide: true});
+        if (!showBar1) this._toggleElementVisibility(hoveredCard, bar1Selector, {hide: true});
     }
 
     /**
@@ -1261,43 +1221,79 @@ export default class CombatCarousel extends Application {
     /**
      * Determines if a particular Combatant Card's overlay should be shown or not
      */
-    _shouldShowOverlay(card, user=game.user) {
+    _shouldShowElement(card, type, elementSelector) {
+
+        const cardElement = this._getCardElement(card);
+
+        // determine if card is hovered, or active combatant
+        const isHovered = cardElement.matches(":hover") ?? false;
+        const isActive = cardElement.classList.contains("is-active-combatant") ?? false;
+        
+        // next find the element
+        const element = cardElement.querySelector(elementSelector);
+        
+        if (!element) return false;
+
+        // get the combatant and token
+        const combatant = this._getCombatantFromCard(card);
+        
+        if (!combatant) return false;
+
+        const token = combatant.token;
+
+        switch (type) {
+            case "overlay":
+                return this._calculateOverlayVisibility(token, {isActive, isHovered});
+
+            case "initiativeValue":
+                return this._calculateInitiativeValueVisibility(token, {isActive, isHovered});
+
+            case "initiativeIcon":
+                return this._calculateInitiativeIconVisibility(token, {isActive, isHovered});
+
+            case "bar":
+                const match = elementSelector.match(/bar\d+/);
+                if (!match) return false;
+                const barName = match[0];
+                return this._calculateBarVisibility(token, barName, {isActive, isHovered});
+
+            default:
+                return false;
+        }        
+    }
+
+    /**
+     * Calculates overlay visibility for the given token and user
+     */
+    _calculateOverlayVisibility(token, {user=game.user, isActive=false, isHovered=false}={}) {
+        if (!token) return false;
+        
         const showOverlaySetting = game.settings.get(NAME, SETTING_KEYS.showOverlay);
 
         const showAlways = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.always);
         const showHover = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.hover);
         const showActive = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.active);
+        const showActiveHover = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.activeHover)
         const showNever = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.never);
 
         // If the overlay should never be shown, return false
         if (showOverlaySetting === showNever) return false;
 
-        const cardElement = this._getCardElement(card);
-
-        // determine if card is hovered, or active combatant
-        const isHovered = cardElement.matches(":hover");
-        const isActive = cardElement.classList.contains("is-active-combatant");
+        // determine visibility
+        //const tokenData = combatant?.token;
         
-        // next find the overlay
-        const overlay = cardElement.querySelector(".overlay-properties");
-        
-        if (!overlay) throw "Overlay element not found";
-
-        // get the combatant and determine if the user is an owner of its token
-        const combatant = this._getCombatantFromCard(card);
-        const tokenData = combatant?.token;
-        const actor = game.actors.get(tokenData.actorId);
 
         const overlayPermissionSetting = game.settings.get(NAME, SETTING_KEYS.overlayPermission);
 
-        const permAll = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.always);
-        const permOwner = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.hover);
-        const permObserver = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.active);
-        const permNone = getKeyByValue(DEFAULT_CONFIG.showOverlay.choices, DEFAULT_CONFIG.showOverlay.choices.never);
+        const permAll = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.all);
+        const permOwner = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.owned);
+        const permObserver = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.observed);
+        const permNone = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.none);
 
+        const actor = game.actors.get(token.actorId);
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
-            || ((overlayPermissionSetting === permOwner) && hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((overlayPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
             || ((overlayPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showOverlaySetting) {
@@ -1311,7 +1307,178 @@ export default class CombatCarousel extends Application {
             case showActive:
                 if (isActive) return hasPerm;
                 return false;
+
+            case showActiveHover:
+                if (isHovered || isActive) return hasPerm;
+                return false;
         
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Determines if a particular Combatant Card's overlay should be shown or not
+     */
+    _calculateInitiativeValueVisibility(token, {user=game.user, isActive=false, isHovered=false}={}) {
+        const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
+
+        const showAlways = getKeyByValue(DEFAULT_CONFIG.showInitiative.choices, DEFAULT_CONFIG.showInitiative.choices.always);
+        const showHover = getKeyByValue(DEFAULT_CONFIG.showInitiative.choices, DEFAULT_CONFIG.showInitiative.choices.hover);
+        const showActive = getKeyByValue(DEFAULT_CONFIG.showInitiative.choices, DEFAULT_CONFIG.showInitiative.choices.active);
+        const showActiveHover = getKeyByValue(DEFAULT_CONFIG.showInitiative.choices, DEFAULT_CONFIG.showInitiative.choices.activeHover)
+        const showNever = getKeyByValue(DEFAULT_CONFIG.showInitiative.choices, DEFAULT_CONFIG.showInitiative.choices.never);
+
+        // If the initiative should never be shown, return false
+        if (showInitiativeSetting === showNever) return false;
+
+        const initiativePermissionSetting = game.settings.get(NAME, SETTING_KEYS.initiativePermission);
+
+        const permAll = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.all);
+        const permOwner = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.owned);
+        const permObserver = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
+        const permNone = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.none);
+
+        const actor = game.actors.get(token.actorId);
+        const hasPerm = game.user.isGM 
+            || (initiativePermissionSetting === permAll) 
+            || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+
+        switch (showInitiativeSetting) {
+            case showAlways:
+                return hasPerm;
+
+            case showHover:
+                if (isHovered) return hasPerm;
+                return false;
+
+            case showActive:
+                if (isActive) return hasPerm;
+                return false;
+
+            case showActiveHover:
+                if (isHovered || isActive) return hasPerm;
+                return false;
+        
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Determines if a particular Combatant Card's overlay should be shown or not
+     */
+    _calculateInitiativeIconVisibility(token, {user=game.user}={}) {
+        const showInitiativeIconSetting = game.settings.get(NAME, SETTING_KEYS.showInitiativeIcon);
+
+        const showAlways = getKeyByValue(DEFAULT_CONFIG.showInitiativeIcon.choices, DEFAULT_CONFIG.showInitiativeIcon.choices.always);
+        const showWithInit = getKeyByValue(DEFAULT_CONFIG.showInitiativeIcon.choices, DEFAULT_CONFIG.showInitiativeIcon.choices.withInit);
+        const showUnrolled = getKeyByValue(DEFAULT_CONFIG.showInitiativeIcon.choices, DEFAULT_CONFIG.showInitiativeIcon.choices.unrolled);
+        const showWithInitUnrolled = getKeyByValue(DEFAULT_CONFIG.showInitiativeIcon.choices, DEFAULT_CONFIG.showInitiativeIcon.choices.withInitUnrolled)
+        const showNever = getKeyByValue(DEFAULT_CONFIG.showInitiativeIcon.choices, DEFAULT_CONFIG.showInitiativeIcon.choices.never);
+
+        // If the initiative should never be shown, return false
+        if (showInitiativeIconSetting === showNever) return false;
+
+        
+        // determine if intiative will be shown
+        const initiativeShown = this._calculateInitiativeValueVisibility(token, user);
+        
+        // get the combatant and determine if the user is an owner of its token
+        const actor = game.actors.get(token.actorId);
+        const tokenId = token?.id ?? token?._id;
+        const combatant = game?.combat?.combatants.find(c => c.tokenId === tokenId);
+        const unrolledCombatant = combatant?.initiative === null;
+
+        const initiativePermissionSetting = game.settings.get(NAME, SETTING_KEYS.initiativePermission);
+
+        const permAll = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.all);
+        const permOwner = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.owned);
+        const permObserver = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
+        const permNone = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.none);
+
+        const hasPerm = game.user.isGM 
+            || (initiativePermissionSetting === permAll) 
+            || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+
+        switch (showInitiativeIconSetting) {
+            case showAlways:
+                return hasPerm;
+
+            case showWithInit:
+                if (initiativeShown) return hasPerm;
+                return false;
+
+            case showUnrolled:
+                if (unrolledCombatant) return hasPerm;
+                return false;
+
+            case showWithInitUnrolled:
+                if (initiativeShown || unrolledCombatant) return hasPerm;
+                return false;
+        
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Calculate bar visibility
+     * @param token 
+     * @param barName 
+     */
+    _calculateBarVisibility(token, barName, {isActive=false, isHovered=false}={}) {
+        if (!token || !barName) return false;
+
+        const titledBarName = typeof barName === "string" ? toTitleCase(barName) : null;
+
+        if (!titledBarName) return false;
+
+        const showBarSetting = game.settings.get(NAME, SETTING_KEYS[`show${titledBarName}`]);
+
+        if (!showBarSetting) return false;
+
+        const showAlways = getKeyByValue(DEFAULT_CONFIG.showBar.choices, DEFAULT_CONFIG.showBar.choices.always);
+        const showHover = getKeyByValue(DEFAULT_CONFIG.showBar.choices, DEFAULT_CONFIG.showBar.choices.hover);
+        const showActive = getKeyByValue(DEFAULT_CONFIG.showBar.choices, DEFAULT_CONFIG.showBar.choices.active);
+        const showActiveHover = getKeyByValue(DEFAULT_CONFIG.showBar.choices, DEFAULT_CONFIG.showBar.choices.activeHover)
+        const showNever = getKeyByValue(DEFAULT_CONFIG.showBar.choices, DEFAULT_CONFIG.showBar.choices.never);
+
+        if (showBarSetting === showNever) return false;
+
+        const barPermissionSetting = game.settings.get(NAME, SETTING_KEYS[`${barName}Permission`]);
+
+        const actor = game.actors.get(token.actorId);
+        const combatant = game?.combat?.combatants.find(c => c.tokenId === token._id);
+
+        const permAll = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.all);
+        const permOwner = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.owned);
+        const permObserver = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
+        const permNone = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG.initiativePermission.choices.none);
+
+        const hasPerm = game.user.isGM 
+            || (barPermissionSetting === permAll) 
+            || ((barPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+
+        switch (showBarSetting) {
+            case showAlways:
+                return hasPerm;
+    
+            case showHover:
+                if (isHovered) return hasPerm;
+                return false;
+    
+            case showActive:
+                if (isActive) return hasPerm;
+                return false;
+    
+            case showActiveHover:
+                if (isHovered || isActive) return hasPerm;
+                return false;
+            
             default:
                 return false;
         }
@@ -1321,18 +1488,18 @@ export default class CombatCarousel extends Application {
      * Toggles visibility of the overlay
      * @param card 
      */
-    _toggleOverlayVisibility(card, {show=false, hide=false}={}) {
+    _toggleElementVisibility(card, elementSelector, {show=false, hide=false}={}) {
         const cardElement = this._getCardElement(card);
-        const overlayElement = cardElement.querySelector(".overlay-properties");
-        const isHidden = overlayElement.classList.contains("hidden");
+        const element = cardElement.querySelector(elementSelector);
+        const isHidden = element.classList.contains("hidden");
 
         switch (isHidden) {
             case true:
-                if (!hide) return overlayElement.classList.remove("hidden");
+                if (!hide) return element.classList.remove("hidden");
                 return true;
             
             case false:
-                if (!show) return overlayElement.classList.add("hidden");
+                if (!show) return element.classList.add("hidden");
                 return true;
 
             default:

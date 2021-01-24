@@ -39,3 +39,11 @@ export function getAllElementSiblings(element, parent) {
 
     return children.filter(child => child !== element);
 }
+
+/**
+ * Sets a string to Title Case
+ * @param {*} string 
+ */
+export function toTitleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

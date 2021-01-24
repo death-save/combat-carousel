@@ -51,6 +51,7 @@ export const SETTING_KEYS = {
     carouselSize: "carouselSize",
     showInitiative: "showInitiative",
     showInitiativeIcon: "showInitiativeIcon",
+    initiativePermission: "initiativePermission",
     imageType: "imageType"
 }
 
@@ -86,6 +87,7 @@ export const DEFAULT_CONFIG = {
             never: "Never",
             hover: "On Hover",
             active: "Active Combatant",
+            activeHover: "Active Combatant and On Hover",
             always: "Always"
         }
     },
@@ -97,11 +99,20 @@ export const DEFAULT_CONFIG = {
             none: "None" 
         }
     },
+    showBar: {
+        choices: {
+            never: "Never",
+            hover: "On Hover",
+            active: "Active Combatant",
+            activeHover: "Active Combatant and On Hover",
+            always: "Always"
+        }
+    },
     bar1Permission: {
         choices: {
             all: "All",
-            owner: "All Owned",
-            token: "Use Token Setting",
+            owned: "Owned Actors",
+            observed: "Observed Actors",
             none: "None" 
         }
     },
@@ -131,15 +142,25 @@ export const DEFAULT_CONFIG = {
             never: "Never",
             hover: "On Hover",
             active: "Active Combatant",
+            activeHover: "Active Combatant and On Hover",
             always: "Always"
         }
     },
     showInitiativeIcon: {
         choices: {
             never: "Never",
-            hover: "On Hover",
-            active: "Active Combatant",
+            withInit: "With Initiative Value",
+            unrolled: "For Unrolled Combatants",
+            withInitUnrolled: "With Initiative and Unrolled",
             always: "Always"
+        }
+    },
+    initiativePermission: {
+        choices: {
+            all: "All",
+            owned: "Owned",
+            observed: "Observed",
+            none: "None"
         }
     },
     imageType: {

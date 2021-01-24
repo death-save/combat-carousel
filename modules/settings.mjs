@@ -14,6 +14,11 @@ import { getKeyByValue } from "./util.mjs";
  * Wrapper to call settings registration
  */
 export default function registerSettings() {
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    Menus                                   */
+    /* -------------------------------------------------------------------------- */
+
     game.settings.registerMenu(NAME, SETTING_KEYS.about, {
         name: "COMBAT_CAROUSEL.SETTINGS.AboutN",
         label: "COMBAT_CAROUSEL.ABOUT.Label",
@@ -31,6 +36,53 @@ export default function registerSettings() {
         type: CombatCarouselConfig,
         restricted: true
     });
+
+    /* -------------------------------------------------------------------------- */
+    /*                               Basic Settings                               */
+    /* -------------------------------------------------------------------------- */
+
+    game.settings.register(NAME, SETTING_KEYS.collapseNav, {
+        name: "COMBAT_CAROUSEL.SETTINGS.CollapseNavN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.CollapseNavH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+
+        }
+    });
+
+    game.settings.register(NAME, SETTING_KEYS.carouselSize, {
+        name: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeH",
+        scope: "client",
+        type: String,
+        default: getKeyByValue(DEFAULT_CONFIG.carouselSize.choices, DEFAULT_CONFIG.carouselSize.choices.med),
+        choices: DEFAULT_CONFIG.carouselSize.choices,
+        config: true,
+        onChange: async s => {
+            await ui.combatCarousel.render(true);
+            ui.combatCarousel.element.addClass(s);
+        }
+    });
+
+    game.settings.register(NAME, SETTING_KEYS.imageType, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ImageTypeN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ImageTypeH",
+        scope: "world",
+        type: String,
+        default: "actor",
+        choices: DEFAULT_CONFIG.imageType.choices,
+        config: true,
+        onChange: s => {
+            ui.combatCarousel.render(true);
+        }
+    });
+
+    /* -------------------------------------------------------------------------- */
+    /*                              Overlay Settings                              */
+    /* -------------------------------------------------------------------------- */
 
     game.settings.register(NAME, SETTING_KEYS.showOverlay, {
         name: "COMBAT_CAROUSEL.SETTINGS.ShowOverlayN",
@@ -60,48 +112,60 @@ export default function registerSettings() {
         }
     });
 
-    game.settings.register(NAME, SETTING_KEYS.appPosition, {
-        name: "COMBAT_CAROUSEL.SETTINGS.AppPositionN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.AppPositionH",
-        scope: "client",
-        type: Object,
-        default: DEFAULT_CONFIG.appPosition,
-        config: false,
-        onChange: s => {
+    /* -------------------------------------------------------------------------- */
+    /*                             Initiative Settings                            */
+    /* -------------------------------------------------------------------------- */
 
-        }
-    });
-
-    game.settings.register(NAME, SETTING_KEYS.collapseNav, {
-        name: "COMBAT_CAROUSEL.SETTINGS.CollapseNavN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.CollapseNavH",
-        scope: "client",
-        type: Boolean,
-        default: false,
+    game.settings.register(NAME, SETTING_KEYS.showInitiative, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeH",
+        scope: "world",
+        type: String,
+        default: "always",
+        choices: DEFAULT_CONFIG.showInitiative.choices,
         config: true,
         onChange: s => {
-
+            ui.combatCarousel.render(true);
         }
     });
 
-    game.settings.register(NAME, SETTING_KEYS.collapsed, {
-        name: "COMBAT_CAROUSEL.SETTINGS.CollapsedN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.CollapsedH",
-        scope: "client",
-        type: Boolean,
-        default: false,
-        config: false,
+    game.settings.register(NAME, SETTING_KEYS.showInitiativeIcon, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeIconN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeIconH",
+        scope: "world",
+        type: String,
+        default: "always",
+        choices: DEFAULT_CONFIG.showInitiativeIcon.choices,
+        config: true,
         onChange: s => {
-
+            ui.combatCarousel.render(true);
         }
     });
+
+    game.settings.register(NAME, SETTING_KEYS.initiativePermission, {
+        name: "COMBAT_CAROUSEL.SETTINGS.InitiativePermissionN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.InitiativePermissionH",
+        scope: "world",
+        type: String,
+        default: "owned",
+        choices: DEFAULT_CONFIG.initiativePermission.choices,
+        config: true,
+        onChange: s => {
+            ui.combatCarousel.render(true);
+        }
+    });
+
+    /* -------------------------------------------------------------------------- */
+    /*                                Bar Settings                                */
+    /* -------------------------------------------------------------------------- */
 
     game.settings.register(NAME, SETTING_KEYS.showBar1, {
         name: "COMBAT_CAROUSEL.SETTINGS.ShowBar1N",
         hint: "COMBAT_CAROUSEL.SETTINGS.ShowBar1H",
         scope: "client",
-        type: Boolean,
-        default: true,
+        type: String,
+        choices: DEFAULT_CONFIG.showBar.choices,
+        default: "always",
         config: true,
         onChange: s => {
             ui.combatCarousel.render(true);
@@ -113,7 +177,7 @@ export default function registerSettings() {
         hint: "COMBAT_CAROUSEL.SETTINGS.Bar1PermissionH",
         scope: "world",
         type: String,
-        default: "owner",
+        default: "owned",
         choices: DEFAULT_CONFIG.bar1Permission.choices,
         config: true,
         onChange: s => {
@@ -147,6 +211,10 @@ export default function registerSettings() {
         }
     });
 
+    /* -------------------------------------------------------------------------- */
+    /*                                Data Storage                                */
+    /* -------------------------------------------------------------------------- */
+
     game.settings.register(NAME, SETTING_KEYS.overlaySettings, {
         name: "COMBAT_CAROUSEL.SETTINGS.PropertyOverlayN",
         hint: "COMBAT_CAROUSEL.SETTINGS.PropertyOverlayH",
@@ -159,56 +227,27 @@ export default function registerSettings() {
         }
     });
 
-    game.settings.register(NAME, SETTING_KEYS.carouselSize, {
-        name: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeH",
+    game.settings.register(NAME, SETTING_KEYS.appPosition, {
+        name: "COMBAT_CAROUSEL.SETTINGS.AppPositionN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.AppPositionH",
         scope: "client",
-        type: String,
-        default: getKeyByValue(DEFAULT_CONFIG.carouselSize.choices, DEFAULT_CONFIG.carouselSize.choices.med),
-        choices: DEFAULT_CONFIG.carouselSize.choices,
-        config: true,
-        onChange: async s => {
-            await ui.combatCarousel.render(true);
-            ui.combatCarousel.element.addClass(s);
+        type: Object,
+        default: DEFAULT_CONFIG.appPosition,
+        config: false,
+        onChange: s => {
+
         }
     });
 
-    game.settings.register(NAME, SETTING_KEYS.showInitiative, {
-        name: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeH",
-        scope: "world",
-        type: String,
-        default: "always",
-        choices: DEFAULT_CONFIG.showInitiative.choices,
-        config: true,
+    game.settings.register(NAME, SETTING_KEYS.collapsed, {
+        name: "COMBAT_CAROUSEL.SETTINGS.CollapsedN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.CollapsedH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: false,
         onChange: s => {
-            ui.combatCarousel.render(true);
-        }
-    });
 
-    game.settings.register(NAME, SETTING_KEYS.showInitiativeIcon, {
-        name: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeIconN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.ShowInitiativeIconH",
-        scope: "world",
-        type: String,
-        default: "always",
-        choices: DEFAULT_CONFIG.showInitiativeIcon.choices,
-        config: true,
-        onChange: s => {
-            ui.combatCarousel.render(true);
-        }
-    });
-
-    game.settings.register(NAME, SETTING_KEYS.imageType, {
-        name: "COMBAT_CAROUSEL.SETTINGS.ImageTypeN",
-        hint: "COMBAT_CAROUSEL.SETTINGS.ImageTypeH",
-        scope: "world",
-        type: String,
-        default: "actor",
-        choices: DEFAULT_CONFIG.imageType.choices,
-        config: true,
-        onChange: s => {
-            ui.combatCarousel.render(true);
         }
     });
 }
