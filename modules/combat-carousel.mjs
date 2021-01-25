@@ -345,7 +345,7 @@ export default class CombatCarousel extends Application {
         const combatantControl = html.find("a.combatant-control");
         const combatControls = html.find(".combat-controls a");
         const encounterControls = html.find(".encounter-controls a");
-        const encounterIcon = html.find(".encounter-info .encounter");
+        const encounterCycleControls = html.find(".encounter a.encounter-control");
         const encounterControlsToggle = html.find(".encounter-info .encounter-controls-toggle");
 
         app.on("mouseenter", event => this._onHoverApp(event, html))
@@ -383,7 +383,7 @@ export default class CombatCarousel extends Application {
 
         // encounterIcon.on("click", event => this._onClickEncounterIcon(event, html));
         // encounterIcon.on("contextmenu", event => this._onEncounterIconContext(event, html));
-
+        encounterCycleControls.on("click", event => this._onClickEncounterControls(event, html));
         encounterControlsToggle.on("click", event => this._onClickEncounterControlsToggle(event, html));
         //this._contextMenu(html);
     }
@@ -790,28 +790,28 @@ export default class CombatCarousel extends Application {
 
         switch (action) {
             case "create":
-                await ui.combat._onCombatCreate(event);
-                break;
+                return await ui.combat._onCombatCreate(event);
             
             case "delete":
-                await this.combat.delete();
-                break;
+                return await this.combat.delete();
 
             case "config":
-                new CombatTrackerConfig().render(true);
-                break;
+                return new CombatTrackerConfig().render(true);
 
             case "rollAll":
-                this.combat.rollAll()
-                break;
+                return this.combat.rollAll()
 
             case "rollNPC":
-                this.combat.rollNPC();
-                break;
-
+                return this.combat.rollNPC();
+                
             case "resetAll":
-                this.combat.resetAll();
-            break;
+                return this.combat.resetAll();
+
+            case "nextEncounter":
+                return this._cycleEncounter("next");
+
+            case "previousEncounter":
+                return this._cycleEncounter("previous");
 
             default:
                 break;
@@ -1599,6 +1599,36 @@ export default class CombatCarousel extends Application {
         const combatant = combat.getCombatant(combatantId);
 
         return combatant ?? null;
+    }
+
+    /**
+     * Cycles the Active Encounter
+     * @param direction 
+     */
+    async _cycleEncounter(direction) {
+        const combats = game.combats.entities;
+
+        if (!combats?.length) return;
+
+        const sceneCombats = combats.filter(c => c.scene.id === canvas.scene.id);
+        const currentId = this?.combat?.id;
+
+        if (!currentId) return;
+
+        const currentIndex = sceneCombats.findIndex(c => c.id === currentId);
+        let newCombat = null;
+
+        switch(direction) {
+            case "next":
+               if ((currentIndex + 1) <= sceneCombats.length) newCombat = sceneCombats[currentIndex + 1];
+
+            case "previous":
+                if ((currentIndex - 1) >= 0) newCombat = sceneCombats[currentIndex - 1];
+        }   
+
+        if ( !newCombat ) return;
+
+        return await newCombat.activate();
     }
 }
 

@@ -37,8 +37,14 @@
     "COMBAT_CAROUSEL.CAROUSEL.EndEncounter": "Click to End Encounter",
     "COMBAT_CAROUSEL.CAROUSEL.DragTooltip": "Click and drag to move, right-click to reset position",
 
-    "COMBAT_CAROUSEL.EncounterOptions.Create": "Create Encounter",
-    "COMBAT_CAROUSEL.EncounterOptions.Delete": "Delete Encounter",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.CreateEncounter": "Create Encounter",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.DeleteEncounter": "Delete Encounter",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.NextEncounter": "Next Encounter",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.PreviousEncounter": "Previous Encounter",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.RollAll": "Roll Initiative",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.RollNPCs": "Roll NPCs",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.ResetAll": "Reset All",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.EncounterConfig": "Combat Tracker Settings",
 
     "COMBAT_CAROUSEL.COMBATANT_CARD.ActiveTurn": "Active Turn",
     "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Hide": "Toggle Visibility",
