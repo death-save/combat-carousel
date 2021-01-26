@@ -247,6 +247,9 @@ export default class CombatCarousel extends Application {
                 bar1.optimum = bar1.max * 0.9;
         }
 
+        // @todo add some setting to configure this (Eg. for owned combatants)
+        const canEditInitiative = game.user.isGM;
+
         const preparedData = {
             id: turn._id,
             name: turn.name,
@@ -266,6 +269,7 @@ export default class CombatCarousel extends Application {
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
+                canEditInitiative,
                 showOverlay
             }
         }

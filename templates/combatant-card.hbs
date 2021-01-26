@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="initiative {{#unless combatant.carousel.showInitiative}}hidden{{/unless}}">
-            <span class="fa-stack fa-2x" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{localize "COMBAT_CAROUSEL.COMBATANT_CARD.EditInitiative"}}{{/if}}{{#unless combatant.initiative}}{{localize "COMBAT_CAROUSEL.COMBATANT_CARD.RollInitiative"}}{{/unless}}">
+            <span class="fa-stack fa-2x" title="{{#if combatant.initiative}}{{combatant.initiative}}{{#if combatant.carousel.canEditInitiative}} - {{localize "COMBAT_CAROUSEL.COMBATANT_CARD.EditInitiative"}}{{/if}}{{/if}}{{#unless combatant.initiative}}{{localize "COMBAT_CAROUSEL.COMBATANT_CARD.RollInitiative"}}{{/unless}}">
                 <a class="roll-init {{#unless combatant.carousel.showInitiativeIcon}}hidden{{/unless}}">
                     <i class="fas fa-dice-d20 fa-stack-2x initiative-icon" ></i>
                 </a>
