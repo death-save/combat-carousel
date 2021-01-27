@@ -278,9 +278,14 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 #combat-carousel .avatar {
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 100%;
     vertical-align: middle;
     overflow: hidden;
+}
+
+#combat-carousel .avatar img {
+    max-height: 100%;
 }
 
 #combat-carousel img.overlay-effect {
