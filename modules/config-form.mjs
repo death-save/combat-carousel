@@ -3,7 +3,7 @@
  * @module config-form
  */
 
-import { NAME, SETTING_KEYS } from "./config.mjs";
+import { NAME, SETTING_KEYS, TEMPLATE_PATH } from "./config.mjs";
 
 /**
  * A form-app for setting the icons and properties to use in the Combat Carousel Overlay
@@ -25,8 +25,8 @@ export default class CombatCarouselConfig extends FormApplication {
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
             id: "combat-carousel-config",
-            template: "modules/combat-carousel/templates/config-form.hbs",
-            title: "Combat Carousel - Overlay Config",
+            template: `${TEMPLATE_PATH}/config-form.hbs`,
+            title: "COMBAT_CAROUSEL.OVERLAY_CONFIG.Title",
             width: 400,
             height: "auto",
             resizable: true,
@@ -40,7 +40,8 @@ export default class CombatCarouselConfig extends FormApplication {
     getData() {
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
         return {
-            overlaySettings
+            overlaySettings,
+            barAttributes: this.getAttributeChoices()
         }
     }
 
@@ -104,5 +105,19 @@ export default class CombatCarouselConfig extends FormApplication {
         const index = row ? row.dataset.row : null;
         const icon = row.querySelector("img");
         icon.src = event.currentTarget.value;
+    }
+
+    /**
+     * Get an Array of attribute choices which could be tracked for Actors in the Combat Tracker
+     * @return {Promise<Array>}
+     */
+    getAttributeChoices() {
+        const actorData = {};
+        for ( let model of Object.values(game.system.model.Actor) ) {
+            mergeObject(actorData, model);
+        }
+        const attributes = TokenConfig.getTrackedAttributes(actorData, []);
+        //attributes.bar.forEach(a => a.push("value"));
+        return TokenConfig.getTrackedAttributeChoices(attributes);
     }
 }

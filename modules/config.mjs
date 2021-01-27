@@ -14,6 +14,16 @@ export const NAME = "combat-carousel";
 export const TITLE = "Combat Carousel";
 
 /**
+ * Path to module
+ */
+export const PATH = "modules/combat-carousel";
+
+/**
+ * Path to templates
+ */
+export const TEMPLATE_PATH = `${PATH}/templates`;
+
+/**
  * Module Icon Paths
  */
 export const CAROUSEL_ICONS = {
@@ -27,10 +37,22 @@ export const CAROUSEL_ICONS = {
  */
 export const SETTING_KEYS = {
     about: "about",
+    appPosition: "appPosition",
+    overlayConfigMenu: "overlayConfigMenu",
+    showOverlay: "showOverlay",
+    overlayPermission: "overlayPermission",
     collapseNav: "collapseNav",
-    showHealth: "showHealthBar",
-    healthBarPermission: "playerHealthBarPermission",
-    overlaySettings: "overlaySettings"
+    collapsed: "carouselCollapsed",
+    showBar1: "showBar1",
+    bar1Permission: "playerBar1Permission",
+    bar1Attribute: "bar1Attribute",
+    bar1Title: "bar1Title",
+    overlaySettings: "overlaySettings",
+    carouselSize: "carouselSize",
+    showInitiative: "showInitiative",
+    showInitiativeIcon: "showInitiativeIcon",
+    initiativePermission: "initiativePermission",
+    imageType: "imageType"
 }
 
 /**
@@ -60,11 +82,92 @@ export const DEFAULT_CONFIG = {
             value: ""
         }
     ],
-    healthBarPermission: {
+    showOverlay: {
         choices: {
-            owner: "All Owned",
-            token: "Use Token Setting",
+            never: "Never",
+            hover: "On Hover",
+            active: "Active Combatant",
+            activeHover: "Active Combatant and On Hover",
+            always: "Always"
+        }
+    },
+    overlayPermission: {
+        choices: {
+            all: "All",
+            owned: "Owned Actors",
+            observed: "Observed Actors",
             none: "None" 
+        }
+    },
+    showBar: {
+        choices: {
+            never: "Never",
+            hover: "On Hover",
+            active: "Active Combatant",
+            activeHover: "Active Combatant and On Hover",
+            always: "Always"
+        }
+    },
+    bar1Permission: {
+        choices: {
+            all: "All",
+            owned: "Owned Actors",
+            observed: "Observed Actors",
+            none: "None" 
+        }
+    },
+    bar1Attribute: "attributes.hp",
+    bar1Title: "HP",
+    appPosition: {
+        left: 120,
+        top: 0,
+        scale: 1.0
+    },
+    carouselSize: {
+        choices: {
+            xs: "Extra Small",
+            sm: "Small",
+            med: "Medium",
+            lg: "Large"
+        },
+        sizeScaleMap: {
+            xs: 0.5,
+            sm: 0.8,
+            med: 1,
+            lg: 1.2
+        }
+    },
+    showInitiative: {
+        choices: {
+            never: "Never",
+            hover: "On Hover",
+            active: "Active Combatant",
+            activeHover: "Active Combatant and On Hover",
+            always: "Always"
+        }
+    },
+    showInitiativeIcon: {
+        choices: {
+            never: "Never",
+            withInit: "With Initiative Value",
+            unrolled: "For Unrolled Combatants",
+            withInitUnrolled: "With Initiative and Unrolled",
+            always: "Always"
+        }
+    },
+    initiativePermission: {
+        choices: {
+            all: "All",
+            owned: "Owned",
+            observed: "Observed",
+            none: "None"
+        }
+    },
+    imageType: {
+        choices: {
+            actor: "Actor",
+            tokenActor: "Token Actor",
+            token: "Token"
         }
     }
 }

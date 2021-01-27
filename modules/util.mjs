@@ -25,59 +25,25 @@ export function getTokenFromCombatantId(combatantId) {
     return token;
 }
 
-
 /**
- * For a given Combat instance, calculate the new turn order and return it
- * @param {Combat} combat  a given Combat instance (default: active combat)
+ * Gets all the siblings of a given element
+ * Adapted from: https://stackoverflow.com/a/51670871/7351584
+ * @param {Element} element 
+ * @param {Element} [parent] 
+ * @returns {Array} siblings
  */
-export function calculateTurns(combat=game.combat) {
-    if (!combat) return null;
+export function getAllElementSiblings(element, parent) {
+    if (!parent) parent = element.parentElement;
 
-    // Populate additional data for each combatant
-    let turns = combat.combatants.map(c => setupTurn(c, combat.scene)).filter(c => c.token && c.visible);
+    const children = [...parent.children];
 
-    // Sort turns into initiative order: (1) initiative, (2) name, (3) tokenId
-    turns = turns.sort((a, b) => {
-        const ia = Number.isNumeric(a.initiative) ? a.initiative : -9999;
-        const ib = Number.isNumeric(b.initiative) ? b.initiative : -9999;
-        let ci = ib - ia;
-        if ( ci !== 0 ) return ci;
-        let [an, bn] = [a.token.name || "", b.token.name || ""];
-        let cn = an.localeCompare(bn);
-        if ( cn !== 0 ) return cn;
-        return a.tokenId - b.tokenId;
-    });
-
-    return turns;
+    return children.filter(child => child !== element);
 }
 
 /**
- * Enriches combatant data to prepare for use in the CombatTracker
- * @param combatant 
+ * Sets a string to Title Case
+ * @param {*} string 
  */
-export function setupTurn(combatant, scene=game.combat.scene) {
-    if (!combatant || !scene) return;
-        
-    const players = game.users.players;
-    const decimals = CONFIG.Combat.initiative.decimals;
-
-    // Duplicate the combatant for comparison or rollback
-    let c = duplicate(combatant);
-
-    // Basic data
-    c.token = scene.getEmbeddedEntity("Token", c.tokenId);
-    if ( !c.token ) return c;
-    c.actor = Actor.fromToken(new Token(c.token, scene));
-    c.players = c.actor ? players.filter(u => c.actor.hasPerm(u, "OWNER")) : [];
-    c.owner = game.user.isGM || (c.actor ? c.actor.owner : false);
-    c.visible = c.owner || !c.hidden;
-
-    // Name and Image
-    c.name = c.token.name || c.actor.name;
-
-    // Turn order and initiative
-    c.initiative = isNaN(parseFloat(c.initiative)) ? null : Number(c.initiative).toFixed(decimals);
-    c.hasRolled = c.initiative !== null;
-
-    return c;
-}
+export function toTitleCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

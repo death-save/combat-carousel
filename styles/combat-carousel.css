@@ -1,12 +1,32 @@
 #combat-carousel.wrapper {
     position: fixed;
-    top: 0;
-    left: 120px;
-    max-width: calc(100% - 430px);
+    /* top: 0;
+    left: 120px; */
+    min-width: 210px;
+    /* max-width: fit-content; */
+    min-height: 170px;
     margin: 0;
     padding: 0;
     box-shadow: none;
     border: none;
+}
+
+#combat-carousel header {
+    display: flex;
+    justify-content: center;
+    height: 10px;
+}
+
+#combat-carousel header h2 {
+    display: none;
+}
+
+#combat-carousel:hover header h2 {
+    display: inherit;
+}
+
+#combat-carousel:hover {
+    background: rgba(0, 0, 0, 0.3);
 }
 
 #combat-carousel .info-bar {
@@ -17,19 +37,47 @@
     height: 25px;
 }
 
+li.scene-control[data-control="combat-carousel"] {
+    display: flex;
+    height: 36px;
+    width: 36px;
+    justify-content: center;
+    align-items: center;
+}
+
+li.scene-control img.carousel-icon {
+    height: 32px;
+    width: 32px;
+    margin: 2px;
+    border: none;
+}
+
 #combat-carousel .carousel-icon {
     display: flex;
+    position: absolute;
+    top: 50px;
+    right: 0px;
     color: white;
     background: rgba(0, 0, 0, 0.5);
     border: solid 1px black;
     border-radius: 2px;
-    position: absolute;
     height: 38px;
     width: 38px;
     z-index: 100;
     text-align: center;
     justify-content: center;
     align-items: center;
+}
+
+#combat-carousel .resize-handle {
+    width: 18px;
+    height: 18px;
+    color: beige;
+    background:rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 40%;
+    right: 0;
+    padding: 2px;
 }
 
 #combat-carousel .carousel-icon .encounter {
@@ -39,7 +87,13 @@
     left: 1px;
 }
 
-#combat-carousel .carousel-icon .collapse-indicator {
+li[data-control="combat-carousel"] div.wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+li[data-control="combat-carousel"] i.collapse-indicator {
     position: absolute;
     font-size: 9px;
     top: 1px;
@@ -59,6 +113,7 @@
 }
 
 #combat-carousel .encounter-info {
+    display: none;
     position: absolute;
     right: 0px;
     top: 0px;
@@ -68,28 +123,118 @@
     border-radius: 3px;
 }
 
-#combat-carousel a.encounter-control {
+#combat-carousel .encounter-info .icon {
     text-align: center;
+    flex: 0 0 30%;
+}
+
+#combat-carousel .encounter-info.visible {
+    display: block;
+}
+
+#combat-carousel .encounter-controls {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    /* right: 0;
+    top: 25%; */
+    width: 50px;
+    height: 65px;
+    text-align: center;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#combat-carousel:hover .encounter-controls {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#combat-carousel .encounter-controls .encounter-control {
+    flex: 0 0 40%;
+    margin: 2px;
+}
+
+#combat-carousel .encounter-info a.encounter-control {
+    display: none;
+    text-align: center;
+    flex: 0;
+}
+
+#combat-carousel .encounter-info:hover .encounter-control {
+    display: flex;
+}
+
+#combat-carousel a.encounter-control.create-remove {
+    display: flex;
+    margin-left: 5px;
 }
 
 #combat-carousel .encounter-info .flexrow {
     align-items: center;
+    min-width: 50px;
+}
+
+#combat-carousel .encounter-info .round {
+    /* padding-left: 5.25px; */
 }
 
 #combat-carousel .encounter-info span {
-    width: 30px;
+    /* max-width: fit-content; */
 }
 
 #combat-carousel .encounter-info i.fas {
+    flex: 0;
     text-align: center;
 }
 
 #combat-carousel .encounter-info .counter {
-    text-align: right;
+    text-align: center;
+}
+
+#combat-carousel .initiative-control {
+    display: none;
+    flex-wrap: wrap;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 50px;
+    height: 56px;
+    /* padding: 0px 4px; */
+    color: #f0f0f0;
+    background: rgba(0,0,0,0.5);
+    border: solid 1px black;
+    border-radius: 3px;
+}
+
+#combat-carousel:hover .initiative-control {
+    display: flex;
+}
+
+#combat-carousel .initiative-control a {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    margin: 2px;
 }
 
 #combat-carousel .overlay {
+    /* display: none; */
+}
+
+#combat-carousel .drag-handle {
     display: none;
+    position: absolute;
+    left: 5px;
+    top: 35%;
+    font-size: 1.5rem;
+    color: grey;
+    text-shadow: 1px 1px black;
+}
+
+#combat-carousel:hover .drag-handle {
+    display: block;
 }
 
 #combat-carousel .overlay.active {
@@ -112,10 +257,6 @@
 }
  
 #combat-carousel .overlay-properties {
-    display: none;
-}
-
-#combat-carousel .splide__slide:hover .overlay-properties {
     display: flex;
     flex-direction: column;
     background: rgba(0,0,0,0.5);
@@ -130,12 +271,21 @@
     text-overflow: ellipsis;
 }
 
+#combat-carousel .container {
+    height: 85%;
+}
+
 #combat-carousel .avatar {
     display: flex;
     align-items: center;
-    height: 125px;
+    justify-content: center;
+    height: 100%;
     vertical-align: middle;
     overflow: hidden;
+}
+
+#combat-carousel .avatar img {
+    max-height: 100%;
 }
 
 #combat-carousel img.overlay-effect {
@@ -154,6 +304,14 @@
     border-radius: 60%;
     z-index: 20;
 }
+
+#combat-carousel .hidden {
+    display: none;
+}
+
+/* #combat-carousel .card:hover .initiative {
+    display: block;
+} */
 
 #combat-carousel .initiative .fa-2x {
     font-size: 1em;
@@ -176,10 +334,6 @@
     border: none;
 }
 
-#combat-carousel .initiative .hidden {
-    display: none;
-}
-
 #combat-carousel .fa-dice-d20 {
     color: maroon;
 }
@@ -200,16 +354,6 @@
     width: 15px;
 }
 
-#combat-carousel .combatant {
-    /* line-height: 32px;
-    padding: 0 8px;
-    margin: 0 8px 8px 0;
-    border: 1px solid #000;
-    border-radius: 3px;
-    position: relative;
-    */
-}
-
 #combat-carousel .card {
     border-radius: 3px;
     border: 1px solid black;
@@ -222,68 +366,111 @@
     animation: fly-in 500ms both;
 }
 
-/*
-@keyframes fly-in {
-    0% {
-        transform: translate(200%, 200%) skew(10deg, 10deg);
-    }
-
-    100% {
-        transform: translate(0%, 0%) skew(0deg, 0deg);
-    }
-}
-*/
-
 @keyframes fly-in {
     from {
-        transform: translate(200%, 200%) skew(10deg, 10deg);
+        transform: skew(-10deg, -10deg) rotateX(90deg) scale(0.1);
+        opacity: 0;
     }
 }
 
-#combat-carousel .car .active-combatant-wrapper {
-    position: relative;
-}
-
-#combat-carousel .card .active-combatant {
+#combat-carousel .card .active-combatant-wrapper {
     display: none;
 }
 
-#combat-carousel .is-active.card .active-combatant {
+#combat-carousel .is-active-combatant.card .active-combatant-wrapper {
     display: block;
     position: absolute;
-    top: -6px;
-    left: 0px;
-    width: 16px;
-    height: 16px;
-    z-index: 999;
+    top: 100%;
+    left: 0;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    background: url("/ui/denim075.png");
+    width: 99%;
+    height: 6%;
 }
 
-#combat-carousel .is-active.card .tracker-indicators {
-    margin-left: 20px;
-}
-
-#combat-carousel .is-active.card:hover .tracker-indicators {
-    margin-left: unset;
+#combat-carousel .is-active-combatant.card .active-combatant {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background:rgba(255,69,0,0.9);
+    /* border: 1px silver; */
+    /* bottom: 1px;
+    left: 0px; */
+    /* clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 50%, 0 100%); */
+    /* clip-path: polygon(0% 0%, 100% 0, 100% 50%, 50% 100%, 0 50%); */
+    /* clip-path: polygon(50% 0%, 100% 50%, 100% 100%, 0 100%, 0 50%); */
+    clip-path: polygon(10% 0%, 90% 0, 50% 75%);
 }
 
 #combat-carousel img {
     border: none;
 }
 
-#combat-carousel .hp {
+#combat-carousel .bar1 {
     text-align: center;
+    height: 10%;
 }
 
 #combat-carousel meter {
+    --background: rgba(0, 0, 0, 0.5);
+    --optimum: limegreen;
+    --sub-optimum: darkorange;
+    --sub-sub-optimum: crimson; 
+
+    display: block;
+    /* The gray background in Firefox */
     width: 98%;
+    height: 1.2em;
     text-align: center;
 }
 
-#combat-carousel meter[value="0"] {
+@supports(-moz-appearance:none) {
+    #combat-carousel meter  {
+        background: var(--background);
+    }
+}
+
+#combat-carousel meter::-moz-meter-bar {
+    height: 25%;
+    margin-top: 0.25em;
+    background: var(--background);
+    border: 2px solid black;
+    /* box-shadow: 0 2px 2px -2px #333 inset; */
+}
+
+#combat-carousel meter:-moz-meter-optimum::-moz-meter-bar {
+    background: var(--optimum);
+}
+
+#combat-carousel meter:-moz-meter-sub-optimum::-moz-meter-bar {
+    background: var(--sub-optimum);
+}
+
+#combat-carousel meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
+    background: var(--sub-sub-optimum);
+}
+
+#combat-carousel meter::-webkit-meter-bar {
+    background: var(--background);
+    border: 2px solid black;
+    /* box-shadow: 0 2px 2px -2px #333 inset; */
+    height: 100%;
+}
+
+#combat-carousel meter::-webkit-meter-optimum-value {
+    background: var(--optimum);
+}
+
+#combat-carousel meter::-webkit-meter-suboptimum-value {
+    background:var(--sub-optimum);
+}
+
+/* #combat-carousel meter[value="0"] {
     -webkit-appearance: none;
     -moz-appearance: none;
     background: rgba(0,0,0,0.9);
-}
+} */
 
 #combat-carousel .combat-round .description {
     display: none;
@@ -326,14 +513,15 @@
     position: relative;
     content: attr(value) "/" attr(max);
     top: -15px;
-    text-shadow: 1px 1px black;
+    /* text-shadow: 1px 1px black; */
+    background:rgba(0, 0, 0, 0.7);
 }
 
-#combat-carousel .splide__slide:hover meter[value="0"]::after {
+/* #combat-carousel .splide__slide:hover meter[value="0"]::after {
     position: inherit;
     content: attr(value) "/" attr(max);
     top: -15px;
-}
+} */
 
 #combat-carousel-config img.icon {
     width: 40px;
@@ -341,17 +529,6 @@
     background: rgba(0, 0, 0, 0.5);
     flex-grow: 0;
     margin: 3px;
-}
-
-#combat-carousel .splide {
-    height: 177px;
-}
-
-#combat-carousel .splide__track {
-    padding-top: 5px;
-}
-#combat-carousel .splide__slider {
-    padding: 0px 50px;
 }
 
 #combat-carousel .splide__slide.token-hover-neutral {
@@ -388,12 +565,6 @@
     z-index: 100;
 }
 
-/*
-#combat-carousel .name:hover {
-    display: none;
-}
-*/
-
 #combat-carousel .name:hover .button-tray {
     display: flex;
     padding: 0px 10px;
@@ -421,29 +592,15 @@
     display: flex;
 }
 
-#combat-carousel .is-active.card {
-    /* border: 1px solid orange; */
+#combat-carousel .is-active-combatant.card {
+    /* clip-path: polygon(0px -21px, 100% -21px, 100% 95%, 50% 100%, 0px 95%); */
+    border-bottom: none;
+    /* height: 83% !important; */
 }
 
-#combat-carousel .splide__slide:hover .active-combatant {
-    margin-top: -20px;
+#combat-carousel .is-active-combatant.card .container {
+    /* height: 80%; */
 }
-
-/*
-#combat-carousel .is-active.card .fa-dice-d20 {
-    color: red;
-}
-*/
-
-/*
-#combat-carousel .splide__slide:hover .effects {
-    display: flex;
-    background: url("/ui/denim075.png") repeat;
-    border: 1px solid black;
-    position: absolute;
-    top: 150px;
-}
-*/
 
 #combat-carousel .fa-dice-d20:hover {
     animation: spin 0.3s linear;
@@ -463,31 +620,25 @@
     }
 }
 
-#combat-carousel .splide__slider {
-    height: 150px;
+#combat-carousel .combat-controls {
+    display: none;
 }
 
-#combat-carousel .splide__arrow {
-    top: calc(50% + 30px);
-    border-radius: 2%;
-    background-color: rgba(0, 0, 0, 0.5);
+#combat-carousel:hover .combat-controls {
+    display: block;
 }
 
-#combat-carousel .splide__arrow svg {
-    fill: #f0f0e0;
-}
-
-#combat-carousel .combat-control .previous,
+#combat-carousel .combat-controls .previous,
 #combat-carousel .splide__arrow--prev {
     left: 0px;
 }
 
-#combat-carousel .combat-control .next,
+#combat-carousel .combat-controls .next,
 #combat-carousel .splide__arrow--next {
     right: 0px;
 }
 
-#combat-carousel .combat-control a {
+#combat-carousel .combat-controls a {
     position: absolute;
     width: 32px;
     height: 32px;
@@ -501,13 +652,53 @@
     color: white;
 }
 
-#combat-carousel .combat-control a.round {
-    top: calc(50% + 45px);
+#combat-carousel .combat-controls a.round {
+    top: calc(50% + 50px);
 }
 
-#combat-carousel .combat-control a.turn {
-    top: calc(50% + 10px);
+#combat-carousel .combat-controls a.turn {
+    top: calc(50% + 15px);
 }
+
+/* SPLIDE */
+
+#combat-carousel .splide {
+    height: 95%;
+}
+
+#combat-carousel .splide__slider {
+    height: 100%;
+    padding: 0px 55px;
+}
+
+#combat-carousel .splide__track {
+    height: 100%;
+    padding-top: 5px;
+}
+
+#combat-carousel .splide__list {
+    height: 100%;
+}
+
+#combat-carousel .splide__arrow {
+    top: calc(50% + 30px);
+    border-radius: 2%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#combat-carousel .splide__arrow svg {
+    fill: #f0f0e0;
+}
+
+#combat-carousel .combat-carousel-pagination {
+    display: none;
+}
+
+#combat-carousel .combat-carousel-pagination.visible {
+    display: flex;
+}
+
+/* ABOUT APP */
 
 #combat-carousel-about img {
     border: none;

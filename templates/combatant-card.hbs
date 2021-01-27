@@ -1,49 +1,45 @@
 <li class="splide__slide card" data-combatant-id="{{combatant.id}}">
-    <div class="active-combatant-wrapper">
-        <div class="active-combatant">
-            <img src="modules/combat-carousel/icons/bookmark.svg" title="{{localize "COMBATANT_CARD.ActiveTurn"}}">
-        </div>
-    </div>
     <div class="name">
         {{#if combatant.carousel.isGM}}
         <div class="button-tray flexrow">
-            <a class="combatant-control" data-control="toggleHidden" title="{{localize "COMBATANT_CARD.Controls.Hide"}}"><i class="fas fa-eye-slash"></i></a>
-            <a class="combatant-control" data-control="toggleDefeated" title="{{localize "COMBATANT_CARD.Controls.Defeated"}}"><i class="fas fa-skull"></i></a>
-            <a class="combatant-control" data-control="remove" title="{{localize "COMBATANT_CARD.Controls.Remove"}}"><i class="fas fa-trash"></i></a>
+            <a class="combatant-control" data-control="toggleHidden" title="{{localize "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Hide"}}"><i class="fas fa-eye-slash"></i></a>
+            <a class="combatant-control" data-control="toggleDefeated" title="{{localize "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Defeated"}}"><i class="fas fa-skull"></i></a>
+            <a class="combatant-control" data-control="remove" title="{{localize "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Remove"}}"><i class="fas fa-trash"></i></a>
         </div>
         {{/if}}
         <h3 title="{{combatant.name}}">{{combatant.name}}</h3>
     </div>
-    <div class="splide__container">
-        {{#if combatant.carousel.owner}}
+    <div class="container">
         <div class="overlay-hud">
             <span class="tracker-indicators">
                 {{#if combatant.defeated}}
-                <i class="fas fa-skull" title="{{localize "WORDS.Defeated"}}"></i>
+                <i class="fas fa-skull" title="{{localize "COMBAT_CAROUSEL.WORDS.Defeated"}}"></i>
                 {{/if}}
+                {{#if combatant.carousel.owner}}
                 {{#if combatant.hidden}}
-                <i class="fas fa-eye-slash" title="{{localize "WORDS.Hidden"}}"></i>
+                <i class="fas fa-eye-slash" title="{{localize "COMBAT_CAROUSEL.WORDS.Hidden"}}"></i>
+                {{/if}}
                 {{/if}}
             </span>
-            <div class="overlay-properties">
+            
+            <div class="overlay-properties {{#unless combatant.carousel.showOverlay}}hidden{{/unless}}">
                 {{#each combatant.carousel.overlayProperties}}
-                <div class="property">
-                    <img class="icon" src="{{this.img}}" title="{{this.name}}"/>
-                    <span class="value" title="{{this.value}}">{{this.value}}</span>
+                <div class="property" title="{{this.name}}: {{this.value}}">
+                    <img class="icon" src="{{this.img}}"/>
+                    <span class="value">{{this.value}}</span>
                 </div>
                 {{/each}}
             </div>
         </div>
-        <div class="initiative">
-            <a class="roll-init">
-                <span class="fa-stack fa-2x">
-                <i class="fas fa-dice-d20 fa-stack-2x" title="{{localize COMBATANT_CARD.RollInitiative}}"></i>
-                <input type="text" class="fa-stack-1x fa-inverse" title="{{#if combatant.initiative}}{{combatant.initiative}} - {{/if}}{{localize "COMBATANT_CARD.RollInitiative"}}" value="{{combatant.initiative}}" disabled/>
+        <div class="initiative {{#unless combatant.carousel.showInitiative}}hidden{{/unless}}">
+            <span class="fa-stack fa-2x" title="{{#if combatant.initiative}}{{combatant.initiative}}{{#if combatant.carousel.canEditInitiative}} - {{localize "COMBAT_CAROUSEL.COMBATANT_CARD.EditInitiative"}}{{/if}}{{/if}}{{#unless combatant.initiative}}{{localize "COMBAT_CAROUSEL.COMBATANT_CARD.RollInitiative"}}{{/unless}}">
+                <a class="roll-init {{#unless combatant.carousel.showInitiativeIcon}}hidden{{/unless}}">
+                    <i class="fas fa-dice-d20 fa-stack-2x initiative-icon" ></i>
+                </a>
+                <input type="text" class="fa-stack-1x fa-inverse {{#unless combatant.carousel.showInitiativeValue}}hidden{{/unless}}" value="{{combatant.initiative}}" disabled/>
             </span>
-            </a>
         </div>
-        {{/if}}
-        <div class="avatar">
+        <div class="avatar splide__slide__container">
             {{#if combatant.carousel.overlayEffect}}
             <img class="overlay-effect" src="{{combatant.carousel.overlayEffect}}"/>
             {{/if}}
@@ -57,15 +53,29 @@
             {{/each}}
         </div>
     </div>
-    {{#if combatant.carousel.showHealth}}
-    <div class="hp" width="100%">
+    
+    <div class="bar1 {{#unless combatant.carousel.showBar1}}hidden{{/unless}}" width="100%" >
         <meter 
-            value="{{combatant.carousel.hp.value}}" 
-            min="0" max="{{combatant.carousel.hp.max}}" 
-            title="{{combatant.carousel.hp.value}}/{{combatant.carousel.hp.max}}" 
-            optimum="{{combatant.carousel.hp.optimum}}" low="{{combatant.carousel.hp.low}}" 
-            high="{{combatant.carousel.hp.high}}"
+            value="{{combatant.carousel.bar1.value}}" 
+            min="0" 
+            max="{{combatant.carousel.bar1.max}}" 
+            title="{{combatant.carousel.bar1.title}}: {{combatant.carousel.bar1.value}}{{#if combatant.carousel.bar1.max}}/{{combatant.carousel.bar1.max}}{{/if}}" 
+            optimum="{{combatant.carousel.bar1.optimum}}" low="{{combatant.carousel.bar1.low}}" 
+            high="{{combatant.carousel.bar1.high}}"
         />
     </div>
-    {{/if}}
+    <div class="active-combatant-wrapper">
+        <div class="active-combatant"></div>
+    </div>
+    {{!-- <div style="position: absolute; top: 100%; width: 100%; height: 5%;">
+        <svg height="100%" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="display: block;">
+            <defs>
+                <pattern id="denim075" width="94" height="94" patternUnits="userSpaceOnUse">
+                    <image x="0" y="0" width="94" height="94" href="ui/denim075.png"></image>
+                </pattern>
+            </defs>
+            <polygon points="0,0 100,0 50,100 0,0" class="triangle" style="fill: url(#denim075);"></polygon>
+            <polyline points="0,0 50,100 100,0 100,0" fill="none" stroke="black"></polyline>
+        </svg>
+    </div> --}}
 </li>

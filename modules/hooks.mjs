@@ -2,13 +2,14 @@
  * Hooks module
  * @module hooks
  */
-
 import CombatCarousel from "./combat-carousel.mjs";
 import registerSettings from "./settings.mjs";
 import overrideMethods from "./overrides.mjs";
-import { NAME, SETTING_KEYS } from "./config.mjs";
-import { getTokenFromCombatantId, calculateTurns } from "./util.mjs";
+import { NAME, SETTING_KEYS, CAROUSEL_ICONS } from "./config.mjs";
+import { getTokenFromCombatantId } from "./util.mjs";
 import { preloadHandlebarsTemplates } from "./templates.mjs";
+import { DEFAULT_CONFIG } from "./config.mjs";
+import { TEMPLATE_PATH } from "./config.mjs";
 
 /**
  * Registers hooks needed throughout the module
@@ -32,8 +33,15 @@ export default function registerHooks() {
      * Ready hook
      */
     Hooks.on("ready", () => {
-        ui.combatCarousel = new CombatCarousel();
-        ui.combatCarousel.render(true);
+        const position = game.settings.get(NAME, SETTING_KEYS.appPosition);
+        
+        ui.combatCarousel = new CombatCarousel(position);
+
+        const collapsed = ui.combatCarousel._collapsed;
+        const state = collapsed ? "closed" : "open";
+        ui.combatCarousel.setToggleIconIndicator(state);
+
+        if (!collapsed) ui.combatCarousel.render(true);
     });
 
     /* -------------------------------------------- */
@@ -45,8 +53,16 @@ export default function registerHooks() {
     /**
      * Create Combat hook
      */
-    Hooks.on("createCombat", (combat, createData, options, userId) => {
-        ui.combatCarousel.render(true);
+    Hooks.on("createCombat", (combat, options, userId) => {
+        const collapsed = ui.combatCarousel._collapsed;
+
+        if (!collapsed) ui.combatCarousel.render(true);
+        
+        const hasTurns = combat?.turns?.length;
+        const carouselImg = ui?.controls?.element.find("img.carousel-icon");
+        const newImgSrc = hasTurns ? CAROUSEL_ICONS.hasTurns : CAROUSEL_ICONS.noTurns;
+        
+        carouselImg.attr("src", newImgSrc);
     });
 
     /**
@@ -54,17 +70,24 @@ export default function registerHooks() {
      */
     Hooks.on("updateCombat", (combat, update, options, userId) => {
         //console.log("combat update", {combat, update, options, userId});
+        const collapsed = ui.combatCarousel._collapsed;
         
+        if (collapsed) return;
+
         if (getProperty(update, "active") === true || hasProperty(update, "round")) {
             return ui.combatCarousel.render(true);
         }
 
         if (hasProperty(update, "turn")) {
-            if (update.turn != ui.combatCarousel.turn) {
-                //ui.combatCarousel.splide.refresh();
+            if (update.turn !== ui.combatCarousel.turn) {
+                const combatant = combat.turns[update.turn];
+
+                if (!combatant) return;
+
                 ui.combatCarousel.turn = update.turn;
-                ui.combatCarousel.splide.go(update.turn);
+                
                 return ui.combatCarousel.render();
+                //return ui.combatCarousel.setActiveCombatant(combatant);
             }
 
             //ui.combatCarousel.render();
@@ -84,8 +107,18 @@ export default function registerHooks() {
     /**
      * Delete Combat hook
      */
-    Hooks.on("deleteCombat", (combat, options, userId) => {
-        ui.combatCarousel.render(true);
+    Hooks.on("deleteCombat", async (combat, options, userId) => {
+        const collapsed = ui.combatCarousel._collapsed;
+        const hasCombat = game.combats.entities?.length;
+        if (!collapsed && !hasCombat) {
+            ui.combatCarousel.close();
+            //await ui.combatCarousel.render(true);
+            //ui.combatCarousel.collapse();
+        }
+
+
+        const carouselImg = ui.controls.element.find("img.carousel-icon");
+        carouselImg.attr("src", CAROUSEL_ICONS.noCombat);
     });
     
     /* ----------------- Combatant ---------------- */
@@ -97,7 +130,7 @@ export default function registerHooks() {
         //console.log("create combatantant:", {combat, createData, options, userId});
         
         // calculate the new turn order
-        const newTurns = calculateTurns(combat);
+        const newTurns = combat.setupTurns();
 
         // grab the new combatant
         const turn = newTurns.find(t => t._id === createData._id);
@@ -122,12 +155,17 @@ export default function registerHooks() {
         }
 
         ui.combatCarousel.render();
+
+        const carouselImg = ui.controls.element.find("img.carousel-icon");
+
+        if (carouselImg.attr("src") != CAROUSEL_ICONS.hasTurns) carouselImg.attr("src", CAROUSEL_ICONS.hasTurns);
     });
     
     /**
      * Update Combatant hook
      */
     Hooks.on("updateCombatant", async (combat, update, options, userId) => {
+        
         //console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
         //ui.combatCarousel.splide.refresh();
@@ -139,6 +177,11 @@ export default function registerHooks() {
         cardToReplace.replaceWith(template);
         ui.combatCarousel.splide.refresh();
         */
+        
+        if (update?.hidden && !game.user.isGM) {
+            return ui.combatCarousel.render(true);
+        }
+
         const safeRender = debounce(() => {
             ui.combatCarousel.render(), 100
         });
@@ -157,12 +200,19 @@ export default function registerHooks() {
         if (index < 0) return;
 
         ui.combatCarousel.splide.remove(index);
+        ui.combatCarousel.setPosition({width: ui.combatCarousel._getMinimumWidth()});
+
+        const combatHasTurns = combat?.turns?.length;
+
+        const carouselImg = ui.controls.element.find("img.carousel-icon");
+
+        if (!combatHasTurns) carouselImg.attr("src", CAROUSEL_ICONS.noTurns);
     });
 
     /* ------------------- Actor ------------------ */
 
     Hooks.on("updateActor", (actor, update, options, userId) => {
-        if (!hasProperty(update, "data.attributes.hp.value")) return;
+        if (!hasProperty(update, "data.attributes.hp.value") && !hasProperty(update, "img")) return;
         // find any matching combat carousel combatants
         
         // update their hp bar
@@ -174,7 +224,13 @@ export default function registerHooks() {
 
     Hooks.on("updateToken", (scene, token, update, options, userId) => {
         //console.log("token update:", scene,token,update,options,userId);
-        if (!hasProperty(update, "effects") && !hasProperty(update, "overlayEffect") && !hasProperty(update, "actorData.data.attributes.hp.value")) return;
+        if (
+            !hasProperty(update, "effects") 
+            && !hasProperty(update, "overlayEffect") 
+            && !hasProperty(update, "actorData.data.attributes.hp.value") 
+            && !hasProperty(update, "img")
+            && !hasProperty(update, "actorData.img")
+        ) return;
         // find any matching combat carousel combatants
         
         // update their hp bar and effects
@@ -189,35 +245,38 @@ export default function registerHooks() {
      * SceneNavigation render hook
      */
     Hooks.on("renderSceneNavigation", (app, html, data) => {
-        if (!ui.combatCarousel) return;
+        // if (!ui.combatCarousel) return;
 
-        const collapsed = data?.collapsed || app?.data?.collapsed || null;
-
-        if (collapsed) {
-            ui.combatCarousel.element.css({"top": "12px"});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "47px"});
-        } else {
-            ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
-        }
+        // const collapsed = data?.collapsed || app?.data?.collapsed || null;
+        
+        // if (collapsed) {
+        //     ui.combatCarousel.element.css({"top": "12px"});
+        //     ui.combatCarousel.element.find(".carousel-icon").css({"top": "47px"});
+        // } else {
+        //     ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
+        //     ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
+        // }
     });
 
     /**
-     * SceneNavigation collapse/expand hook
+     * Combat Tracker Render hook
      */
-    Hooks.on("collapseSceneNavigation", (app, collapsed) => {
-        if (!ui.combatCarousel) return;
-
-        if (collapsed) {
-            ui.combatCarousel.element.css({"top": "12px"});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "42px"});
-        } else {
-            ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
-            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
-        }
-    });
-
     Hooks.on("renderCombatTracker", (app, html, data) => {
+        const rendered = ui?.combatCarousel?.rendered;
+        const collapsed = ui?.combatCarousel?._collapsed;
+        const trackerCombat = ui.combat.combat;
+        const carouselCombat = ui.combatCarousel?.combat;
+        const combatMatch = trackerCombat?.id === carouselCombat?.id;
+
+        if (!data?.hasCombat && rendered) {
+            ui.combatCarousel.close();
+        }
+
+        if (data?.hasCombat && !combatMatch && collapsed === false) {
+            ui.combatCarousel.render(true);
+        }
+
+        ui?.combatCarousel?.setToggleIcon();
         //console.log("combat tracker rendered:", app, html, data);
     });
 
@@ -231,6 +290,35 @@ export default function registerHooks() {
     /* -------------------------------------------- */
     /*              Miscellaneous Hooks             */
     /* -------------------------------------------- */
+
+    /**
+     * SceneNavigation collapse/expand hook
+     */
+    Hooks.on("collapseSceneNavigation", (app, collapsed) => {
+        if (!ui.combatCarousel) return;
+
+        /**
+        if (collapsed) {
+            ui.combatCarousel.element.css({"top": "12px"});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "42px"});
+        } else {
+            ui.combatCarousel.element.css({"top": `${app.element.height() + 12 + 5}px`});
+            ui.combatCarousel.element.find(".carousel-icon").css({"top": "auto"});
+        }
+        */
+    });
+
+    /**
+     * Sidebar Collapse Hook
+     */
+    Hooks.on("sidebarCollapse", (app, collapsed) => {
+        console.log(collapsed);
+
+        if (!ui.combatCarousel) return;
+
+        ui.combatCarousel.setPosition();
+
+    });
 
     /**
      * Hover Token hook
@@ -283,6 +371,9 @@ export default function registerHooks() {
         */
     });
 
+    /**
+     * Control Token hook
+     */
     Hooks.on("controlToken", (token, controlled) => {
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
@@ -305,5 +396,23 @@ export default function registerHooks() {
             default:
                 return;
         }
+    });
+
+    /**
+     * Render Scene Controls Hook
+     */
+    Hooks.on("renderSceneControls", async (app, html, data) => {
+        const combatState = CombatCarousel.getCombatState(game.combat);
+        const carouselIcon = CAROUSEL_ICONS[combatState];
+
+        const ccButtonHtml = await renderTemplate(`${TEMPLATE_PATH}/combat-carousel-button.hbs`,{carouselIcon});
+        
+        html.append(ccButtonHtml);
+
+        const ccButton = html.find("li[data-control='combat-carousel']");
+        
+        ccButton
+            .on("click", event => ui.combatCarousel._onModuleIconClick(event))
+            .on("contextmenu", event => ui.combatCarousel.resetPosition(event))
     });
 }
