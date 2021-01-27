@@ -2,13 +2,13 @@
     "name": "combat-carousel",
     "title": "Combat Carousel",
     "description": "Adds a CRPG-style combat tracker to the top of the screen",
-    "version": "0.1.4",
+    "version": "0.2.0",
     "author": "Evan Clarke [errational#2007]",
-    "minimumCoreVersion": "0.7.5",
-    "compatibleCoreVersion": "0.7.5",
+    "minimumCoreVersion": "0.7.9",
+    "compatibleCoreVersion": "0.7.9",
     "url": "https://github.com/death-save/combat-carousel-public",
-    "manifest": "https://raw.githubusercontent.com/death-save/combat-carousel-public/main/module.json",
-    "download": "https://github.com/death-save/combat-carousel-public/blob/v0.1.4-alpha/combat-carousel.zip",
+    "manifest": "https://deathsave.s3-us-west-2.amazonaws.com/jwf9vgfdz3v9/module.json",
+    "download": "https://deathsave.s3-us-west-2.amazonaws.com/jwf9vgfdz3v9/combat-carousel.zip",
     "scripts": [
       "./libs/splide/js/splide.min.js"
     ],
