@@ -17,10 +17,10 @@ export function getKeyByValue(object, value) {
  * @param {*} combatantId 
  */
 export function getTokenFromCombatantId(combatantId) {
-    const combatant = game?.combat?.combatants.find(c => c._id === combatantId);
+    const combatant = game?.combat?.combatants.find(c => c.id === combatantId);
     if (!combatant) return;
 
-    const token = combatant.tokenId ? canvas.tokens.get(combatant.tokenId) : null;
+    const token = combatant.token ?? null;
 
     return token;
 }

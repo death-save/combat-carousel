@@ -116,8 +116,8 @@ export default class CombatCarouselConfig extends FormApplication {
         for ( let model of Object.values(game.system.model.Actor) ) {
             mergeObject(actorData, model);
         }
-        const attributes = TokenConfig.getTrackedAttributes(actorData, []);
+        const attributes = TokenDocument.getTrackedAttributes(actorData, []);
         //attributes.bar.forEach(a => a.push("value"));
-        return TokenConfig.getTrackedAttributeChoices(attributes);
+        return TokenDocument.getTrackedAttributeChoices(attributes);
     }
 }

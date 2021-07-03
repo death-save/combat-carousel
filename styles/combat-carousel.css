@@ -272,6 +272,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 }
 
 #combat-carousel .container {
+    position: relative;
     height: 85%;
 }
 

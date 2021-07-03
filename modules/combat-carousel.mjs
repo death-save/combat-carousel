@@ -104,13 +104,13 @@ export default class CombatCarousel extends Application {
             }
 
             const controlledTokens = canvas?.tokens?.controlled;
-            const controlledCombatants = game?.combat?.combatants?.filter(c => controlledTokens.some(t => c.tokenId === t.id));
+            const controlledCombatants = game?.combat?.combatants?.filter(c => controlledTokens.some(t => c.token?.id === t.id));
 
             for (const slide of slides) {
                 const combatantId = slide.dataset.combatantId;
-                if (controlledCombatants.some(c => c._id === combatantId)) {
-                    const combatant = controlledCombatants.find(c => c._id === combatantId);
-                    const token = controlledTokens.find(t => t.id === combatant.tokenId);
+                if (controlledCombatants.some(c => c.id === combatantId)) {
+                    const combatant = controlledCombatants.find(c => c.id === combatantId);
+                    const token = controlledTokens.find(t => t.id === combatant.token.id);
                     const borderColor = PIXI.utils.hex2string(token._getBorderColor());
                     slide.style.borderColor = borderColor;
                 }
@@ -142,11 +142,14 @@ export default class CombatCarousel extends Application {
             
             if (!combatantId) return;
 
-            const combatant = game.combat.getCombatant(combatantId);
+            const combatant = game.combat?.combatants?.get(combatantId);
 
             if (!combatant) return;
 
-            const token = canvas.tokens.get(combatant.tokenId);
+            const token = canvas.tokens.get(combatant.token?.id);
+
+            if (!token) return;
+
             const index = this.getCombatantSlideIndex(combatant);
 
             return await token.control();
@@ -168,12 +171,12 @@ export default class CombatCarousel extends Application {
             }
 
             const controlledTokens = canvas?.tokens?.controlled;
-            const controlledCombatants = game?.combat?.combatants?.filter(c => controlledTokens.some(t => c.tokenId === t.id));
+            const controlledCombatants = game?.combat?.combatants?.filter(c => controlledTokens.some(t => c.token?.id === t.id));
             const combatantId = $element.data().combatantId;
 
-            if (controlledCombatants.some(c => c._id === combatantId)) {
-                const combatant = controlledCombatants.find(c => c._id === combatantId);
-                const token = controlledTokens.find(t => t.id === combatant.tokenId);
+            if (controlledCombatants.some(c => c.id === combatantId)) {
+                const combatant = controlledCombatants.find(c => c.id === combatantId);
+                const token = controlledTokens.find(t => t.id === combatant.token.id);
                 const borderColor = PIXI.utils.hex2string(token._getBorderColor());
                 $element.css("border-color", borderColor);
             }
@@ -196,18 +199,20 @@ export default class CombatCarousel extends Application {
      * @returns {Object} preparedData  data ready for template
      */
     prepareTurnData(turn) {
-        const token = canvas.tokens.get(turn.tokenId);
+        const token = turn.token;
+        const actor = turn.actor ?? (token ? token.actor : null);
 
-        if (!token) return null;
+        if (!actor) return null;
+        //if (!token) return null;
 
         const isActiveTurn = game.combat.turn === game.combat.turns.indexOf(turn);
 
-        const showOverlay = this._calculateOverlayVisibility(token, {isActive: isActiveTurn});
+        const showOverlay = this._calculateOverlayVisibility(actor, {isActive: isActiveTurn});
 
         const overlaySettings = game.settings.get(NAME, SETTING_KEYS.overlaySettings);
         
-        const showInitiativeValue = this._calculateInitiativeValueVisibility(token, {isActive: isActiveTurn});
-        const showInitiativeIcon = this._calculateInitiativeIconVisibility(token, {isActive: isActiveTurn});
+        const showInitiativeValue = this._calculateInitiativeValueVisibility(turn, {isActive: isActiveTurn});
+        const showInitiativeIcon = this._calculateInitiativeIconVisibility(turn, {isActive: isActiveTurn});
         const showInitiative = showInitiativeValue || showInitiativeIcon;
 
         const imageTypeSetting = game.settings.get(NAME, SETTING_KEYS.imageType);
@@ -215,14 +220,11 @@ export default class CombatCarousel extends Application {
 
         switch (imageTypeSetting) {
             case "actor":
-                const actorId = token.data.actorId;
-                const actor = game.actors.get(actorId);
-                img = actor?.img ?? turn.img;
+                img = (actor.isToken ? game.actors.get(actor.id)?.img : actor.img) ?? turn.img;
                 break;
 
             case "tokenActor":
-                const tokenActor = token.actor;
-                img = tokenActor?.img ?? turn.img;
+                img = actor.img ?? turn.img;
                 break;
 
             case "token":
@@ -233,39 +235,47 @@ export default class CombatCarousel extends Application {
                 break;
         }
 
-        const showBar1 = this._calculateBarVisibility(token, "bar1", {isActive: isActiveTurn});
+        const showBar1 = this._calculateBarVisibility(turn, "bar1", {isActive: isActiveTurn});
         let bar1 = {};
 
         const bar1AttributeSetting = game.settings.get(NAME, SETTING_KEYS.bar1Attribute);
-        bar1 = bar1AttributeSetting ? token.getBarAttribute("bar1", {alternative: bar1AttributeSetting}) : null;
-          
-        bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
 
-        if (bar1?.type === "bar") {
+        if (token && bar1AttributeSetting ) {
+            bar1 = token.getBarAttribute("bar1", {alternative: bar1AttributeSetting});
+            bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
+
+            if (bar1?.type === "bar") {
                 bar1.low = bar1.max * 0.34;
                 bar1.high = bar1.max * 0.6;
                 bar1.optimum = bar1.max * 0.9;
+            }
         }
+        
 
         // @todo add some setting to configure this (Eg. for owned combatants)
         const canEditInitiative = game.user.isGM;
 
         const preparedData = {
-            id: turn._id,
+            id: turn.id,
             name: turn.name,
             img,
             initiative: turn.initiative,
             hidden: turn.hidden,
             visible: turn.visible,
-            defeated: turn.defeated,
+            defeated: turn.data.defeated,
             carousel: {
                 isGM: game.user.isGM,
-                owner: token.owner,
+                owner: turn.isOwner,
                 showBar1,
                 bar1,
-                overlayProperties: CombatCarousel.getOverlayProperties(token, overlaySettings),
+                overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
-                effects: token?.data?.effects || null,
+                effects: actor.effects?.contents.map(e => { 
+                    return {
+                        img: e.data.icon,
+                        name: e.name ?? e.data.label
+                    }
+                }) || null,
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
@@ -282,19 +292,22 @@ export default class CombatCarousel extends Application {
      */
     getData() {
         const view = canvas.scene;
-        const combats = view ? game.combats.entities.filter(c => c.data.scene === view._id) : [];
-        const currentCombatIdx = combats.findIndex(c => c === game.combat);
+        //const combats = view ? game.combats.contents.filter(c => c.data.scene === view.id) : [];
+        //const combats = game.combats.contents;
+        const combats = ui.combat.combats;
+        const currentCombatIdx = combats.findIndex(c => c.id === game.combat?.id);
         const hasCombat = currentCombatIdx > -1;
-        const combat = this.combat = hasCombat ? game.combat : null;
+        const combat = this.combat = (hasCombat ? game.combat : null);
         const encounterCount = combats?.length ?? 0;
         const encounter = hasCombat ? currentCombatIdx + 1 : null;
         const previousEncounter = encounter > 1 ? encounter - 1 : null;
         const nextEncounter = encounter < encounterCount ? encounter + 1 : null;
-        const round = game.combat ? game.combat.round : null;
+        const round = combat ? combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
         //@todo use util method to setup turns -- need to filter out non-visible turns
-        const turns = game?.combat?.turns.map(t => this.prepareTurnData(t)) ?? [];
+        //const turns = game?.combat?.turns.filter(t => t.token).map(t => this.prepareTurnData(t)) ?? [];
+        const turns = combat?.turns?.map(t => this.prepareTurnData(t)) ?? [];
         const visibleTurns = turns.filter(t => t.visible);
 
         const combatState = CombatCarousel.getCombatState(game.combat);
@@ -489,11 +502,11 @@ export default class CombatCarousel extends Application {
         
         if (!combatantId) return;
 
-        const combatant = game.combat.getCombatant(combatantId);
+        const combatant = game.combat.combatants.get(combatantId);
 
         if (!combatant) return;
 
-        const token = canvas.tokens.get(combatant.tokenId);
+        const token = canvas.tokens.get(combatant.token.id);
         
         if (!token.owner) return;
 
@@ -549,7 +562,8 @@ export default class CombatCarousel extends Application {
         
         if (!combatantId) return;
 
-        await game.combat.updateCombatant({_id: combatantId, initiative: null});
+        const combatant = game.combat.combatants.get(combatantId);
+        await combatant.update({initiative: null});
     }
 
     /**
@@ -656,7 +670,7 @@ export default class CombatCarousel extends Application {
             
         if (!combatantId) return;
 
-        const combatant = game.combat.getCombatant(combatantId);
+        const combatant = game.combat.combatants.get(combatantId);
 
         if (!combatant) return;
 
@@ -664,7 +678,7 @@ export default class CombatCarousel extends Application {
 
         if (isCtrl && game.user.isGM) {
             
-            const turn = game.combat.turns.find(t => t._id === combatantId);
+            const turn = game.combat.turns.find(t => t.id === combatantId);
 
             if (!turn) return;
 
@@ -673,9 +687,11 @@ export default class CombatCarousel extends Application {
             return await game.combat.update({turn: turnIndex});
         }
 
-        const token = canvas.tokens.get(combatant.tokenId);
+        const token = canvas.tokens.get(combatant.token.id);
         const index = this.getCombatantSlideIndex(combatant);
         if (Number.isFinite(index)) this.splide.go(index);
+
+        if (!token) return;
 
         await canvas.animatePan({x: token.x, y: token.y});
         return await token.control();
@@ -721,21 +737,21 @@ export default class CombatCarousel extends Application {
 
         if (!combat) return;
 
-        const combatant = combat.getCombatant(li.dataset.combatantId);
+        const combatant = combat.combatants.get(li.dataset.combatantId);
 
         // Switch control action
         switch (button.dataset.control) {
 
             // Toggle combatant visibility
             case "toggleHidden":
-                await game.combat.updateCombatant({_id: combatant._id, hidden: !combatant.hidden});
+                await combat.updateEmbeddedDocuments("Combatant", [{id: combatant.id, hidden: !combatant.hidden}]);
                 break;
     
             // Toggle combatant defeated flag
             case "toggleDefeated":
                 // let isDefeated = !combatant.defeated;
-                // await game.combat.updateCombatant({_id: combatant._id, defeated: isDefeated});
-                // const token = canvas.tokens.get(combatant.tokenId);
+                // await game.combat.updateCombatant({_id: combatant.id, defeated: isDefeated});
+                // const token = canvas.tokens.get(combatant.token.id);
                 // if ( token ) {
                 //     if ( isDefeated && !token.data.overlayEffect ) token.toggleOverlay(CONFIG.controlIcons.defeated);
                 //     else if ( !isDefeated && token.data.overlayEffect === CONFIG.controlIcons.defeated ) token.toggleOverlay(null);
@@ -745,7 +761,7 @@ export default class CombatCarousel extends Application {
     
             // Roll combatant initiative
             case "remove":
-                await game.combat.deleteCombatant([combatant._id]);
+                await combat.deleteEmbeddedDocuments("Combatant", [{id: combatant.id}]);
                 break;
         }
   
@@ -1032,6 +1048,9 @@ export default class CombatCarousel extends Application {
 
         const slideIndex = this.getCombatantSlideIndex(combatant);
         const activeCombatantSlide = this.slides[slideIndex];
+        
+        if (!activeCombatantSlide) return;
+
         activeCombatantSlide.classList.add("is-active-combatant");
         this.splide.go(slideIndex);
     }
@@ -1246,23 +1265,23 @@ export default class CombatCarousel extends Application {
         
         if (!combatant) return false;
 
-        const token = combatant.token;
+        //const token = combatant.token;
 
         switch (type) {
             case "overlay":
-                return this._calculateOverlayVisibility(token, {isActive, isHovered});
+                return this._calculateOverlayVisibility(combatant, {isActive, isHovered});
 
             case "initiativeValue":
-                return this._calculateInitiativeValueVisibility(token, {isActive, isHovered});
+                return this._calculateInitiativeValueVisibility(combatant, {isActive, isHovered});
 
             case "initiativeIcon":
-                return this._calculateInitiativeIconVisibility(token, {isActive, isHovered});
+                return this._calculateInitiativeIconVisibility(combatant, {isActive, isHovered});
 
             case "bar":
                 const match = elementSelector.match(/bar\d+/);
                 if (!match) return false;
                 const barName = match[0];
-                return this._calculateBarVisibility(token, barName, {isActive, isHovered});
+                return this._calculateBarVisibility(combatant, barName, {isActive, isHovered});
 
             default:
                 return false;
@@ -1272,8 +1291,12 @@ export default class CombatCarousel extends Application {
     /**
      * Calculates overlay visibility for the given token and user
      */
-    _calculateOverlayVisibility(token, {user=game.user, isActive=false, isHovered=false}={}) {
-        if (!token) return false;
+    _calculateOverlayVisibility(entity, {user=game.user, isActive=false, isHovered=false}={}) {
+        if (!entity) return false;
+
+        const actor = entity instanceof Actor ? entity : (entity instanceof TokenDocument ? entity.actor : null);
+
+        if (!actor) return false;
         
         const showOverlaySetting = game.settings.get(NAME, SETTING_KEYS.showOverlay);
 
@@ -1286,10 +1309,6 @@ export default class CombatCarousel extends Application {
         // If the overlay should never be shown, return false
         if (showOverlaySetting === showNever) return false;
 
-        // determine visibility
-        //const tokenData = combatant?.token;
-        
-
         const overlayPermissionSetting = game.settings.get(NAME, SETTING_KEYS.overlayPermission);
 
         const permAll = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.all);
@@ -1297,7 +1316,6 @@ export default class CombatCarousel extends Application {
         const permObserver = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.observed);
         const permNone = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.none);
 
-        const actor = token?.actor ?? game.actors.get(token.actorId);
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
             || ((overlayPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
@@ -1327,7 +1345,11 @@ export default class CombatCarousel extends Application {
     /**
      * Determines if a particular Combatant Card's overlay should be shown or not
      */
-    _calculateInitiativeValueVisibility(token, {user=game.user, isActive=false, isHovered=false}={}) {
+    _calculateInitiativeValueVisibility(combatant, {user=game.user, isActive=false, isHovered=false}={}) {
+        const actor = combatant.actor;
+
+        if (!actor) return false;
+
         const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
 
         const showAlways = getKeyByValue(DEFAULT_CONFIG.showInitiative.choices, DEFAULT_CONFIG.showInitiative.choices.always);
@@ -1346,7 +1368,6 @@ export default class CombatCarousel extends Application {
         const permObserver = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
         const permNone = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.none);
 
-        const actor = token?.actor ?? game.actors.get(token.actorId);
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
             || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
@@ -1376,7 +1397,11 @@ export default class CombatCarousel extends Application {
     /**
      * Determines if a particular Combatant Card's overlay should be shown or not
      */
-    _calculateInitiativeIconVisibility(token, {user=game.user}={}) {
+    _calculateInitiativeIconVisibility(combatant, {user=game.user}={}) {
+        const actor = combatant.actor;
+
+        if (!actor) return false;
+
         const showInitiativeIconSetting = game.settings.get(NAME, SETTING_KEYS.showInitiativeIcon);
 
         const showAlways = getKeyByValue(DEFAULT_CONFIG.showInitiativeIcon.choices, DEFAULT_CONFIG.showInitiativeIcon.choices.always);
@@ -1387,16 +1412,12 @@ export default class CombatCarousel extends Application {
 
         // If the initiative should never be shown, return false
         if (showInitiativeIconSetting === showNever) return false;
-
         
         // determine if intiative will be shown
-        const initiativeShown = this._calculateInitiativeValueVisibility(token, user);
+        const initiativeShown = this._calculateInitiativeValueVisibility(combatant, user);
         
         // get the combatant and determine if the user is an owner of its token
-        const actor = token?.actor ?? game.actors.get(token.actorId);
-        const tokenId = token?.id ?? token?._id;
-        const combatant = game?.combat?.combatants.find(c => c.tokenId === tokenId);
-        const unrolledCombatant = combatant?.initiative === null;
+        const unrolledCombatant = combatant.initiative === null;
 
         const initiativePermissionSetting = game.settings.get(NAME, SETTING_KEYS.initiativePermission);
 
@@ -1436,8 +1457,10 @@ export default class CombatCarousel extends Application {
      * @param token 
      * @param barName 
      */
-    _calculateBarVisibility(token, barName, {user=game.user, isActive=false, isHovered=false}={}) {
-        if (!token || !barName) return false;
+    _calculateBarVisibility(combatant, barName, {user=game.user, isActive=false, isHovered=false}={}) {
+        if (!combatant || !barName) return false;
+
+        const actor = combatant.actor;
 
         const titledBarName = typeof barName === "string" ? toTitleCase(barName) : null;
 
@@ -1456,9 +1479,6 @@ export default class CombatCarousel extends Application {
         if (showBarSetting === showNever) return false;
 
         const barPermissionSetting = game.settings.get(NAME, SETTING_KEYS[`${barName}Permission`]);
-
-        const actor = token?.actor ?? game.actors.get(token.actorId);
-        const combatant = game?.combat?.combatants.find(c => c.tokenId === token._id);
 
         const permAll = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.all);
         const permOwner = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.owned);
@@ -1552,17 +1572,17 @@ export default class CombatCarousel extends Application {
      * @param token 
      * @param overlaySettings
      */
-    static getOverlayProperties(token, overlaySettings) {
+    static getOverlayProperties(actor, overlaySettings) {
         // Only return if value mask is set
-        const tokenOverlay = overlaySettings.filter(o => o.value).map(o => {
+        const overlay = overlaySettings.filter(o => o.value).map(o => {
             return {
                 name: o.name,
                 img: o.img,
-                value: getProperty(token, `actor.data.${o.value}`)
+                value: getProperty(actor, `data.${o.value}`)
             }
         });
 
-        return tokenOverlay;
+        return overlay;
     }
 
     /**
@@ -1581,7 +1601,7 @@ export default class CombatCarousel extends Application {
             combatantIds.push(s.dataset.combatantId);
         }
 
-        const index = combatantIds.indexOf(combatant._id);
+        const index = combatantIds.indexOf(combatant.id);
 
         return index;
     }
@@ -1600,7 +1620,7 @@ export default class CombatCarousel extends Application {
 
         if (!combatantId) return null;
 
-        const combatant = combat.getCombatant(combatantId);
+        const combatant = combat.combatants?.get(combatantId);
 
         return combatant ?? null;
     }
@@ -1610,29 +1630,31 @@ export default class CombatCarousel extends Application {
      * @param direction 
      */
     async _cycleEncounter(direction) {
-        const combats = game.combats.entities;
+        const combats = ui.combat.combats;
 
         if (!combats?.length) return;
 
-        const sceneCombats = combats.filter(c => c.scene.id === canvas.scene.id);
         const currentId = this?.combat?.id;
 
         if (!currentId) return;
 
-        const currentIndex = sceneCombats.findIndex(c => c.id === currentId);
+        const currentIndex = combats.findIndex(c => c.id === currentId);
         let newCombat = null;
 
         switch(direction) {
             case "next":
-               if ((currentIndex + 1) <= sceneCombats.length) newCombat = sceneCombats[currentIndex + 1];
+               if ((currentIndex + 1) <= combats.length) newCombat = combats[currentIndex + 1];
+               break;
 
             case "previous":
-                if ((currentIndex - 1) >= 0) newCombat = sceneCombats[currentIndex - 1];
+                if ((currentIndex - 1) >= 0) newCombat = combats[currentIndex - 1];
+                break;
         }   
 
         if ( !newCombat ) return;
 
-        return await newCombat.activate();
+        await newCombat.activate();
+        ui.combat.initialize(newCombat);
     }
 }
 

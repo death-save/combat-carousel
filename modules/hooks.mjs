@@ -41,7 +41,10 @@ export default function registerHooks() {
         const state = collapsed ? "closed" : "open";
         ui.combatCarousel.setToggleIconIndicator(state);
 
-        if (!collapsed) ui.combatCarousel.render(true);
+        const viewed = canvas.scene;
+        const activeCombat = game.combat;
+        const isViewedCombat = activeCombat?.scene?.id == viewed?.id;
+        if (!collapsed && isViewedCombat) ui.combatCarousel.render(true);
     });
 
     /* -------------------------------------------- */
@@ -53,7 +56,7 @@ export default function registerHooks() {
     /**
      * Create Combat hook
      */
-    Hooks.on("createCombat", (combat, options, userId) => {
+    Hooks.on("createCombat", (combat, createData, options, userId) => {
         const collapsed = ui.combatCarousel._collapsed;
 
         if (!collapsed) ui.combatCarousel.render(true);
@@ -126,14 +129,14 @@ export default function registerHooks() {
     /**
      * Create Combatant hook
      */
-    Hooks.on("createCombatant", async (combat, createData, options, userId) => {
+    Hooks.on("createCombatant", async (combatant, createData, options, userId) => {
         //console.log("create combatantant:", {combat, createData, options, userId});
         
         // calculate the new turn order
-        const newTurns = combat.setupTurns();
+        const newTurns = combatant.parent?.setupTurns() ?? [];
 
         // grab the new combatant
-        const turn = newTurns.find(t => t._id === createData._id);
+        const turn = newTurns.find(t => t.id === combatant.id);
 
         if (!turn) return;
 
@@ -144,7 +147,7 @@ export default function registerHooks() {
         if (!templateData) return;
 
         const combatantCard = await renderTemplate("modules/combat-carousel/templates/combatant-card.hbs", templateData);
-        const index = newTurns.map(t => t._id).indexOf(createData._id) ?? -1;
+        const index = newTurns.map(t => t.id).indexOf(combatant.id) ?? -1;
         
         await ui.combatCarousel.splide.emit("addCombatant", combatantCard, index);
         
@@ -164,21 +167,21 @@ export default function registerHooks() {
     /**
      * Update Combatant hook
      */
-    Hooks.on("updateCombatant", async (combat, update, options, userId) => {
+    Hooks.on("updateCombatant", async (combatant, updateData, options, userId) => {
         
         //console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
         //ui.combatCarousel.splide.refresh();
         /*
-        const turn = combat.turns.find(t => t._id === update._id);
+        const turn = combat.turns.find(t => t.id === update.id);
         const combatant = CombatCarousel.prepareTurnData(turn);
         const template = await renderTemplate("modules/combat-carousel/templates/combatant-card.hbs", {combatant});
-        const cardToReplace = ui.combatCarousel.element.find(`li[data-combatant-id="${update._id}"]`);
+        const cardToReplace = ui.combatCarousel.element.find(`li[data-combatant-id="${update.id}"]`);
         cardToReplace.replaceWith(template);
         ui.combatCarousel.splide.refresh();
         */
         
-        if (update?.hidden && !game.user.isGM) {
+        if (updateData?.hidden && !game.user.isGM) {
             return ui.combatCarousel.render(true);
         }
 
@@ -192,7 +195,7 @@ export default function registerHooks() {
     /**
      * Delete Combatant hook
      */
-    Hooks.on("deleteCombatant", (combat, combatant, options, userId) => {
+    Hooks.on("deleteCombatant", (combatant, options, userId) => {
         //console.log("delete combatant:", {combat, combatant, options, userId});
         
         const index = ui.combatCarousel.getCombatantSlideIndex(combatant);
@@ -211,8 +214,8 @@ export default function registerHooks() {
 
     /* ------------------- Actor ------------------ */
 
-    Hooks.on("updateActor", (actor, update, options, userId) => {
-        if (!hasProperty(update, "data.attributes.hp.value") && !hasProperty(update, "img")) return;
+    Hooks.on("updateActor", (actor, updateData, options, userId) => {
+        if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
         // find any matching combat carousel combatants
         
         // update their hp bar
@@ -222,14 +225,14 @@ export default function registerHooks() {
 
     /* ------------------- Token ------------------ */
 
-    Hooks.on("updateToken", (scene, token, update, options, userId) => {
+    Hooks.on("updateToken", (token, updateData, options, userId) => {
         //console.log("token update:", scene,token,update,options,userId);
         if (
-            !hasProperty(update, "effects") 
-            && !hasProperty(update, "overlayEffect") 
-            && !hasProperty(update, "actorData.data.attributes.hp.value") 
-            && !hasProperty(update, "img")
-            && !hasProperty(update, "actorData.img")
+            !hasProperty(updateData, "effects") 
+            && !hasProperty(updateData, "overlayEffect") 
+            && !hasProperty(updateData, "actorData.data.attributes.hp.value") 
+            && !hasProperty(updateData, "img")
+            && !hasProperty(updateData, "actorData.img")
         ) return;
         // find any matching combat carousel combatants
         
@@ -262,17 +265,19 @@ export default function registerHooks() {
      * Combat Tracker Render hook
      */
     Hooks.on("renderCombatTracker", (app, html, data) => {
+        const viewed = canvas.scene;
         const rendered = ui?.combatCarousel?.rendered;
         const collapsed = ui?.combatCarousel?._collapsed;
-        const trackerCombat = ui.combat.combat;
+        const trackerCombat = ui.combat.viewed;
         const carouselCombat = ui.combatCarousel?.combat;
         const combatMatch = trackerCombat?.id === carouselCombat?.id;
+        const isViewedCombat = trackerCombat?.scene == viewed;
 
         if (!data?.hasCombat && rendered) {
             ui.combatCarousel.close();
         }
 
-        if (data?.hasCombat && !combatMatch && collapsed === false) {
+        if (data?.hasCombat && isViewedCombat && !combatMatch && collapsed === false) {
             ui.combatCarousel.render(true);
         }
 
@@ -328,11 +333,11 @@ export default function registerHooks() {
 
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
-        const combatant = game.combat.combatants.find(c => c.tokenId === token.id);
+        const combatant = game.combat.combatants.find(c => c.token?.id === token.id);
 
         if (!combatant) return;
 
-        const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant._id}"]`);
+        const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant.id}"]`);
         
         if (!slide) return;
 
@@ -350,19 +355,19 @@ export default function registerHooks() {
         }
         /*
         if (hovered) {
-            const combatant = game.combat.combatants.find(c => c.tokenId === token.id);
+            const combatant = game.combat.combatants.find(c => c.token.id === token.id);
             const borderColor = PIXI.utils.hex2string(token._getBorderColor());
 
             if (!combatant) return;
-            const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant._id}"]`);
+            const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant.id}"]`);
             if (!slide) return;
             return slide.style.borderColor = borderColor;
         }
 
         const controlledTokens = canvas.tokens.controlled;
         const controlledTokenIds = controlledTokens ? controlledTokens.map(t => t.id) : [];
-        const controlledCombatants = game.combat.combatants.filter(c => controlledTokenIds.includes(c.tokenId));
-        const controlledCombatantIds = controlledCombatants ? controlledCombatants.map(c => c._id) : [];
+        const controlledCombatants = game.combat.combatants.filter(c => controlledTokenIds.includes(c.token.id));
+        const controlledCombatantIds = controlledCombatants ? controlledCombatants.map(c => c.id) : [];
         const slides = ui.combatCarousel.splide.root.querySelectorAll("li.splide__slide");
         return slides.forEach(s => {
             if (controlledCombatantIds.includes(s.dataset.combatantId)) return;
@@ -377,11 +382,11 @@ export default function registerHooks() {
     Hooks.on("controlToken", (token, controlled) => {
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
-        const combatant = game.combat.combatants.find(c => c.tokenId === token.id);
+        const combatant = game.combat.combatants.find(c => c.token?.id === token.id);
 
         if (!combatant) return;
 
-        const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant._id}"]`);
+        const slide = ui.combatCarousel?.splide?.root.querySelector(`li.splide__slide[data-combatant-id="${combatant.id}"]`);
         
         if (!slide) return;
 

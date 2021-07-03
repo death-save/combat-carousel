@@ -41,7 +41,7 @@
     "COMBAT_CAROUSEL.CAROUSEL.Controls.DeleteEncounter": "Delete Encounter",
     "COMBAT_CAROUSEL.CAROUSEL.Controls.NextEncounter": "Next Encounter",
     "COMBAT_CAROUSEL.CAROUSEL.Controls.PreviousEncounter": "Previous Encounter",
-    "COMBAT_CAROUSEL.CAROUSEL.Controls.RollAll": "Roll Initiative",
+    "COMBAT_CAROUSEL.CAROUSEL.Controls.RollAll": "Roll All",
     "COMBAT_CAROUSEL.CAROUSEL.Controls.RollNPCs": "Roll NPCs",
     "COMBAT_CAROUSEL.CAROUSEL.Controls.ResetAll": "Reset All",
     "COMBAT_CAROUSEL.CAROUSEL.Controls.EncounterConfig": "Combat Tracker Settings",
