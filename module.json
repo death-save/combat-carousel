@@ -15,7 +15,7 @@
       }
     ],
     "minimumCoreVersion": "0.8.5",
-    "compatibleCoreVersion": "0.8.7",
+    "compatibleCoreVersion": "0.8.8",
     "url": "https://github.com/death-save/combat-carousel",
     "manifest": "https://deathsave.s3-us-west-2.amazonaws.com/jwf9vgfdz3v9/module.json",
     "download": "https://deathsave.s3-us-west-2.amazonaws.com/jwf9vgfdz3v9/combat-carousel.zip",
