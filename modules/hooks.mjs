@@ -59,7 +59,9 @@ export default function registerHooks() {
     Hooks.on("createCombat", (combat, createData, options, userId) => {
         const collapsed = ui.combatCarousel._collapsed;
 
-        if (!collapsed) ui.combatCarousel.render(true);
+        if (collapsed) return;
+        
+        ui.combatCarousel.render(true);
         
         const hasTurns = combat?.turns?.length;
         const carouselImg = ui?.controls?.element.find("img.carousel-icon");
@@ -130,6 +132,8 @@ export default function registerHooks() {
      * Create Combatant hook
      */
     Hooks.on("createCombatant", async (combatant, createData, options, userId) => {
+        if (ui.combatCarousel._collapsed) return;
+
         //console.log("create combatantant:", {combat, createData, options, userId});
         
         // calculate the new turn order
@@ -168,6 +172,7 @@ export default function registerHooks() {
      * Update Combatant hook
      */
     Hooks.on("updateCombatant", async (combatant, updateData, options, userId) => {
+        if (ui.combatCarousel._collapsed) return;
         
         //console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
@@ -196,6 +201,8 @@ export default function registerHooks() {
      * Delete Combatant hook
      */
     Hooks.on("deleteCombatant", (combatant, options, userId) => {
+        if (ui.combatCarousel._collapsed) return;
+
         //console.log("delete combatant:", {combat, combatant, options, userId});
         
         const index = ui.combatCarousel.getCombatantSlideIndex(combatant);
@@ -215,6 +222,8 @@ export default function registerHooks() {
     /* ------------------- Actor ------------------ */
 
     Hooks.on("updateActor", (actor, updateData, options, userId) => {
+        if (ui.combatCarousel._collapsed) return;
+
         if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
         // find any matching combat carousel combatants
         
@@ -226,6 +235,8 @@ export default function registerHooks() {
     /* ------------------- Token ------------------ */
 
     Hooks.on("updateToken", (token, updateData, options, userId) => {
+        if (ui.combatCarousel._collapsed) return;
+
         //console.log("token update:", scene,token,update,options,userId);
         if (
             !hasProperty(updateData, "effects") 
@@ -317,18 +328,17 @@ export default function registerHooks() {
      * Sidebar Collapse Hook
      */
     Hooks.on("sidebarCollapse", (app, collapsed) => {
-        console.log(collapsed);
-
-        if (!ui.combatCarousel) return;
+        if (!ui.combatCarousel || ui.combatCarousel?._collapsed) return;
 
         ui.combatCarousel.setPosition();
-
     });
 
     /**
      * Hover Token hook
      */
     Hooks.on("hoverToken", (token, hovered) => {
+        if (ui.combatCarousel._collapsed) return;
+
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
         if (!ui?.combatCarousel?.splide || !game.combat) return;
@@ -380,7 +390,7 @@ export default function registerHooks() {
      * Control Token hook
      */
     Hooks.on("controlToken", (token, controlled) => {
-        if (!ui?.combatCarousel?.splide || !game.combat) return;
+        if (!game.combat || !ui.combatCarousel?.splide || ui.combatCarousel?._collapsed) return;
 
         const combatant = game.combat.combatants.find(c => c.token?.id === token.id);
 
