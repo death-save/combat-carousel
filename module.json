@@ -4,11 +4,24 @@
     "description": "Adds a CRPG-style combat tracker to the top of the screen",
     "version": "0.2.1",
     "author": "Evan Clarke [errational#2007]",
+    "authors": [
+      {
+        "name": "Evan Clarke",
+        "url": "https://deathsave.dev",
+        "discord": "errational#2007",
+        "reddit": "u/etherboy",
+        "twitter": "@death_save_dev",
+        "patreon": "deathsave"
+      }
+    ],
     "minimumCoreVersion": "0.8.5",
     "compatibleCoreVersion": "0.8.7",
-    "url": "https://github.com/death-save/combat-carousel-public",
+    "url": "https://github.com/death-save/combat-carousel",
     "manifest": "https://deathsave.s3-us-west-2.amazonaws.com/jwf9vgfdz3v9/module.json",
     "download": "https://deathsave.s3-us-west-2.amazonaws.com/jwf9vgfdz3v9/combat-carousel.zip",
+    "bugs": "https://github.com/death-save/combat-carousel/issues",
+    "changelog": "https://github.com/death-save/combat-carousel/CHANGELOG.md",
+    "readme": "https://github.com/death-save/combat-carousel/wiki/",
     "scripts": [
       "./libs/splide/js/splide.min.js"
     ],
@@ -45,6 +58,24 @@
     "styles" : [
         "./styles/combat-carousel.css",
         "./libs/splide/css/splide.min.css"
-    ]
+    ],
+    "media": [
+      {
+        "type": "cover",
+        "url": "https://i.imgur.com/JSYoVvb.png",
+        "caption": "Combat Carousel in action"
+      },
+      {
+        "type": "video",
+        "url": "https://i.imgur.com/yZK53mA.mp4",
+        "caption":"Combat Carousel v0.2.0 moving"
+      },
+      {
+        "type": "video",
+        "url": "https://www.youtube.com/watch?v=tG1rKcG1Oa4",
+        "caption":"Combat Carousel launch video"
+      }
+    ],
+    "manifestPlusVersion": "1.2.0"
   }
   
