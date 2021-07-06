@@ -228,6 +228,7 @@ export default function registerHooks() {
         if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
         // find any matching combat carousel combatants
         
+        if (!game.combat.combatants.some(c => c.actor.id === actor.id)) return;
         // update their hp bar
 
         ui.combatCarousel.render();
@@ -249,6 +250,8 @@ export default function registerHooks() {
             && !hasProperty(updateData, "actorData.img")
         ) return;
         // find any matching combat carousel combatants
+        
+        if (!game.combat.combatants.some(c => c.token.id === token.id)) return;
         
         // update their hp bar and effects
         ui.combatCarousel.render();
