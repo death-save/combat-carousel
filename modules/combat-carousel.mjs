@@ -1342,7 +1342,15 @@ export default class CombatCarousel extends Application {
     _calculateOverlayVisibility(entity, {user=game.user, isActive=false, isHovered=false}={}) {
         if (!entity) return false;
 
-        const actor = entity instanceof Actor ? entity : (entity instanceof TokenDocument ? entity.actor : null);
+        let actor = null;
+        
+        if (entity instanceof Actor) {
+            actor = entity;
+        } else if (entity instanceof TokenDocument) {
+            actor = entity.actor;
+        } else if (entity instanceof Combatant) {
+            actor = entity.actor ?? entity.token?.actor;
+        }
 
         if (!actor) return false;
         
