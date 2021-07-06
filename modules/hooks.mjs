@@ -115,7 +115,6 @@ export default function registerHooks() {
             //ui.combatCarousel.collapse();
         }
 
-
         const carouselImg = ui.controls.element.find("img.carousel-icon");
         carouselImg.attr("src", CAROUSEL_ICONS.noCombat);
     });
