@@ -140,7 +140,7 @@ export default function registerHooks() {
         if (!turn) return;
 
         const templateData = {
-            combatant: CombatCarousel.prepareTurnData(turn)
+            combatant: ui.combatCarousel.prepareTurnData(turn)
         };
 
         if (!templateData) return;
