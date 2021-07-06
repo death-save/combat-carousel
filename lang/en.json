@@ -1,6 +1,8 @@
 {
     "COMBAT_CAROUSEL.SETTINGS.AboutN": "About",
     "COMBAT_CAROUSEL.SETTINGS.AboutH": "Info about Combat Carousel",
+    "COMBAT_CAROUSEL.SETTINGS.EnableModuleN": "Enable Combat Carousel",
+    "COMBAT_CAROUSEL.SETTINGS.EnableModuleH": "Enables module functionality",
     "COMBAT_CAROUSEL.SETTINGS.OverlayConfigH": "Open the form to configure the Combatant Overlay",
     "COMBAT_CAROUSEL.SETTINGS.CollapseNavN": "Collapse Navigation Bar",
     "COMBAT_CAROUSEL.SETTINGS.CollapseNavH": "Collapse the Scene Navigation Bar when Combat Carousel is rendered",

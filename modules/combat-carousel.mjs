@@ -4,7 +4,7 @@
  */
 
 import CombatCarouselConfig from "./config-form.mjs";
-import { CAROUSEL_ICONS, DEFAULT_CONFIG, NAME, SETTING_KEYS } from "./config.mjs";
+import { CAROUSEL_ICONS, DEFAULT_CONFIG, NAME, SETTING_KEYS, TEMPLATE_PATH } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
 import { toTitleCase } from "./util.mjs";
 import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId } from "./util.mjs";
@@ -403,6 +403,54 @@ export default class CombatCarousel extends Application {
         encounterCycleControls.on("click", event => this._onClickEncounterControls(event, html));
         encounterControlsToggle.on("click", event => this._onClickEncounterControlsToggle(event, html));
         //this._contextMenu(html);
+    }
+
+    /* -------------------------------------------- */
+    /*                 Hook Handlers                */
+    /* -------------------------------------------- */
+
+    /**
+     * 
+     * @returns 
+     */
+    static _onReady() {
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled) return;
+
+        const position = game.settings.get(NAME, SETTING_KEYS.appPosition);
+        
+        ui.combatCarousel = new CombatCarousel(position);
+
+        const collapsed = ui.combatCarousel._collapsed;
+        const state = collapsed ? "closed" : "open";
+        ui.combatCarousel.setToggleIconIndicator(state);
+
+        const viewed = canvas.scene;
+        const activeCombat = game.combat;
+        const isViewedCombat = activeCombat?.scene?.id == viewed?.id;
+        if (!collapsed && isViewedCombat) ui.combatCarousel.render(true);
+    }
+
+    /**
+     * 
+     * @param app 
+     * @param html 
+     * @param data 
+     */
+    static async _onRenderSceneControls(app, html, data) {
+        const combatState = CombatCarousel.getCombatState(game.combat);
+        const carouselIcon = CAROUSEL_ICONS[combatState];
+
+        const ccButtonHtml = await renderTemplate(`${TEMPLATE_PATH}/combat-carousel-button.hbs`,{carouselIcon});
+        
+        html.append(ccButtonHtml);
+
+        const ccButton = html.find("li[data-control='combat-carousel']");
+        
+        ccButton
+            .on("click", event => ui.combatCarousel._onModuleIconClick(event))
+            .on("contextmenu", event => ui.combatCarousel.resetPosition(event));
     }
 
     /* -------------------------------------------- */

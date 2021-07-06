@@ -4,6 +4,7 @@
  */
 
 import AboutApp from "./about.mjs";
+import CombatCarousel from "./combat-carousel.mjs";
 import CombatCarouselConfig from "./config-form.mjs";
 import { DEFAULT_CONFIG } from "./config.mjs";
 import { SETTING_KEYS } from "./config.mjs";
@@ -40,6 +41,29 @@ export default function registerSettings() {
     /* -------------------------------------------------------------------------- */
     /*                               Basic Settings                               */
     /* -------------------------------------------------------------------------- */
+
+    game.settings.register(NAME, SETTING_KEYS.enabled, {
+        name: "COMBAT_CAROUSEL.SETTINGS.EnableModuleN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.EnableModuleH",
+        scope: "client",
+        type: Boolean,
+        default: true,
+        config: true,
+        onChange: async (s) => {
+            if (s) {
+                const controlsHtml = ui.controls.element;
+                await CombatCarousel._onRenderSceneControls(null, controlsHtml, null);
+                return CombatCarousel._onReady();
+            }
+
+            if (s === false) {
+                if (ui.combatCarousel?.rendered) ui.combatCarousel.close();
+                const controlsHtml = ui.controls.element;
+                const ccButton = controlsHtml.find("li[data-control='combat-carousel']");
+                ccButton.remove();
+            }
+        }
+    });
 
     game.settings.register(NAME, SETTING_KEYS.collapseNav, {
         name: "COMBAT_CAROUSEL.SETTINGS.CollapseNavN",

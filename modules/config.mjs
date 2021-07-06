@@ -38,6 +38,7 @@ export const CAROUSEL_ICONS = {
 export const SETTING_KEYS = {
     about: "about",
     appPosition: "appPosition",
+    enabled: "enabled",
     overlayConfigMenu: "overlayConfigMenu",
     showOverlay: "showOverlay",
     overlayPermission: "overlayPermission",

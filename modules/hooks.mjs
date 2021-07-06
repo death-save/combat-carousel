@@ -33,18 +33,7 @@ export default function registerHooks() {
      * Ready hook
      */
     Hooks.on("ready", () => {
-        const position = game.settings.get(NAME, SETTING_KEYS.appPosition);
-        
-        ui.combatCarousel = new CombatCarousel(position);
-
-        const collapsed = ui.combatCarousel._collapsed;
-        const state = collapsed ? "closed" : "open";
-        ui.combatCarousel.setToggleIconIndicator(state);
-
-        const viewed = canvas.scene;
-        const activeCombat = game.combat;
-        const isViewedCombat = activeCombat?.scene?.id == viewed?.id;
-        if (!collapsed && isViewedCombat) ui.combatCarousel.render(true);
+        CombatCarousel._onReady();
     });
 
     /* -------------------------------------------- */
@@ -56,10 +45,10 @@ export default function registerHooks() {
     /**
      * Create Combat hook
      */
-    Hooks.on("createCombat", (combat, createData, options, userId) => {
-        const collapsed = ui.combatCarousel._collapsed;
+    Hooks.on("createCombat", async (combat, createData, options, userId) => {
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        if (collapsed) return;
+        if (!enabled || !ui.combatCarousel || ui.combatCarousel?._collapsed) return;
         
         ui.combatCarousel.render(true);
         
@@ -74,10 +63,11 @@ export default function registerHooks() {
      * Update Combat hook
      */
     Hooks.on("updateCombat", (combat, update, options, userId) => {
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || ui.combatCarousel?._collapsed) return;
+
         //console.log("combat update", {combat, update, options, userId});
-        const collapsed = ui.combatCarousel._collapsed;
-        
-        if (collapsed) return;
 
         if (getProperty(update, "active") === true || hasProperty(update, "round")) {
             return ui.combatCarousel.render(true);
@@ -113,9 +103,13 @@ export default function registerHooks() {
      * Delete Combat hook
      */
     Hooks.on("deleteCombat", async (combat, options, userId) => {
-        const collapsed = ui.combatCarousel._collapsed;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || ui.combatCarousel?._collapsed) return;
+
         const hasCombat = game.combats.entities?.length;
-        if (!collapsed && !hasCombat) {
+
+        if (!hasCombat) {
             ui.combatCarousel.close();
             //await ui.combatCarousel.render(true);
             //ui.combatCarousel.collapse();
@@ -131,8 +125,10 @@ export default function registerHooks() {
     /**
      * Create Combatant hook
      */
-    Hooks.on("createCombatant", async (combatant, createData, options, userId) => {
-        if (ui.combatCarousel._collapsed) return;
+    Hooks.on("createCombatant", async (combatant, options, userId) => {
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || !ui.combatCarousel || ui.combatCarousel?._collapsed) return;
 
         //console.log("create combatantant:", {combat, createData, options, userId});
         
@@ -172,7 +168,9 @@ export default function registerHooks() {
      * Update Combatant hook
      */
     Hooks.on("updateCombatant", async (combatant, updateData, options, userId) => {
-        if (ui.combatCarousel._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || ui.combatCarousel?._collapsed) return;
         
         //console.log("combatant update", {combat, update, options, userId});
         //ui.combatCarousel.splide.go()
@@ -201,7 +199,9 @@ export default function registerHooks() {
      * Delete Combatant hook
      */
     Hooks.on("deleteCombatant", (combatant, options, userId) => {
-        if (ui.combatCarousel._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || ui.combatCarousel?._collapsed) return;
 
         //console.log("delete combatant:", {combat, combatant, options, userId});
         
@@ -222,7 +222,9 @@ export default function registerHooks() {
     /* ------------------- Actor ------------------ */
 
     Hooks.on("updateActor", (actor, updateData, options, userId) => {
-        if (ui.combatCarousel._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || ui.combatCarousel?._collapsed) return;
 
         if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
         // find any matching combat carousel combatants
@@ -235,7 +237,9 @@ export default function registerHooks() {
     /* ------------------- Token ------------------ */
 
     Hooks.on("updateToken", (token, updateData, options, userId) => {
-        if (ui.combatCarousel._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || ui.combatCarousel?._collapsed) return;
 
         //console.log("token update:", scene,token,update,options,userId);
         if (
@@ -276,6 +280,10 @@ export default function registerHooks() {
      * Combat Tracker Render hook
      */
     Hooks.on("renderCombatTracker", (app, html, data) => {
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled) return;
+
         const viewed = canvas.scene;
         const rendered = ui?.combatCarousel?.rendered;
         const collapsed = ui?.combatCarousel?._collapsed;
@@ -311,7 +319,9 @@ export default function registerHooks() {
      * SceneNavigation collapse/expand hook
      */
     Hooks.on("collapseSceneNavigation", (app, collapsed) => {
-        if (!ui.combatCarousel) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || !ui.combatCarousel) return;
 
         /**
         if (collapsed) {
@@ -328,7 +338,9 @@ export default function registerHooks() {
      * Sidebar Collapse Hook
      */
     Hooks.on("sidebarCollapse", (app, collapsed) => {
-        if (!ui.combatCarousel || ui.combatCarousel?._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || !ui.combatCarousel || ui.combatCarousel?._collapsed) return;
 
         ui.combatCarousel.setPosition();
     });
@@ -337,9 +349,9 @@ export default function registerHooks() {
      * Hover Token hook
      */
     Hooks.on("hoverToken", (token, hovered) => {
-        if (ui.combatCarousel._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        if (!ui?.combatCarousel?.splide || !game.combat) return;
+        if (!enabled || ui.combatCarousel?._collapsed) return;
 
         if (!ui?.combatCarousel?.splide || !game.combat) return;
 
@@ -390,7 +402,9 @@ export default function registerHooks() {
      * Control Token hook
      */
     Hooks.on("controlToken", (token, controlled) => {
-        if (!game.combat || !ui.combatCarousel?.splide || ui.combatCarousel?._collapsed) return;
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+
+        if (!enabled || !game.combat || !ui.combatCarousel?.splide || ui.combatCarousel?._collapsed) return;
 
         const combatant = game.combat.combatants.find(c => c.token?.id === token.id);
 
@@ -417,17 +431,10 @@ export default function registerHooks() {
      * Render Scene Controls Hook
      */
     Hooks.on("renderSceneControls", async (app, html, data) => {
-        const combatState = CombatCarousel.getCombatState(game.combat);
-        const carouselIcon = CAROUSEL_ICONS[combatState];
+        const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        const ccButtonHtml = await renderTemplate(`${TEMPLATE_PATH}/combat-carousel-button.hbs`,{carouselIcon});
-        
-        html.append(ccButtonHtml);
+        if (!enabled) return;
 
-        const ccButton = html.find("li[data-control='combat-carousel']");
-        
-        ccButton
-            .on("click", event => ui.combatCarousel._onModuleIconClick(event))
-            .on("contextmenu", event => ui.combatCarousel.resetPosition(event))
+        return CombatCarousel._onRenderSceneControls(app, html, data);
     });
 }
