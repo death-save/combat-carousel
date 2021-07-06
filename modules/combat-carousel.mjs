@@ -231,6 +231,9 @@ export default class CombatCarousel extends Application {
                 img = token.data.img ?? turn.img;
                 break;
 
+            case "combatant":
+                img = turn.img;
+
             default:
                 break;
         }

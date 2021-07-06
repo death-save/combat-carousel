@@ -168,7 +168,8 @@ export const DEFAULT_CONFIG = {
         choices: {
             actor: "Actor",
             tokenActor: "Token Actor",
-            token: "Token"
+            token: "Token",
+            combatant: "Combatant"
         }
     }
 }
