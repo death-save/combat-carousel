@@ -87,7 +87,7 @@ export default class CombatCarousel extends Application {
             const $slides = $(slides);
             const $track = this.element.find(".splide__track");
 
-            if (force || this._rendered === false) {
+            if (force) {
                 for (let i = 0; i < slides.length; i++) {
                     slides[i].classList.add("fly");
                     slides[i].style.animationDelay = `${0.1 * (i ? i : 1)}s`;
