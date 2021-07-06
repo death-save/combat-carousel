@@ -864,7 +864,7 @@ export default class CombatCarousel extends Application {
                 return await ui.combat._onCombatCreate(event);
             
             case "delete":
-                return await this.combat.delete();
+                return await this.combat.endCombat();
 
             case "config":
                 return new CombatTrackerConfig().render(true);
