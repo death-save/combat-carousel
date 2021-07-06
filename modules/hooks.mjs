@@ -243,8 +243,9 @@ export default function registerHooks() {
 
         //console.log("token update:", scene,token,update,options,userId);
         if (
-            !hasProperty(updateData, "effects") 
-            && !hasProperty(updateData, "overlayEffect") 
+            !hasProperty(updateData, "effects")
+            && !hasProperty(updateData, "overlayEffect")
+            && !hasProperty(updateData, "actorData.effects")
             && !hasProperty(updateData, "actorData.data.attributes.hp.value") 
             && !hasProperty(updateData, "img")
             && !hasProperty(updateData, "actorData.img")
