@@ -1,0 +1,95 @@
+<div id="combat-carousel" class="wrapper">
+    <header class="header">
+        {{!-- {{#if this.encounter}}
+        <h3>
+            Encounter: {{this.encounter}} Round: {{this.round}}
+        </h3>
+        {{/if}} --}}
+    </header>
+    <div class="splide">
+        <div class="splide__slider">
+            <div class="combat-controls">
+                {{#if this.hasPreviousTurn}}
+                <a class="previous turn" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.PreviousTurn"}}" data-action="previousTurn"><i class="fas fa-chevron-left"></i></a>
+                {{/if}}
+                {{#if this.hasPreviousRound}}
+                <a class="previous round" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.PreviousRound"}}" data-action="previousRound"><i class="fas fa-step-backward"></i></a>
+                {{/if}}
+                {{#if this.hasNextTurn}}
+                <a class="next turn" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.NextTurn"}}" data-action="nextTurn"><i class="fas fa-chevron-right"></i></a>
+                {{/if}}
+                {{#if this.hasNextRound}}
+                <a class="next round" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.NextRound"}}" data-action="nextRound"><i class="fas fa-step-forward"></i></a>
+                {{/if}}
+            </div>
+            <div class="splide__track">
+                <ul class="splide__list">
+                    {{#each visibleTurns}}
+                        {{> "modules/combat-carousel/templates/combatant-card.hbs" combatant=this}}
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="drag-handle" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.DragTooltip"}}">
+        <i class="fas fa-bars"></i>
+    </div>
+    {{#if this.encounter}}
+    <div class="encounter-info flexcol">
+        <div class="encounter flexrow" title="{{localize "COMBAT_CAROUSEL.WORDS.Encounter"}} {{this.encounter}} / {{this.encounterCount}}">
+            {{#if canReverseEncounter}}
+            <a class="encounter-control previous" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.PreviousEncounter"}}" data-action="previousEncounter">
+                <i class="fas fa-caret-left"></i>
+            </a>
+            {{/if}}
+            <span class="counter">{{this.encounter}}</span>
+            {{#if canAdvanceEncounter}}
+            <a class="encounter-control next" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.NextEncounter"}}" data-action="nextEncounter">
+                <i class="fas fa-caret-right"></i>
+            </a>
+            {{/if}}
+            <span class="icon">
+                <i class="fas fa-fist-raised"></i>
+            </span>
+        </div>
+        <div class="round flexrow" title="{{localize "COMBAT_CAROUSEL.WORDS.Round"}} {{this.round}}">
+            {{!-- <a class="round-previous">
+                <i class="fas fa-caret-left"></i>
+            </a> --}}
+            <span class="counter">{{this.round}}</span>
+            {{!-- <a class="round-next">
+                <i class="fas fa-caret-right"></i>
+            </a> --}}
+            <span class="icon">
+                <i class="fas fa-circle-notch"></i>
+            </span>
+        </div>
+    </div>
+    {{/if}}
+    {{#if canControlCombat}}
+    <div class="encounter-controls">
+        <a class="encounter-control" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.CreateEncounter"}}" data-action="create">
+            <i class="fas fa-plus"></i>
+        </a>
+        {{#if encounter}}
+        <a class="encounter-control" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.DeleteEncounter"}}" data-action="delete">
+            <i class="fas fa-trash"></i>
+        </a>
+        {{/if}}
+        {{#if turns}}
+        <a class="encounter-control" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.RollAll"}}" data-action="rollAll">
+            <i class="fas fa-users"></i>
+        </a>
+        <a class="encounter-control" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.RollNPCs"}}" data-action="rollNPC">
+            <i class="fas fa-users-cog"></i>
+        </a>
+        <a class="encounter-control" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.ResetAll"}}" data-action="resetAll">
+            <i class="fas fa-undo"></i>
+        </a>
+        {{/if}}
+        <a class="encounter-control" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.Controls.EncounterConfig"}}" data-action="config">
+            <i class="fas fa-cog"></i>
+        </a>
+    </div>
+    {{/if}}
+</div>

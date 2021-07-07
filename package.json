@@ -1,0 +1,34 @@
+{
+  "name": "combat-carousel",
+  "version": "0.2.1-beta",
+  "description": "A Foundry VTT module providing CRPG-style combat tracker",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/death-save/combat-carousel.git"
+  },
+  "keywords": [
+    "fvtt",
+    "foundryvtt",
+    "death-save",
+    "combat-carousel"
+  ],
+  "author": "Evan Clarke (errational)",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/death-save/combat-carousel-public/issues"
+  },
+  "homepage": "https://github.com/death-save/combat-carousel-public#readme",
+  "devDependencies": {
+    "@pixi/jsdoc-template": "^2.6.0",
+    "gulp": "^4.0.2",
+    "gulp-zip": "^5.0.2",
+    "jquery": "^3.6.0",
+    "jsdoc-to-markdown": "^6.0.1",
+    "node-fetch": "^2.6.1",
+    "patreon": "^0.4.1"
+  }
+}

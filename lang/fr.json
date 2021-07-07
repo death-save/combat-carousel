@@ -1,0 +1,30 @@
+{
+    "COMBAT_CAROUSEL.SETTINGS.AboutN": "A propos",
+    "COMBAT_CAROUSEL.SETTINGS.AboutH": "Infos à propos de Combat Carousel",
+    "COMBAT_CAROUSEL.SETTINGS.CollapseNavN": "Réduire la Barre de Navigation",
+    "COMBAT_CAROUSEL.SETTINGS.CollapseNavH": "Réduire la Barre de Navigation lorsque Combat Carousel est affiché",
+    "COMBAT_CAROUSEL.SETTINGS.ShowHealthN": "Afficher la Jauge de Vie",
+    "COMBAT_CAROUSEL.SETTINGS.ShowHealthH": "Affiche la jauge de vie sous chaque portrait",
+    "COMBAT_CAROUSEL.SETTINGS.HealthBarPermissionN": "Permissions sur les Jauges de Vie pour les Joueurs",
+    "COMBAT_CAROUSEL.SETTINGS.HealthBarPermissionH": "Définit dans quelles circonstances montrer les jauges de vies aux joueurs. All Owned: Les jauges de vie de tout jeton que le joueur possède seront affichées. Use Token Setting: Utiliser le paramètre de jauge du jeton (comme Owner ou Always). None: Ne pas montrer aux joueurs les jauges de vie.",
+
+    "COMBAT_CAROUSEL.CAROUSEL.NextTurn": "Prochain Tour",
+    "COMBAT_CAROUSEL.CAROUSEL.PreviousTurn": "Tour Précédent",
+    "COMBAT_CAROUSEL.CAROUSEL.NextRound": "Prochain Round",
+    "COMBAT_CAROUSEL.CAROUSEL.PreviousRound": "Round Précédent",
+    "COMBAT_CAROUSEL.CAROUSEL.NextRoundTooltip": "Cliquer pour accéder au Prochain Round",
+    "COMBAT_CAROUSEL.CAROUSEL.PreviousRoundTooltip": "Cliquer pour retourner au Round Précédent",
+    "COMBAT_CAROUSEL.CAROUSEL.ToggleHint": "Cliquer pour afficher/cacher, clic droit pour accéder à la configuration",
+
+    "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Hide": "Changer la Visibilité",
+    "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Defeated": "Noter comme Vaincu",
+    "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Remove": "Retirer de la Rencontre",
+
+    "COMBAT_CAROUSEL.WORDS.Save": "Sauver",
+    "COMBAT_CAROUSEL.WORDS.Cancel": "Annuler",
+    "COMBAT_CAROUSEL.WORDS.Hidden": "Caché",
+    "COMBAT_CAROUSEL.WORDS.Defeated": "Vaincu",
+    "COMBAT_CAROUSEL.WORDS.Encounter": "Rencontre",
+    "COMBAT_CAROUSEL.WORDS.Round": "Round",
+    "COMBAT_CAROUSEL.WORDS.Turn": "Tour"
+}

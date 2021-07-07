@@ -1,0 +1,48 @@
+<form onsubmit="event.preventDefault()" autocomplete="off">
+    <!--
+    <h2>{{localize "COMBAT_CAROUSEL.CONFIG_FORM.ResourceBars"}}</h2>
+    <div class="form-group">
+        <label>{{localize "COMBAT_CAROUSEL.CONFIG_FORM.ResourceBar1"}}:</label>
+        <div class="form-fields">
+            <select class="bar-attribute" name="bar1.attribute">
+                {{#select bar1.attribute}}
+                <option value="">None</option>
+                {{#each barAttributes as |attrs label|}}
+                <optgroup label="{{ label }}">
+                    {{#each attrs}}
+                    <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </optgroup>
+                {{/each}}
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    -->
+
+    <h2>{{localize "COMBAT_CAROUSEL.OVERLAY_CONFIG.Name"}}</h2>
+    {{#each overlaySettings}}
+    <div class="overlay-row" data-row="{{@index}}">
+        <div class="form-group">
+            <label>{{localize "COMBAT_CAROUSEL.WORDS.Property"}} {{@index}} {{localize "COMBAT_CAROUSEL.WORDS.Name"}}</label>
+            <input type="text" name="name-{{@index}}" value="{{this.name}}" placeholder="{{localize "COMBAT_CAROUSEL.WORDS.Property"}} {{@index}} {{localize "COMBAT_CAROUSEL.WORDS.Name"}}">
+        </div>
+        <div class="form-group">
+            <label>{{localize "COMBAT_CAROUSEL.WORDS.Property"}} {{@index}} {{localize "COMBAT_CAROUSEL.WORDS.Value"}}</label>
+            <input type="text" name="actor-property-{{@index}}" value="{{this.value}}" placeholder="{{localize "COMBAT_CAROUSEL.WORDS.Property"}} {{@index}} {{localize "COMBAT_CAROUSEL.WORDS.Value"}}">
+        </div>
+        <img src="{{this.img}}" class="icon" />
+        <div class="flexrow">
+            <input type="text" name="icon-{{@index}}" title="Overlay Icon Path" class="icon-path" value="{{this.img}}" placeholder="/icons/example.svg" data-dtype="String">
+            <button type="button" name="file-picker-{{@index}}" class="file-picker" data-type="image" data-target="icon-{{@index}}" title="{{localize "COMBAT_CAROUSEL.WORDS.BrowseFiles"}}" tabindex="-1">
+                <i class="fas fa-file-import fa-fw"></i>
+            </button>
+        </div>
+    </div>
+    <hr />
+    {{/each}}
+    <footer class="flexrow">
+        <button type="submit" name="save"><i class="fas fa-save"></i> {{localize "COMBAT_CAROUSEL.WORDS.Save"}}</button>
+        <button type="button" name="cancel"><i class="fas fa-times"></i>{{localize "COMBAT_CAROUSEL.WORDS.Cancel"}}</button>
+    </footer>
+</form> 

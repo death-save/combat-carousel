@@ -1,0 +1,30 @@
+{
+    "COMBAT_CAROUSEL.SETTINGS.AboutN": "Sobre",
+    "COMBAT_CAROUSEL.SETTINGS.AboutH": "Sobre o Combat Carousel",
+    "COMBAT_CAROUSEL.SETTINGS.CollapseNavN": "Esconder Barra de Navegação",
+    "COMBAT_CAROUSEL.SETTINGS.CollapseNavH": "Esconde a Barra de Navegação quando o Combat Carousel aparecer.",
+    "COMBAT_CAROUSEL.SETTINGS.ShowHealthN": "Mostrar Barra de Vida",
+    "COMBAT_CAROUSEL.SETTINGS.ShowHealthH": "Mostra a Barra de Vida embaixo do retrato.",
+    "COMBAT_CAROUSEL.SETTINGS.HealthBarPermissionN": "Permissões da Barra de Vida para os jogadores",
+    "COMBAT_CAROUSEL.SETTINGS.HealthBarPermissionH": "Define quando as Barras de Vida devem ser mostradas para os jogadores. All Owned: mostra as Barras de Vida de todos os tokens que o jogador for dono. Use Token Setting: usa a configuração de Barra de Vida de cada token. None: não mostra nenhuma Barra de Vida aos jogadores.",
+
+    "COMBAT_CAROUSEL.CAROUSEL.NextTurn": "Próximo Turno",
+    "COMBAT_CAROUSEL.CAROUSEL.PreviousTurn": "Turno Anterior",
+    "COMBAT_CAROUSEL.CAROUSEL.NextRound": "Próxima Rodada",
+    "COMBAT_CAROUSEL.CAROUSEL.PreviousRound": "Rodada Anterior",
+    "COMBAT_CAROUSEL.CAROUSEL.NextRoundTooltip": "Ir para a Próxima Rodada",
+    "COMBAT_CAROUSEL.CAROUSEL.PreviousRoundTooltip": "Ir para a Rodada Anterior",
+    "COMBAT_CAROUSEL.CAROUSEL.ToggleHint": "Botão esquerdo para esconder/revelar, botão direito para configurar",
+
+    "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Hide": "Mudar Visibilidade",
+    "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Defeated": "Marcar como Derrotado",
+    "COMBAT_CAROUSEL.COMBATANT_CARD.Controls.Remove": "Remover do Encontro",
+
+    "COMBAT_CAROUSEL.WORDS.Save": "Salvar",
+    "COMBAT_CAROUSEL.WORDS.Cancel": "Calcelar",
+    "COMBAT_CAROUSEL.WORDS.Hidden": "Escondido",
+    "COMBAT_CAROUSEL.WORDS.Defeated": "Derrotado",
+    "COMBAT_CAROUSEL.WORDS.Encounter": "Encontro",
+    "COMBAT_CAROUSEL.WORDS.Round": "Rodada",
+    "COMBAT_CAROUSEL.WORDS.Turn": "Turno"
+}
