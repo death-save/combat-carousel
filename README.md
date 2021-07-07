@@ -3,7 +3,7 @@
 # Combat Carousel
 ![https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.6.3=>0.7.6-green](https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.8.5=>0.8.8-green)
 
-![GitHub downloads (latest)](https://img.shields.io/github/downloads-pre/death-save/combat-carousel/latest/combat-carousel.zip)
+![GitHub downloads (latest)](https://img.shields.io/github/downloads-pre/death-save/combat-carousel/latest/module.zip)
 [![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Install%20Base&query=package.installs&suffix=%&url=https://forge-vtt.com/api/bazaar/package/combat-carousel&colorB=brightgreen)](https://forge-vtt.com/)
 
 A Foundry VTT module to display CRPG-style Combatant cards in carousel-like format.
