@@ -2,10 +2,20 @@
 
 ## Known Issues
 - ~~Encounters on non-active scenes do not appear in the Carousel~~
-- Newly Added/Removed Combatants on non-active scenes do not appear in the Carousel
+- ~~Newly Added/Removed Combatants on non-active scenes do not appear in the Carousel~~
 - Tested exclusively with `dnd5e` system -- other systems may encounter errors at this time
 - Initiative icon assumes `d20`-based initiative
 - Some strings are still not setup for translation
+
+## [0.2.1] - 2021-07-06
+> This release marks the public beta for the 0.2.x series of Combat Carousel.
+- Added compatibility for Foundry VTT v0.8.x
+- You can now disable the module even if your GM was nice enough to install and enable it! Simply uncheck the `Enable Combat Carousel` setting to disable its functionality... you monster.
+- Added `Combatant` option for **Combat Carousel** card images. This will use the image you've set for combatant--overriding their token image--but defaults to the token image if none exists.
+- Carousel is no longer forcefully rendered during combat updates *except* when Combat Carousel is enabled and combat is created
+- In case you have second thoughts you now get a prompt (same as core Foundry) when deleting a combat/encounter.
+- **Combat Carousel** should be approximately 43.51629% more efficient due to more stringent checks when processing actor/token updates.
+- Active/Status Effects are visible again. Yes Gary... for the last time, your character is still petrified!
 
 ## [0.2.0] - 2021-01-24
 - The Carousel can now be moved ⬆↗⬅↘↖⬇➡↙: 
