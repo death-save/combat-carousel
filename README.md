@@ -14,7 +14,7 @@ A Foundry VTT module to display CRPG-style Combatant cards in carousel-like form
 [Release Video - YouTube](https://www.youtube.com/watch?v=tG1rKcG1Oa4)    
 [Release Stream - Twitch](https://www.twitch.tv/videos/754023462?t=0h0m49s)
 
-## Attribution
+# Attribution
 - This module uses the SplideJS library to provide carousel functionality: https://splidejs.com/
 - Carousel icon based on `Horse Carousel` icon by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from https://www.flaticon.com/free-icon/horse-carousel_82324
 - Bookmark Icon made by <a href="https://www.flaticon.com/authors/dinosoftlabs" title="DinosoftLabs">DinosoftLabs</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
