@@ -795,7 +795,7 @@ export default class CombatCarousel extends Application {
 
             // Toggle combatant visibility
             case "toggleHidden":
-                await combat.updateEmbeddedDocuments("Combatant", [{id: combatant.id, hidden: !combatant.hidden}]);
+                await combat.updateEmbeddedDocuments("Combatant", [{_id: combatant.id, hidden: !combatant.hidden}]);
                 break;
     
             // Toggle combatant defeated flag
