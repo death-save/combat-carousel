@@ -1677,7 +1677,7 @@ export default class CombatCarousel extends Application {
 
         const combatantId = cardElement.dataset.combatantId;
 
-        if (!combatantId) return null;
+        if (!combatantId || !combat) return null;
 
         const combatant = combat.combatants?.get(combatantId);
 
