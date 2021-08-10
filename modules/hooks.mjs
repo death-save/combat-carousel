@@ -228,7 +228,7 @@ export default function registerHooks() {
         if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
         // find any matching combat carousel combatants
         
-        if (!game.combat.combatants.some(c => c.actor.id === actor.id)) return;
+        if (!game.combat?.combatants.some(c => c.actor.id === actor.id)) return;
         // update their hp bar
 
         ui.combatCarousel.render();
