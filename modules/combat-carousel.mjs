@@ -264,7 +264,7 @@ export default class CombatCarousel extends Application {
             img,
             initiative: turn.initiative,
             hidden: turn.hidden,
-            visible: turn.visible,
+            visible: turn.isVisible,
             defeated: turn.data.defeated,
             carousel: {
                 isGM: game.user.isGM,
