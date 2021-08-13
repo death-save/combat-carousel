@@ -42,6 +42,7 @@ export const SETTING_KEYS = {
     overlayConfigMenu: "overlayConfigMenu",
     showOverlay: "showOverlay",
     overlayPermission: "overlayPermission",
+    showEffects: "showEffects",
     collapseNav: "collapseNav",
     collapsed: "carouselCollapsed",
     showBar1: "showBar1",
