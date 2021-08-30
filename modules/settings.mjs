@@ -136,6 +136,18 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.showEffects, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ShowEffectsN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ShowEffectsH",
+        scope: "world",
+        type: Boolean,
+        default: true,
+        config: true,
+        onChange: s => {
+            ui.combatCarousel.render(true);
+        }
+    });
+
     /* -------------------------------------------------------------------------- */
     /*                             Initiative Settings                            */
     /* -------------------------------------------------------------------------- */

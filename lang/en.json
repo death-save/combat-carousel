@@ -12,6 +12,8 @@
     "COMBAT_CAROUSEL.SETTINGS.Bar1PermissionH": "Define what circumstances to show bar 1 to players. All: show bars on all Combatants. Owned: bars shown for any tokens the player owns. Observer: bars shown for any tokens the player has observer permission on. None: Do not show players any bars.",
     "COMBAT_CAROUSEL.SETTINGS.ShowOverlayN": "Show Overlay",
     "COMBAT_CAROUSEL.SETTINGS.ShowOverlayH": "Shows overlay (if configured). Options are: Always: always show the overlay. Active Combatant: only show the overlay for the Active Combatant. Hover: only show the overlay on hover. Never: never show the overlay. Note: additional GM settings may restrict overlay visibility.",
+    "COMBAT_CAROUSEL.SETTINGS.ShowEffectsN": "Show effects as overlay",
+    "COMBAT_CAROUSEL.SETTINGS.ShowEffectH": "Shows Active Effects in the carousel. Works best if Active Effects are used by conditions and similar purposes.",
     "COMBAT_CAROUSEL.SETTINGS.OverlayPermissionN": "Player Overlay Permissions",
     "COMBAT_CAROUSEL.SETTINGS.OverlayPermissionH": "Define what circumstances to show Overlay to players. All: show overlay on all Combatants. Owner: overlay shown for any tokens the player owns. Observer: overlay shown for any tokens the player has observer permission on. None: Do not show players any overlay.",
     "COMBAT_CAROUSEL.SETTINGS.Bar1AttributeN": "Bar 1 Attribute",
