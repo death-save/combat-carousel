@@ -1244,8 +1244,8 @@ export default class CombatCarousel extends Application {
      * @param {Number} [left] 
      */
     _getAvailableWidth({sidebarWidth=null, left=null}={}) {
-        // If no sidebarWidth is provided, calculate its width including any positional buffer
-        sidebarWidth = sidebarWidth ?? (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()) + 5);
+        // If no sidebarWidth is provided, calculate its width including any positional buffer, if the sidebar is visible
+        sidebarWidth = sidebarWidth ?? ui.sidebar.element.is(":hidden") ? 0 : (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()) + 5);
         const carouselLeft = left ?? this.element.offset().left;
         const availableWidth = Math.floor(window.innerWidth - (carouselLeft + sidebarWidth));
 
