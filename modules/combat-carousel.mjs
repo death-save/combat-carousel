@@ -274,12 +274,12 @@ export default class CombatCarousel extends Application {
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
-                effects: showEffectsSetting? actor.effects?.contents.map(e => { 
+                effects: showEffectsSetting ? (actor.effects?.contents.map(e => { 
                     return {
                         img: e.data.icon,
                         name: e.name ?? e.data.label
                     }
-                }) || null : null,
+                }) || null) : null,
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
