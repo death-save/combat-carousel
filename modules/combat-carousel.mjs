@@ -244,9 +244,10 @@ export default class CombatCarousel extends Application {
         const bar1AttributeSetting = game.settings.get(NAME, SETTING_KEYS.bar1Attribute);
 
         if (token && bar1AttributeSetting ) {
-            bar1 = token.getBarAttribute("bar1", {alternative: bar1AttributeSetting});
+            bar1 = token.getBarAttribute("bar1", bar1AttributeSetting) ?? {};
             bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
 
+            // Set values for HTML progress bar styling
             if (bar1?.type === "bar") {
                 bar1.low = bar1.max * 0.34;
                 bar1.high = bar1.max * 0.6;
