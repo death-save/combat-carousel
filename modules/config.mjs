@@ -172,5 +172,14 @@ export const DEFAULT_CONFIG = {
             token: "Token",
             combatant: "Combatant"
         }
+    },
+    showEffects: {
+        choices: {
+            all: "All Effects",
+            none: "No Effects",
+            allActive: "All Active Effects",
+            activeTemporary: "Active Temporary Effects",
+            activePassive: "Active Passive Effects"
+        }
     }
 }

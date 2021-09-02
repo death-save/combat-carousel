@@ -140,8 +140,9 @@ export default function registerSettings() {
         name: "COMBAT_CAROUSEL.SETTINGS.ShowEffectsN",
         hint: "COMBAT_CAROUSEL.SETTINGS.ShowEffectsH",
         scope: "world",
-        type: Boolean,
-        default: true,
+        type: String,
+        default: "all",
+        choices: DEFAULT_CONFIG.showEffects.choices,
         config: true,
         onChange: s => {
             ui.combatCarousel.render(true);

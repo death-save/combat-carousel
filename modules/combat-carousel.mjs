@@ -259,7 +259,6 @@ export default class CombatCarousel extends Application {
         // @todo add some setting to configure this (Eg. for owned combatants)
         const canEditInitiative = game.user.isGM;
         
-        const showEffectsSetting = game.settings.get(NAME, SETTING_KEYS.showEffects);
         const preparedData = {
             id: turn.id,
             name: turn.name,
@@ -275,12 +274,7 @@ export default class CombatCarousel extends Application {
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
-                effects: showEffectsSetting ? (actor.effects?.contents.map(e => { 
-                    return {
-                        img: e.data.icon,
-                        name: e.name ?? e.data.label
-                    }
-                }) || null) : null,
+                effects: this._filterActorEffects(actor),
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
@@ -1622,6 +1616,50 @@ export default class CombatCarousel extends Application {
         if(newDirection && (newDirection !== currentDirection)) {
             $indicator.removeClass(`fa-caret-${currentDirection}`).addClass(`fa-caret-${newDirection}`)
         }
+    }
+
+    /**
+     * Filter Actor effects based on the current effect display choice
+     * @param actor 
+     */
+     _filterActorEffects(actor) {
+        const showEffectsSetting = game.settings.get(NAME, SETTING_KEYS.showEffects);
+
+        const actorEffects = actor.effects?.contents;
+        let filteredEffects = null;
+
+        switch (showEffectsSetting) {
+            case "all":
+                filteredEffects = actorEffects;
+                break;
+            
+            case "allActive":
+                filteredEffects = actorEffects.filter(e => !e.data.disabled);
+                break;
+            
+            case "activeTemporary":
+                filteredEffects = actorEffects.filter(e => !e.data.disabled && e.isTemporary);
+                break;
+            
+            case "activePassive":
+                filteredEffects = actorEffects.filter(e => !e.data.disabled && !e.isTemporary);
+                break;
+        
+            default:
+            case "none":
+                break;
+        }
+        
+        if (filteredEffects) {
+            filteredEffects = filteredEffects.map(e => { 
+                return {
+                    img: e.data.icon,
+                    name: e.name ?? e.data.label
+                }
+            });
+        }
+
+        return filteredEffects; 
     }
 
     /* -------------------------------------------- */
