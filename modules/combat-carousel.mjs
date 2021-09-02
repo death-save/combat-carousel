@@ -1378,8 +1378,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
-            || ((overlayPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((overlayPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showOverlaySetting) {
             case showAlways:
@@ -1430,8 +1430,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1488,8 +1488,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1547,8 +1547,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
-            || ((barPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showBarSetting) {
             case showAlways:
