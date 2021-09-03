@@ -808,7 +808,7 @@ export default class CombatCarousel extends Application {
     
             // Roll combatant initiative
             case "remove":
-                await combat.deleteEmbeddedDocuments("Combatant", [{id: combatant.id}]);
+                this._removeCombatant(combatant);
                 break;
         }
   
@@ -965,6 +965,20 @@ export default class CombatCarousel extends Application {
         const encounterOptions = this._getEncounterContextOptions();
 
         if (encounterOptions) new ContextMenu(html, ".encounter-info", encounterOptions);
+    }
+
+    /**
+     * Removes a combatant from combat
+     * @param combatantId 
+     */
+     _removeCombatant(combatant) {
+        let confirmDialog = Dialog.confirm({
+            title: "Delete Combatant",
+            content: "<p>Remove combatant from Encounter?</p>",
+            yes: () => combatant.delete(),
+            no: () => {},
+            defaultYes: false
+        });
     }
 
     /* -------------------------------------------- */
