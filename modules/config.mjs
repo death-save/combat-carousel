@@ -54,7 +54,8 @@ export const SETTING_KEYS = {
     showInitiative: "showInitiative",
     showInitiativeIcon: "showInitiativeIcon",
     initiativePermission: "initiativePermission",
-    imageType: "imageType"
+    imageType: "imageType",
+    controlActiveCombatantToken: "controlActiveCombatantToken"
 }
 
 /**

@@ -104,6 +104,17 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.controlActiveCombatantToken, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ControlActiveCombatantTokenN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ControlActiveCombatantTokenH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+        }
+    });
+
     /* -------------------------------------------------------------------------- */
     /*                              Overlay Settings                              */
     /* -------------------------------------------------------------------------- */

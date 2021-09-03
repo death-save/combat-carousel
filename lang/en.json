@@ -31,7 +31,9 @@
             "ImageTypeN": "Combatant Image",
             "ImageTypeH": "Select which Image to use for Combatants in the Carousel. Options are: Actor: the Actor's image. Token Actor: the Token Actor's image (will show Actor image if Token Actor image not set). Token: The token's image",
             "CarouselSizeN": "Carousel Size",
-            "CarouselSizeH": "The size of the Carousel on the screen. HUD/Control elements are not scaled."
+            "CarouselSizeH": "The size of the Carousel on the screen. HUD/Control elements are not scaled.",
+            "ControlActiveCombatantTokenN": "Control Active Combatant's Token",
+            "ControlActiveCombatantTokenH": "Enable to automatically control (select) the token associated to the currently Active Combatant."
         },
 
         "CAROUSEL": {

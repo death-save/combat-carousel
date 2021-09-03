@@ -151,8 +151,13 @@ export default class CombatCarousel extends Application {
             if (!token) return;
 
             const index = this.getCombatantSlideIndex(combatant);
+            const controlTokenSetting = game.settings.get(NAME, SETTING_KEYS.controlActiveCombatantToken);
 
-            return await token.control();
+            if (controlTokenSetting) {
+                await token.control();
+            }
+
+            return; 
         });
 
         /**
