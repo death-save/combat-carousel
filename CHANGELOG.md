@@ -1,11 +1,22 @@
 # Changelog
 
 ## Known Issues
-- ~~Encounters on non-active scenes do not appear in the Carousel~~
-- ~~Newly Added/Removed Combatants on non-active scenes do not appear in the Carousel~~
-- Tested exclusively with `dnd5e` system -- other systems may encounter errors at this time
+- Tested (almost) exclusively with `dnd5e` system -- other systems may encounter errors -- please report in Issue Log
 - Initiative icon assumes `d20`-based initiative
 - Some strings are still not setup for translation
+
+## [0.2.2] - 2021-09-03
+- The evil incantation causing **hidden combatants** to be revealed has been dispelled. GMs: rest easy knowing your secret invisible party-killing superbeast surprise is no longer spoiled. (thanks @JamzTheMan 🎉)
+- For SOME REASON some systems don't use `attributes.hp` for health bars. Weird huh! Combat Carousel works with these systems again. 
+- Combatants who don't make the cut can be **deleted** from the Carousel again. (Yikes Roger, you really screwed up that death save...)
+- - ...also added a **confirmation dialog** in case you accidentally click the wrong combatant (like anyone except Roger...) 
+- Sidebar hidden (eg. by some other module) but the **Carousel doesn't fill the space**? Now it does! (thanks @sPOIDar 🎉)
+- **No combat**? No problem (any longer)! (thanks @DavidAremaCarretero 🎉)
+- Apparently having every single Active Effect on the Combatant Card wasn't desirable in all situations (PF2e users I see you!). Well now you can **choose which Effects to show** (All, Temporary + Passive, Temporary Only, Passive Only) (thanks @Drental 🎉 for contributing code to this)
+- In case you don't like to be in control, there's now a setting to control whether you **control the active Combatant** when it changes
+- Updated **Spanish** translation (thanks @lozalojo 🎉)
+- Updated **Japanese** translation (thanks `touge` and @brothersharper 🎉)
+- Confirmed compatibility with Foundry VTT 0.8.9
 
 ## [0.2.1] - 2021-07-06
 > This release marks the public beta for the 0.2.x series of Combat Carousel.

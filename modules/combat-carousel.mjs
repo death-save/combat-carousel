@@ -151,8 +151,13 @@ export default class CombatCarousel extends Application {
             if (!token) return;
 
             const index = this.getCombatantSlideIndex(combatant);
+            const controlTokenSetting = game.settings.get(NAME, SETTING_KEYS.controlActiveCombatantToken);
 
-            return await token.control();
+            if (controlTokenSetting) {
+                await token.control();
+            }
+
+            return; 
         });
 
         /**
@@ -244,9 +249,10 @@ export default class CombatCarousel extends Application {
         const bar1AttributeSetting = game.settings.get(NAME, SETTING_KEYS.bar1Attribute);
 
         if (token && bar1AttributeSetting ) {
-            bar1 = token.getBarAttribute("bar1", {alternative: bar1AttributeSetting});
+            bar1 = token.getBarAttribute("bar1", bar1AttributeSetting) ?? {};
             bar1.title = game.settings.get(NAME, SETTING_KEYS.bar1Title);
 
+            // Set values for HTML progress bar styling
             if (bar1?.type === "bar") {
                 bar1.low = bar1.max * 0.34;
                 bar1.high = bar1.max * 0.6;
@@ -257,14 +263,14 @@ export default class CombatCarousel extends Application {
 
         // @todo add some setting to configure this (Eg. for owned combatants)
         const canEditInitiative = game.user.isGM;
-
+        
         const preparedData = {
             id: turn.id,
             name: turn.name,
             img,
             initiative: turn.initiative,
             hidden: turn.hidden,
-            visible: turn.visible,
+            visible: turn.isVisible,
             defeated: turn.data.defeated,
             carousel: {
                 isGM: game.user.isGM,
@@ -273,12 +279,7 @@ export default class CombatCarousel extends Application {
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
                 overlayEffect: token?.data?.overlayEffect || null,
-                effects: actor.effects?.contents.map(e => { 
-                    return {
-                        img: e.data.icon,
-                        name: e.name ?? e.data.label
-                    }
-                }) || null,
+                effects: this._filterActorEffects(actor),
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
@@ -812,7 +813,7 @@ export default class CombatCarousel extends Application {
     
             // Roll combatant initiative
             case "remove":
-                await combat.deleteEmbeddedDocuments("Combatant", [{id: combatant.id}]);
+                this._removeCombatant(combatant);
                 break;
         }
   
@@ -969,6 +970,20 @@ export default class CombatCarousel extends Application {
         const encounterOptions = this._getEncounterContextOptions();
 
         if (encounterOptions) new ContextMenu(html, ".encounter-info", encounterOptions);
+    }
+
+    /**
+     * Removes a combatant from combat
+     * @param combatantId 
+     */
+     _removeCombatant(combatant) {
+        let confirmDialog = Dialog.confirm({
+            title: "Delete Combatant",
+            content: "<p>Remove combatant from Encounter?</p>",
+            yes: () => combatant.delete(),
+            no: () => {},
+            defaultYes: false
+        });
     }
 
     /* -------------------------------------------- */
@@ -1244,8 +1259,8 @@ export default class CombatCarousel extends Application {
      * @param {Number} [left] 
      */
     _getAvailableWidth({sidebarWidth=null, left=null}={}) {
-        // If no sidebarWidth is provided, calculate its width including any positional buffer
-        sidebarWidth = sidebarWidth ?? (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()) + 5);
+        // If no sidebarWidth is provided, calculate its width including any positional buffer, if the sidebar is visible
+        sidebarWidth = sidebarWidth ?? ui.sidebar.element.is(":hidden") ? 0 : (ui.sidebar.element.outerWidth() + (window.innerWidth - ui.sidebar.element.offset().left - ui.sidebar.element.outerWidth()) + 5);
         const carouselLeft = left ?? this.element.offset().left;
         const availableWidth = Math.floor(window.innerWidth - (carouselLeft + sidebarWidth));
 
@@ -1377,8 +1392,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
-            || ((overlayPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((overlayPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showOverlaySetting) {
             case showAlways:
@@ -1429,8 +1444,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1487,8 +1502,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1546,8 +1561,8 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
-            || ((barPermissionSetting === permOwner) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.hasPerm(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
 
         switch (showBarSetting) {
             case showAlways:
@@ -1620,6 +1635,50 @@ export default class CombatCarousel extends Application {
         if(newDirection && (newDirection !== currentDirection)) {
             $indicator.removeClass(`fa-caret-${currentDirection}`).addClass(`fa-caret-${newDirection}`)
         }
+    }
+
+    /**
+     * Filter Actor effects based on the current effect display choice
+     * @param actor 
+     */
+     _filterActorEffects(actor) {
+        const showEffectsSetting = game.settings.get(NAME, SETTING_KEYS.showEffects);
+
+        const actorEffects = actor.effects?.contents;
+        let filteredEffects = null;
+
+        switch (showEffectsSetting) {
+            case "all":
+                filteredEffects = actorEffects;
+                break;
+            
+            case "allActive":
+                filteredEffects = actorEffects.filter(e => !e.data.disabled);
+                break;
+            
+            case "activeTemporary":
+                filteredEffects = actorEffects.filter(e => !e.data.disabled && e.isTemporary);
+                break;
+            
+            case "activePassive":
+                filteredEffects = actorEffects.filter(e => !e.data.disabled && !e.isTemporary);
+                break;
+        
+            default:
+            case "none":
+                break;
+        }
+        
+        if (filteredEffects) {
+            filteredEffects = filteredEffects.map(e => { 
+                return {
+                    img: e.data.icon,
+                    name: e.name ?? e.data.label
+                }
+            });
+        }
+
+        return filteredEffects; 
     }
 
     /* -------------------------------------------- */

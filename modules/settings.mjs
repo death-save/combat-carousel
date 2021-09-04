@@ -104,6 +104,17 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.controlActiveCombatantToken, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ControlActiveCombatantTokenN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ControlActiveCombatantTokenH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+        }
+    });
+
     /* -------------------------------------------------------------------------- */
     /*                              Overlay Settings                              */
     /* -------------------------------------------------------------------------- */
@@ -133,6 +144,19 @@ export default function registerSettings() {
             if (!game.user.isGM) {
                 ui.combatCarousel.render(true);
             }
+        }
+    });
+
+    game.settings.register(NAME, SETTING_KEYS.showEffects, {
+        name: "COMBAT_CAROUSEL.SETTINGS.ShowEffectsN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.ShowEffectsH",
+        scope: "world",
+        type: String,
+        default: "all",
+        choices: DEFAULT_CONFIG.showEffects.choices,
+        config: true,
+        onChange: s => {
+            ui.combatCarousel.render(true);
         }
     });
 

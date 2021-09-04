@@ -42,6 +42,7 @@ export const SETTING_KEYS = {
     overlayConfigMenu: "overlayConfigMenu",
     showOverlay: "showOverlay",
     overlayPermission: "overlayPermission",
+    showEffects: "showEffects",
     collapseNav: "collapseNav",
     collapsed: "carouselCollapsed",
     showBar1: "showBar1",
@@ -53,7 +54,8 @@ export const SETTING_KEYS = {
     showInitiative: "showInitiative",
     showInitiativeIcon: "showInitiativeIcon",
     initiativePermission: "initiativePermission",
-    imageType: "imageType"
+    imageType: "imageType",
+    controlActiveCombatantToken: "controlActiveCombatantToken"
 }
 
 /**
@@ -170,6 +172,15 @@ export const DEFAULT_CONFIG = {
             tokenActor: "Token Actor",
             token: "Token",
             combatant: "Combatant"
+        }
+    },
+    showEffects: {
+        choices: {
+            all: "All Effects",
+            none: "No Effects",
+            allActive: "All Active Effects",
+            activeTemporary: "Active Temporary Effects",
+            activePassive: "Active Passive Effects"
         }
     }
 }
