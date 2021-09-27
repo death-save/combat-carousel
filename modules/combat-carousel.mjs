@@ -1388,12 +1388,14 @@ export default class CombatCarousel extends Application {
         const permAll = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.all);
         const permOwner = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.owned);
         const permObserver = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.observed);
+		const permLimited = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.limited);
         const permNone = getKeyByValue(DEFAULT_CONFIG.overlayPermission.choices, DEFAULT_CONFIG.overlayPermission.choices.none);
 
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
             || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
+			|| ((overlayPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
 
         switch (showOverlaySetting) {
             case showAlways:
@@ -1440,12 +1442,14 @@ export default class CombatCarousel extends Application {
         const permAll = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.all);
         const permOwner = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.owned);
         const permObserver = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
+		const permLimited = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.limited);
         const permNone = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.none);
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
             || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1498,12 +1502,14 @@ export default class CombatCarousel extends Application {
         const permAll = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.all);
         const permOwner = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.owned);
         const permObserver = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.observed);
+		const permLimited = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.limited);
         const permNone = getKeyByValue(DEFAULT_CONFIG.initiativePermission.choices, DEFAULT_CONFIG.initiativePermission.choices.none);
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
             || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1557,12 +1563,14 @@ export default class CombatCarousel extends Application {
         const permAll = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.all);
         const permOwner = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.owned);
         const permObserver = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.observed);
+		const permLimited = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.limited);
         const permNone = getKeyByValue(DEFAULT_CONFIG[`${barName}Permission`].choices, DEFAULT_CONFIG[`${barName}Permission`].choices.none);
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
             || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER));
+            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
+			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
 
         switch (showBarSetting) {
             case showAlways:
