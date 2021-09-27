@@ -99,6 +99,7 @@ export const DEFAULT_CONFIG = {
             all: "All",
             owned: "Owned Actors",
             observed: "Observed Actors",
+			limited: "Limited Actors",
             none: "None" 
         }
     },
@@ -116,6 +117,7 @@ export const DEFAULT_CONFIG = {
             all: "All",
             owned: "Owned Actors",
             observed: "Observed Actors",
+			limited: "Limited Actors",
             none: "None" 
         }
     },
@@ -163,6 +165,7 @@ export const DEFAULT_CONFIG = {
             all: "All",
             owned: "Owned",
             observed: "Observed",
+			limited: "Limited Actors",
             none: "None"
         }
     },
