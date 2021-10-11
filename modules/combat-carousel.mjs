@@ -636,9 +636,10 @@ export default class CombatCarousel extends Application {
         event.preventDefault();
         const hoveredCard = event.currentTarget;
         const combatantId = hoveredCard.dataset.combatantId;
-        const token = getTokenFromCombatantId(combatantId);
+        const tokenDocument = getTokenFromCombatantId(combatantId);
+        const token = tokenDocument ? canvas?.tokens?.placeables.find(t => t?.document.uuid === tokenDocument?.uuid) : null;
 
-        if ( token && token.isVisible ) {
+        if (token && token.visible) {
             if ( !token._controlled ) token._onHoverIn(event);
             this._highlightedToken = token;
         }
