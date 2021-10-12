@@ -746,7 +746,10 @@ export default class CombatCarousel extends Application {
 
         if (!token) return;
 
-        await canvas.animatePan({x: token.x, y: token.y});
+        const panOnClickSetting = game.settings.get(NAME, SETTING_KEYS.panOnClick);
+
+        if (panOnClickSetting && (game.user.isGM || token.visible)) await canvas.animatePan({x: token.x, y: token.y});
+        
         return await token.control();
     }
 

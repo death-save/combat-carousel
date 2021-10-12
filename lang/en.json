@@ -33,7 +33,9 @@
             "CarouselSizeN": "Carousel Size",
             "CarouselSizeH": "The size of the Carousel on the screen. HUD/Control elements are not scaled.",
             "ControlActiveCombatantTokenN": "Control Active Combatant's Token",
-            "ControlActiveCombatantTokenH": "Enable to automatically control (select) the token associated to the currently Active Combatant."
+            "ControlActiveCombatantTokenH": "Enable to automatically control (select) the token associated to the currently Active Combatant.",
+            "PanOnClickN": "Pan on Card Click",
+            "PanOnClickH": "Pans to the matching token when a card is clicked (note: the token must be 'visible' to the current user)"
         },
 
         "CAROUSEL": {

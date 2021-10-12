@@ -115,6 +115,17 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.panOnClick, {
+        name: "COMBAT_CAROUSEL.SETTINGS.PanOnClickN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.PanOnClickH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+        }
+    });
+
     /* -------------------------------------------------------------------------- */
     /*                              Overlay Settings                              */
     /* -------------------------------------------------------------------------- */
