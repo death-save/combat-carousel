@@ -136,30 +136,6 @@ export default class CombatCarousel extends Application {
             */
         });
 
-        this.splide.on("active", async (slide) => {
-            const card = slide.slide;
-            const combatantId = card.dataset.combatantId;
-            
-            if (!combatantId) return;
-
-            const combatant = game.combat?.combatants?.get(combatantId);
-
-            if (!combatant) return;
-
-            const token = canvas.tokens.get(combatant.token?.id);
-
-            if (!token) return;
-
-            const index = this.getCombatantSlideIndex(combatant);
-            const controlTokenSetting = game.settings.get(NAME, SETTING_KEYS.controlActiveCombatantToken);
-
-            if (controlTokenSetting) {
-                await token.control();
-            }
-
-            return; 
-        });
-
         /**
          * Handle adding a new combatant
          */
@@ -1125,6 +1101,15 @@ export default class CombatCarousel extends Application {
 
         activeCombatantSlide.classList.add("is-active-combatant");
         this.splide.go(slideIndex);
+
+        const tokenDocument = combatant.token;
+        const token = canvas?.tokens.placeables.find(t => t.id === tokenDocument.id);
+
+        if (!token) return;
+
+        const controlTokenSetting = game.settings.get(NAME, SETTING_KEYS.controlActiveCombatantToken);
+
+        if (controlTokenSetting) token.control();
     }
 
     /**
