@@ -4,6 +4,15 @@
 - Tested (almost) exclusively with `dnd5e` system -- other systems may encounter errors -- please report in Issue Log
 - Initiative icon assumes `d20`-based initiative
 - Some strings are still not setup for translation
+- When multiple combatants are added to combat at the same time, and the `Control Active Combatant` setting is enabled, there will be an error in console. It doesn't appear to prevent any Carousel behaviour.
+
+## [0.2.3] - 2021-10-11
+- Spanish translation updated (thanks @lozalojo ! 🎉)
+- Added options for `Limited` Actor permission to settings that support permissions (thanks @SovietVVinter ! 🎉)
+- Hovering combatant cards in the carousel hovers the token again 🛸
+- Panning for gold is fun, but panning to the active combatant might not be for you, so there's now a setting for that!
+- Clicking a combatant card now bubbles that click to the matching token, which provides better support for modules that override the native left click
+- Added support for the  🐛`Bug Reporter` module!
 
 ## [0.2.2] - 2021-09-03
 - The evil incantation causing **hidden combatants** to be revealed has been dispelled. GMs: rest easy knowing your secret invisible party-killing superbeast surprise is no longer spoiled. (thanks @JamzTheMan 🎉)
