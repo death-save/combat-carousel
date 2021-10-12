@@ -55,7 +55,8 @@ export const SETTING_KEYS = {
     showInitiativeIcon: "showInitiativeIcon",
     initiativePermission: "initiativePermission",
     imageType: "imageType",
-    controlActiveCombatantToken: "controlActiveCombatantToken"
+    controlActiveCombatantToken: "controlActiveCombatantToken",
+    panOnClick: "panOnClick"
 }
 
 /**
@@ -99,6 +100,7 @@ export const DEFAULT_CONFIG = {
             all: "All",
             owned: "Owned Actors",
             observed: "Observed Actors",
+			limited: "Limited Actors",
             none: "None" 
         }
     },
@@ -116,6 +118,7 @@ export const DEFAULT_CONFIG = {
             all: "All",
             owned: "Owned Actors",
             observed: "Observed Actors",
+			limited: "Limited Actors",
             none: "None" 
         }
     },
@@ -163,6 +166,7 @@ export const DEFAULT_CONFIG = {
             all: "All",
             owned: "Owned",
             observed: "Observed",
+			limited: "Limited Actors",
             none: "None"
         }
     },

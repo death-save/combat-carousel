@@ -2,7 +2,7 @@
     "name": "combat-carousel",
     "title": "Combat Carousel",
     "description": "Adds a CRPG-style combat tracker to the top of the screen",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "author": "Evan Clarke [errational#2007]",
     "authors": [
       {
@@ -76,6 +76,9 @@
         "caption":"Combat Carousel launch video"
       }
     ],
-    "manifestPlusVersion": "1.2.0"
+    "manifestPlusVersion": "1.2.0",
+    "flags": {
+      "allowBugReporter": true
+    }
   }
   
