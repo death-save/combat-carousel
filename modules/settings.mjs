@@ -128,6 +128,18 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.alwaysOnTop, {
+        name: "COMBAT_CAROUSEL.SETTINGS.AlwaysOnTopN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.AlwaysOnTopH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+            if (ui.combatCarousel?.rendered) ui.combatCarousel.render(true);
+        }
+    });
+
     /* -------------------------------------------------------------------------- */
     /*                              Overlay Settings                              */
     /* -------------------------------------------------------------------------- */

@@ -58,6 +58,12 @@ export default class CombatCarousel extends Application {
         const sizeSetting = game.settings.get(NAME, SETTING_KEYS.carouselSize);
         const scale = this.sizeFactor = sizeSetting ? DEFAULT_CONFIG.carouselSize.sizeScaleMap[sizeSetting] : 1;
         
+        const alwaysOnTopSetting = game.settings.get(NAME, SETTING_KEYS.alwaysOnTop);
+
+        if (alwaysOnTopSetting) {
+            this.element[0].style.zIndex = 100;
+        }
+
         /**
         * Create a Splide instance and store it for later use
         */
