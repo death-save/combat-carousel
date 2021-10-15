@@ -86,8 +86,10 @@ export default function registerSettings() {
         choices: DEFAULT_CONFIG.carouselSize.choices,
         config: true,
         onChange: async s => {
-            await ui.combatCarousel.render(true);
-            ui.combatCarousel.element.addClass(s);
+            if (ui.combatCarousel?.rendered) {
+                await ui.combatCarousel.render(true);
+                ui.combatCarousel.element.addClass(s);
+            }
         }
     });
 
@@ -100,7 +102,7 @@ export default function registerSettings() {
         choices: DEFAULT_CONFIG.imageType.choices,
         config: true,
         onChange: s => {
-            ui.combatCarousel.render(true);
+            if (ui.combatCarousel?.rendered) ui.combatCarousel.render(true);
         }
     });
 
