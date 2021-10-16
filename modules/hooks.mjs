@@ -51,7 +51,11 @@ export default function registerHooks() {
         if (!enabled || !ui.combatCarousel || ui.combatCarousel?._collapsed) return;
         
         ui.combatCarousel.render(true);
-        
+
+        // If set, collapse the Nav bar
+        const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
+        if (collapseNavSetting) ui.nav.collapse();
+
         const hasTurns = combat?.turns?.length;
         const carouselImg = ui?.controls?.element.find("img.carousel-icon");
         const newImgSrc = hasTurns ? CAROUSEL_ICONS.hasTurns : CAROUSEL_ICONS.noTurns;
@@ -297,6 +301,9 @@ export default function registerHooks() {
 
         if (!data?.hasCombat && rendered) {
             ui.combatCarousel.close();
+            // If set, re-expand the nav bar after combat closes
+            const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
+            if (collapseNavSetting) ui.nav.expand();
         }
 
         if (data?.hasCombat && isViewedCombat && !combatMatch && collapsed === false) {
