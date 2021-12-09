@@ -223,7 +223,7 @@ export default function registerHooks() {
     Hooks.on("updateActor", (actor, updateData, options, userId) => {
         const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        if (!enabled || ui.combatCarousel?._collapsed) return;
+        if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
         if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
         // find any matching combat carousel combatants
@@ -239,7 +239,7 @@ export default function registerHooks() {
     Hooks.on("updateToken", (token, updateData, options, userId) => {
         const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        if (!enabled || ui.combatCarousel?._collapsed) return;
+        if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
         //console.log("token update:", scene,token,update,options,userId);
         if (
