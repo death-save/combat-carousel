@@ -50,11 +50,6 @@ export default class CombatCarousel extends Application {
         // Instantiate the Fixed Draggable to make this app draggable
         new FixedDraggable(this, this.element, this.element.find(".drag-handle")[0], this.options.resizeable, {onDragMouseUp: this._onDragEnd});
 
-        // If set, collapse the Nav bar
-        const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
-
-        if (collapseNavSetting && game.combat) ui.nav.collapse();
-
         const sizeSetting = game.settings.get(NAME, SETTING_KEYS.carouselSize);
         const scale = this.sizeFactor = sizeSetting ? DEFAULT_CONFIG.carouselSize.sizeScaleMap[sizeSetting] : 1;
         
