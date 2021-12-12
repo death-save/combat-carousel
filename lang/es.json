@@ -38,7 +38,9 @@
             "CarouselSizeN": "Tamaño del carrusel",
             "CarouselSizeH": "El tamaño del carrusel en la pantalla. No se rescalarán los elementos de control ni el HUD",
             "ControlActiveCombatantTokenN": "Controlar icono del contendiente activo",
-            "ControlActiveCombatantTokenH": "Habilita el control automático (seleccionar) del icono asociado al contendiente activo actualmente"
+            "ControlActiveCombatantTokenH": "Habilita el control automático (seleccionar) del icono asociado al contendiente activo actualmente",
+            "PanOnClickN": "Centrar al hacer clic en una tarjeta",
+            "PanOnClickH": "Se centra en el icono correspondiente cuando se hace clic en una tarjeta (nota: el icono debe ser 'visible' para el usuario actual)"
         },
 
         "CAROUSEL": {
