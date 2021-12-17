@@ -425,8 +425,11 @@ export default class CombatCarousel extends Application {
 
         const ccButtonHtml = await renderTemplate(`${TEMPLATE_PATH}/combat-carousel-button.hbs`,{carouselIcon});
         
-        html.append(ccButtonHtml);
+        const mainControls = html.find(".control-tools.main-controls");
 
+        if (!mainControls?.length) return;
+
+        mainControls.append(ccButtonHtml);
         const ccButton = html.find("li[data-control='combat-carousel']");
         
         ccButton
