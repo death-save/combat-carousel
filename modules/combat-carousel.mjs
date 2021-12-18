@@ -247,7 +247,7 @@ export default class CombatCarousel extends Application {
             img,
             initiative: turn.initiative,
             hidden: turn.hidden,
-            visible: turn.isVisible,
+            visible: turn.visible,
             defeated: turn.data.defeated,
             carousel: {
                 isGM: game.user.isGM,
@@ -540,7 +540,7 @@ export default class CombatCarousel extends Application {
 
         const token = canvas.tokens.get(combatant.token.id);
         
-        if (!token.owner) return;
+        if (!token.isOwner) return;
 
         if (!combatant.initiative) game.combat.rollInitiative(combatantId);
     }
@@ -707,7 +707,7 @@ export default class CombatCarousel extends Application {
 
         if (!combatant) return;
 
-        const isCtrl = game.keyboard.isCtrl(event);
+        const isCtrl = game.keyboard.isModifierActive(KeyboardManager.MODIFIER_KEYS.CONTROL);
 
         if (isCtrl && game.user.isGM) {
             
@@ -745,7 +745,7 @@ export default class CombatCarousel extends Application {
         const combatantId = card.dataset.combatantId;
         const token = getTokenFromCombatantId(combatantId);
 
-        if (!game.user.isGM || !token.owner) return;
+        if (!game.user.isGM || !token.isOwner) return;
 
         token.actor.sheet.render(true);
     }
