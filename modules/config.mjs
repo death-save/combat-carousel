@@ -57,7 +57,8 @@ export const SETTING_KEYS = {
     imageType: "imageType",
     controlActiveCombatantToken: "controlActiveCombatantToken",
     panOnClick: "panOnClick",
-    alwaysOnTop: "alwaysOnTop"
+    alwaysOnTop: "alwaysOnTop",
+    openOnCombatCreate: "openOnCombatCreate"
 }
 
 /**

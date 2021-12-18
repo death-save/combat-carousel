@@ -77,6 +77,18 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.openOnCombatCreate, {
+        name: "COMBAT_CAROUSEL.SETTINGS.OpenOnCombatCreateN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.OpenOnCombatCreateH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+
+        }
+    });
+
     game.settings.register(NAME, SETTING_KEYS.carouselSize, {
         name: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeN",
         hint: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeH",

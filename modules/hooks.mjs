@@ -47,8 +47,9 @@ export default function registerHooks() {
      */
     Hooks.on("createCombat", async (combat, createData, options, userId) => {
         const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+        const openOnCreate = game.settings.get(NAME, SETTING_KEYS.openOnCombatCreate);
 
-        if (!enabled || !ui.combatCarousel || ui.combatCarousel?._collapsed) return;
+        if (!enabled || !ui.combatCarousel || (ui.combatCarousel?._collapsed && !openOnCreate)) return;
         
         ui.combatCarousel.render(true);
 

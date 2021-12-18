@@ -37,7 +37,9 @@
             "PanOnClickN": "Pan on Card Click",
             "PanOnClickH": "Pans to the matching token when a card is clicked (note: the token must be 'visible' to the current user)",
             "AlwaysOnTopN": "Always On Top",
-            "AlwaysOnTopH": "Always render the Carousel above other UI elements."
+            "AlwaysOnTopH": "Always render the Carousel above other UI elements.",
+            "OpenOnCombatCreateN": "Open Combat Carousel on Combat Creation",
+            "OpenOnCombatCreateH": "Opens the Carousel when a Combat is created"
         },
 
         "CAROUSEL": {
