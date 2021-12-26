@@ -173,6 +173,7 @@ export default class CombatCarousel extends Application {
         await this.splide.mount();
 
         this.setPosition({width: this._getMinimumWidth(), height: 205 * scale});
+        this._collapsed = false;
     }
 
     /**
