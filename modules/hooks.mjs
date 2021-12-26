@@ -230,7 +230,7 @@ export default function registerHooks() {
 
         if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
-        if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
+        if (!hasProperty(updateData, "data.attributes.hp") && !hasProperty(updateData, "img") && !hasProperty(updateData, "name")) return;
         // find any matching combat carousel combatants
         
         if (!game.combat?.combatants.some(c => c.actor.id === actor.id)) return;
@@ -250,10 +250,9 @@ export default function registerHooks() {
         if (
             !hasProperty(updateData, "effects")
             && !hasProperty(updateData, "overlayEffect")
-            && !hasProperty(updateData, "actorData.effects")
-            && !hasProperty(updateData, "actorData.data.attributes.hp.value") 
+            && !hasProperty(updateData, "actorData")
             && !hasProperty(updateData, "img")
-            && !hasProperty(updateData, "actorData.img")
+            && !hasProperty(updateData, "name")
         ) return;
         // find any matching combat carousel combatants
         
