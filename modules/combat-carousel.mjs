@@ -91,7 +91,7 @@ export default class CombatCarousel extends Application {
             if (force) {
                 for (let i = 0; i < slides.length; i++) {
                     slides[i].classList.add("fly");
-                    slides[i].style.animationDelay = `${0.1 * (i ? i : 1)}s`;
+                    slides[i].style.animationDelay = `${0.2 * (i ? i + 1 : 1)}s`;
 
                     slides[i].addEventListener("animationend", event => {
                         event.target.classList.remove("fly");
