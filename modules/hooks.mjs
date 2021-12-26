@@ -112,9 +112,8 @@ export default function registerHooks() {
 
         if (!enabled || ui.combatCarousel?._collapsed) return;
 
-        const hasCombat = game.combats.entities?.length;
-
-        if (!hasCombat) {
+        if (!game.combat) {
+            await ui.combatCarousel.collapse();
             ui.combatCarousel.close();
             //await ui.combatCarousel.render(true);
             //ui.combatCarousel.collapse();
