@@ -6,6 +6,18 @@
 - Some strings are still not setup for translation
 - When multiple combatants are added to combat at the same time, and the `Control Active Combatant` setting is enabled, there will be an error in console. It doesn't appear to prevent any Carousel behaviour.
 
+## [0.2.5] - 2021-12-27
+> This update adds compatibility for Foundry VTT V9
+
+- Combat Carousel no longer throws an error if you have a world with no active combat
+- Spanish translation update (again, thanks @lozalojo 🎉)
+- Nav bar automagically re-expands after combat if the collapse setting is enabled (thanks @sirrus233 🎉)
+- Added a setting to open the Carousel on combat creation
+- Lengthened the delay for the fly-in effect on cards when the Carousel is opened
+- Occasionally the Carousel got confused about its collapsed/expanded state. Should happen less now
+- Added additional update properties for actors and tokens that cause the Carousel UI to update
+- Carousel now collapses when combat is deleted
+
 ## [0.2.3] - 2021-10-11
 - Spanish translation updated (thanks @lozalojo ! 🎉)
 - Added options for `Limited` Actor permission to settings that support permissions (thanks @SovietVVinter ! 🎉)
