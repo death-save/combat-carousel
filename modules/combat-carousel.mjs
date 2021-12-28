@@ -50,14 +50,15 @@ export default class CombatCarousel extends Application {
         // Instantiate the Fixed Draggable to make this app draggable
         new FixedDraggable(this, this.element, this.element.find(".drag-handle")[0], this.options.resizeable, {onDragMouseUp: this._onDragEnd});
 
-        // If set, collapse the Nav bar
-        const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
-
-        if (collapseNavSetting && game.combat) ui.nav.collapse();
-
         const sizeSetting = game.settings.get(NAME, SETTING_KEYS.carouselSize);
         const scale = this.sizeFactor = sizeSetting ? DEFAULT_CONFIG.carouselSize.sizeScaleMap[sizeSetting] : 1;
         
+        const alwaysOnTopSetting = game.settings.get(NAME, SETTING_KEYS.alwaysOnTop);
+
+        if (alwaysOnTopSetting) {
+            this.element[0].style.zIndex = 100;
+        }
+
         /**
         * Create a Splide instance and store it for later use
         */
@@ -90,7 +91,7 @@ export default class CombatCarousel extends Application {
             if (force) {
                 for (let i = 0; i < slides.length; i++) {
                     slides[i].classList.add("fly");
-                    slides[i].style.animationDelay = `${0.1 * (i ? i : 1)}s`;
+                    slides[i].style.animationDelay = `${0.2 * (i ? i + 1 : 1)}s`;
 
                     slides[i].addEventListener("animationend", event => {
                         event.target.classList.remove("fly");
@@ -172,6 +173,7 @@ export default class CombatCarousel extends Application {
         await this.splide.mount();
 
         this.setPosition({width: this._getMinimumWidth(), height: 205 * scale});
+        this._collapsed = false;
     }
 
     /**
@@ -246,7 +248,7 @@ export default class CombatCarousel extends Application {
             img,
             initiative: turn.initiative,
             hidden: turn.hidden,
-            visible: turn.isVisible,
+            visible: turn.visible,
             defeated: turn.data.defeated,
             carousel: {
                 isGM: game.user.isGM,
@@ -424,8 +426,11 @@ export default class CombatCarousel extends Application {
 
         const ccButtonHtml = await renderTemplate(`${TEMPLATE_PATH}/combat-carousel-button.hbs`,{carouselIcon});
         
-        html.append(ccButtonHtml);
+        const mainControls = html.find(".control-tools.main-controls");
 
+        if (!mainControls?.length) return;
+
+        mainControls.append(ccButtonHtml);
         const ccButton = html.find("li[data-control='combat-carousel']");
         
         ccButton
@@ -536,7 +541,7 @@ export default class CombatCarousel extends Application {
 
         const token = canvas.tokens.get(combatant.token.id);
         
-        if (!token.owner) return;
+        if (!token.isOwner) return;
 
         if (!combatant.initiative) game.combat.rollInitiative(combatantId);
     }
@@ -703,7 +708,7 @@ export default class CombatCarousel extends Application {
 
         if (!combatant) return;
 
-        const isCtrl = game.keyboard.isCtrl(event);
+        const isCtrl = game.keyboard.isModifierActive(KeyboardManager.MODIFIER_KEYS.CONTROL);
 
         if (isCtrl && game.user.isGM) {
             
@@ -741,7 +746,7 @@ export default class CombatCarousel extends Application {
         const combatantId = card.dataset.combatantId;
         const token = getTokenFromCombatantId(combatantId);
 
-        if (!game.user.isGM || !token.owner) return;
+        if (!game.user.isGM || !token.isOwner) return;
 
         token.actor.sheet.render(true);
     }

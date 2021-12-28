@@ -77,6 +77,18 @@ export default function registerSettings() {
         }
     });
 
+    game.settings.register(NAME, SETTING_KEYS.openOnCombatCreate, {
+        name: "COMBAT_CAROUSEL.SETTINGS.OpenOnCombatCreateN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.OpenOnCombatCreateH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+
+        }
+    });
+
     game.settings.register(NAME, SETTING_KEYS.carouselSize, {
         name: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeN",
         hint: "COMBAT_CAROUSEL.SETTINGS.CarouselSizeH",
@@ -86,8 +98,10 @@ export default function registerSettings() {
         choices: DEFAULT_CONFIG.carouselSize.choices,
         config: true,
         onChange: async s => {
-            await ui.combatCarousel.render(true);
-            ui.combatCarousel.element.addClass(s);
+            if (ui.combatCarousel?.rendered) {
+                await ui.combatCarousel.render(true);
+                ui.combatCarousel.element.addClass(s);
+            }
         }
     });
 
@@ -100,7 +114,7 @@ export default function registerSettings() {
         choices: DEFAULT_CONFIG.imageType.choices,
         config: true,
         onChange: s => {
-            ui.combatCarousel.render(true);
+            if (ui.combatCarousel?.rendered) ui.combatCarousel.render(true);
         }
     });
 
@@ -123,6 +137,18 @@ export default function registerSettings() {
         default: false,
         config: true,
         onChange: s => {
+        }
+    });
+
+    game.settings.register(NAME, SETTING_KEYS.alwaysOnTop, {
+        name: "COMBAT_CAROUSEL.SETTINGS.AlwaysOnTopN",
+        hint: "COMBAT_CAROUSEL.SETTINGS.AlwaysOnTopH",
+        scope: "client",
+        type: Boolean,
+        default: false,
+        config: true,
+        onChange: s => {
+            if (ui.combatCarousel?.rendered) ui.combatCarousel.render(true);
         }
     });
 

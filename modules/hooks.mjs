@@ -47,11 +47,16 @@ export default function registerHooks() {
      */
     Hooks.on("createCombat", async (combat, createData, options, userId) => {
         const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
+        const openOnCreate = game.settings.get(NAME, SETTING_KEYS.openOnCombatCreate);
 
-        if (!enabled || !ui.combatCarousel || ui.combatCarousel?._collapsed) return;
+        if (!enabled || !ui.combatCarousel || (ui.combatCarousel?._collapsed && !openOnCreate)) return;
         
         ui.combatCarousel.render(true);
-        
+
+        // If set, collapse the Nav bar
+        const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
+        if (collapseNavSetting) ui.nav.collapse();
+
         const hasTurns = combat?.turns?.length;
         const carouselImg = ui?.controls?.element.find("img.carousel-icon");
         const newImgSrc = hasTurns ? CAROUSEL_ICONS.hasTurns : CAROUSEL_ICONS.noTurns;
@@ -107,9 +112,8 @@ export default function registerHooks() {
 
         if (!enabled || ui.combatCarousel?._collapsed) return;
 
-        const hasCombat = game.combats.entities?.length;
-
-        if (!hasCombat) {
+        if (!game.combat) {
+            await ui.combatCarousel.collapse();
             ui.combatCarousel.close();
             //await ui.combatCarousel.render(true);
             //ui.combatCarousel.collapse();
@@ -223,9 +227,9 @@ export default function registerHooks() {
     Hooks.on("updateActor", (actor, updateData, options, userId) => {
         const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        if (!enabled || ui.combatCarousel?._collapsed) return;
+        if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
-        if (!hasProperty(updateData, "data.attributes.hp.value") && !hasProperty(updateData, "img")) return;
+        if (!hasProperty(updateData, "data.attributes.hp") && !hasProperty(updateData, "img") && !hasProperty(updateData, "name")) return;
         // find any matching combat carousel combatants
         
         if (!game.combat?.combatants.some(c => c.actor.id === actor.id)) return;
@@ -239,16 +243,15 @@ export default function registerHooks() {
     Hooks.on("updateToken", (token, updateData, options, userId) => {
         const enabled = game.settings.get(NAME, SETTING_KEYS.enabled);
 
-        if (!enabled || ui.combatCarousel?._collapsed) return;
+        if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
         //console.log("token update:", scene,token,update,options,userId);
         if (
             !hasProperty(updateData, "effects")
             && !hasProperty(updateData, "overlayEffect")
-            && !hasProperty(updateData, "actorData.effects")
-            && !hasProperty(updateData, "actorData.data.attributes.hp.value") 
+            && !hasProperty(updateData, "actorData")
             && !hasProperty(updateData, "img")
-            && !hasProperty(updateData, "actorData.img")
+            && !hasProperty(updateData, "name")
         ) return;
         // find any matching combat carousel combatants
         
@@ -297,6 +300,9 @@ export default function registerHooks() {
 
         if (!data?.hasCombat && rendered) {
             ui.combatCarousel.close();
+            // If set, re-expand the nav bar after combat closes
+            const collapseNavSetting = game.settings.get(NAME, SETTING_KEYS.collapseNav);
+            if (collapseNavSetting) ui.nav.expand();
         }
 
         if (data?.hasCombat && isViewedCombat && !combatMatch && collapsed === false) {

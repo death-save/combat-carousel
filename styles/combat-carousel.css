@@ -37,7 +37,7 @@
     height: 25px;
 }
 
-li.scene-control[data-control="combat-carousel"] {
+#controls ol li.scene-control[data-control="combat-carousel"] {
     display: flex;
     height: 36px;
     width: 36px;
@@ -85,6 +85,10 @@ li.scene-control img.carousel-icon {
     font-size: 9px;
     top: 1px;
     left: 1px;
+}
+
+li[data-control="combat-carousel"] {
+    display: inherit;
 }
 
 li[data-control="combat-carousel"] div.wrapper {
