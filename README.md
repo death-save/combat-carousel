@@ -1,7 +1,7 @@
 ![Combat Carousel Logo](img/combat-carousel-fulllogo.png)    
 *It's free to ride, but it might cost your life...*
 # Combat Carousel
-![https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.8.5=>0.8.9-green](https://img.shields.io/badge/Foundry%20VTT%20compatibility-0.8.5=>0.8.9-green)
+![https://img.shields.io/badge/Foundry%20VTT%20compatibility-9.235=>9.238-green](https://img.shields.io/badge/Foundry%20VTT%20compatibility-9.235=>9.238-green)
 
 ![GitHub downloads (latest)](https://img.shields.io/github/downloads-pre/death-save/combat-carousel/latest/module.zip)
 [![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Install%20Base&query=package.installs&suffix=%&url=https://forge-vtt.com/api/bazaar/package/combat-carousel&colorB=brightgreen)](https://forge-vtt.com/)
