@@ -211,7 +211,7 @@ export default class CombatCarousel extends Application {
                 break;
 
             case "token":
-                img = token.data.img ?? turn.img;
+                img = token.img ?? turn.img;
                 break;
 
             case "combatant":
@@ -249,14 +249,14 @@ export default class CombatCarousel extends Application {
             initiative: turn.initiative,
             hidden: turn.hidden,
             visible: turn.visible,
-            defeated: turn.data.defeated,
+            defeated: turn.defeated,
             carousel: {
                 isGM: game.user.isGM,
                 owner: turn.isOwner,
                 showBar1,
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
-                overlayEffect: token?.data?.overlayEffect || null,
+                overlayEffect: token?.overlayEffect || null,
                 effects: this._filterActorEffects(actor),
                 showInitiativeValue,
                 showInitiativeIcon,
@@ -1657,15 +1657,15 @@ export default class CombatCarousel extends Application {
                 break;
             
             case "allActive":
-                filteredEffects = actorEffects.filter(e => !e.data.disabled);
+                filteredEffects = actorEffects.filter(e => !e.disabled);
                 break;
             
             case "activeTemporary":
-                filteredEffects = actorEffects.filter(e => !e.data.disabled && e.isTemporary);
+                filteredEffects = actorEffects.filter(e => !e.disabled && e.isTemporary);
                 break;
             
             case "activePassive":
-                filteredEffects = actorEffects.filter(e => !e.data.disabled && !e.isTemporary);
+                filteredEffects = actorEffects.filter(e => !e.disabled && !e.isTemporary);
                 break;
         
             default:
@@ -1681,8 +1681,8 @@ export default class CombatCarousel extends Application {
             
             filteredEffects = filteredEffects.map(e => { 
                 return {
-                    img: e.data.icon,
-                    name: e.name ?? e.data.label
+                    img: e.icon,
+                    name: e.name ?? e.label
                 }
             });
         }
@@ -1705,7 +1705,7 @@ export default class CombatCarousel extends Application {
             return {
                 name: o.name,
                 img: o.img,
-                value: getProperty(actor, `data.${o.value}`)
+                value: getProperty(actor, `${o.value}`)
             }
         });
 

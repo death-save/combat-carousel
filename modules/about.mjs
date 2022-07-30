@@ -32,7 +32,7 @@ export default class AboutApp extends FormApplication {
      */
     async getData() {
         return {
-            version: game.modules.get("combat-carousel").data.version,
+            version: game.modules.get("combat-carousel").version,
             patrons: await this.fetchPatrons()
         }
     }
