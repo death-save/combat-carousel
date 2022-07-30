@@ -230,7 +230,7 @@ export default function registerHooks() {
         if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
         // try to use system's primary attribute bar, then fallback to combat carousel setting, then fallback to matching all data updates
-        const hasUpdatedBar1 = hasProperty(updateData, ((game.system.data.primaryTokenAttribute ?? game.settings.get(NAME, SETTING_KEYS.bar1Attribute)) ?? 'data'));
+        const hasUpdatedBar1 = hasProperty(updateData, ((game.system.data.primaryTokenAttribute ?? game.settings.get(NAME, SETTING_KEYS.bar1Attribute)) ?? "data"));
 
         const hasUpdatedOverlayProperties = game.settings.get(NAME, SETTING_KEYS.overlaySettings)
           .filter(o => o.value).reduce((a,o) => a || hasProperty(updateData, o.value), false);
