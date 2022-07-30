@@ -235,7 +235,7 @@ export default function registerHooks() {
         const hasUpdatedOverlayProperties = game.settings.get(NAME, SETTING_KEYS.overlaySettings)
           .filter(o => o.value).reduce((a,o) => a || hasProperty(updateData, o.value), false);
 
-        if (!hasUpdatedBar1 && !hasUpdatedOverlayProperties && !hasProperty(updateData, "img") && !hasProperty(updateData, "img") && !hasProperty(updateData, "name")) return;
+        if (!hasUpdatedBar1 && !hasUpdatedOverlayProperties && !hasProperty(updateData, "img") && !hasProperty(updateData, "name")) return;
         // find any matching combat carousel combatants
         
         if (!game.combat?.combatants.some(c => c.actor.id === actor.id)) return;
@@ -266,6 +266,17 @@ export default function registerHooks() {
         // update their hp bar and effects
         ui.combatCarousel.render();
     });
+
+    /* --------------- Active Effect -------------- */
+    
+    Hooks.on("createActiveEffect", (effect, options, userId) => {
+        CombatCarousel._onActiveEffectChange(effect, options, userId);
+    });
+
+    Hooks.on("deleteActiveEffect", (effect, options, userId) => {
+        CombatCarousel._onActiveEffectChange(effect, options, userId);
+    });
+
 
     /* -------------------------------------------- */
     /*                 Render Hooks                 */

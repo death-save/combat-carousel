@@ -438,6 +438,24 @@ export default class CombatCarousel extends Application {
             .on("contextmenu", event => ui.combatCarousel.resetPosition(event));
     }
 
+    /**
+     * Active Effect change handler
+     * @param {ActiveEffect} effect 
+     * @param {Object} options 
+     * @param {String} userId 
+     */
+    static _onActiveEffectChange(effect, options, userId) {
+        if (!game.combat) return;
+
+        const parentIsToken = effect.parent?.isToken;
+        const matchingCombatant = game.combat?.combatants?.find(c => parentIsToken ? c.tokenId == effect.parent.token.id : c.actorId == effect.parent.id);
+
+        if (!matchingCombatant) return;
+
+        // if there's a matching combatant we should rerender
+        ui.combatCarousel.render();
+    }
+
     /* -------------------------------------------- */
     /*                Event Handlers                */
     /* -------------------------------------------- */
