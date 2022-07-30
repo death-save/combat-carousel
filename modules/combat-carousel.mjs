@@ -1674,6 +1674,11 @@ export default class CombatCarousel extends Application {
         }
         
         if (filteredEffects) {
+            if(game.system.id === 'pf1') {
+                console.log("effects", filteredEffects);
+                filteredEffects = filteredEffects.filter(e => e.data.flags.pf1?.show ?? true);
+            }
+            
             filteredEffects = filteredEffects.map(e => { 
                 return {
                     img: e.data.icon,
