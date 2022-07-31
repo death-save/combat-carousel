@@ -1407,9 +1407,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
-            || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((overlayPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((overlayPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showOverlaySetting) {
             case showAlways:
@@ -1461,9 +1461,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1521,9 +1521,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1582,9 +1582,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
-            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showBarSetting) {
             case showAlways:
