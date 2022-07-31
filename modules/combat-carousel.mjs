@@ -1131,8 +1131,9 @@ export default class CombatCarousel extends Application {
         if (!token) return;
 
         const controlTokenSetting = game.settings.get(NAME, SETTING_KEYS.controlActiveCombatantToken);
+        const canControlToken = token.can(game.userId, "control");
 
-        if (controlTokenSetting) token.control();
+        if (controlTokenSetting && canControlToken) token.control();
     }
 
     /**
