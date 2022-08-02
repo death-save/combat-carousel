@@ -80,12 +80,8 @@ export default function registerHooks() {
 
         if (hasProperty(update, "turn")) {
             if (update.turn !== ui.combatCarousel.turn) {
-                const combatant = combat.turns[update.turn];
-
-                if (!combatant) return;
-
                 ui.combatCarousel.turn = update.turn;
-                
+
                 return ui.combatCarousel.render();
                 //return ui.combatCarousel.setActiveCombatant(combatant);
             }
