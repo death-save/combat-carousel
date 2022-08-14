@@ -40,7 +40,11 @@
             "ControlActiveCombatantTokenN": "Controlar icono del contendiente activo",
             "ControlActiveCombatantTokenH": "Habilita el control automático (seleccionar) del icono asociado al contendiente activo actualmente",
             "PanOnClickN": "Centrar al hacer clic en una tarjeta",
-            "PanOnClickH": "Se centra en el icono correspondiente cuando se hace clic en una tarjeta (nota: el icono debe ser 'visible' para el usuario actual)"
+            "PanOnClickH": "Se centra en el icono correspondiente cuando se hace clic en una tarjeta (nota: el icono debe ser 'visible' para el usuario actual)",
+            "AlwaysOnTopN": "Siempre visible",
+            "AlwaysOnTopH": "Mostrar el carrusel siempre encima del resto de elementos de la UI",
+            "OpenOnCombatCreateN": "Abrir Combat Carousel al crear un combate",
+            "OpenOnCombatCreateH": "Abre el carrusel cuando se crea un combate"
         },
 
         "CAROUSEL": {

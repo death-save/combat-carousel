@@ -5,6 +5,17 @@
 - Initiative icon assumes `d20`-based initiative
 - Some strings are still not setup for translation
 - When multiple combatants are added to combat at the same time, and the `Control Active Combatant` setting is enabled, there will be an error in console. It doesn't appear to prevent any Carousel behaviour.
+- Currently only the attribute set as the 1st Token bar is able to be set as the Carousel 1st bar (eg. if your Token config is set to `system.attributes.hp` then this is the only attribute Combat Carousel will work with for now)
+
+## [0.3.0] - 2022-08-12
+> This update adds compatibility for Foundry VTT v10
+
+- Updated to respect PF1E's 'Hide From Tokens' setting on buffs. (thanks @Fair-Strides 🎉)
+- Allow Carousel updates to occur even when there is no active combatant (thanks @BoltsJ 🎉)
+- The Carousel will now refresh when Active Effects are updated
+- Ensure user has permission before controlling token when turn changes
+- **Japanese** translation updated (thanks @brothersharper 🎉)
+- **Spanish** translation updated (thanks @lozalojo ! 🎉)
 
 ## [0.2.5] - 2021-12-27
 > This update adds compatibility for Foundry VTT V9

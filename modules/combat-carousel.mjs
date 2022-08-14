@@ -211,7 +211,7 @@ export default class CombatCarousel extends Application {
                 break;
 
             case "token":
-                img = token.data.img ?? turn.img;
+                img = token.img ?? turn.img;
                 break;
 
             case "combatant":
@@ -249,14 +249,14 @@ export default class CombatCarousel extends Application {
             initiative: turn.initiative,
             hidden: turn.hidden,
             visible: turn.visible,
-            defeated: turn.data.defeated,
+            defeated: turn.defeated,
             carousel: {
                 isGM: game.user.isGM,
                 owner: turn.isOwner,
                 showBar1,
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
-                overlayEffect: token?.data?.overlayEffect || null,
+                overlayEffect: token?.overlayEffect || null,
                 effects: this._filterActorEffects(actor),
                 showInitiativeValue,
                 showInitiativeIcon,
@@ -436,6 +436,24 @@ export default class CombatCarousel extends Application {
         ccButton
             .on("click", event => ui.combatCarousel._onModuleIconClick(event))
             .on("contextmenu", event => ui.combatCarousel.resetPosition(event));
+    }
+
+    /**
+     * Active Effect change handler
+     * @param {ActiveEffect} effect 
+     * @param {Object} options 
+     * @param {String} userId 
+     */
+    static _onActiveEffectChange(effect, options, userId) {
+        if (!game.combat) return;
+
+        const parentIsToken = effect.parent?.isToken;
+        const matchingCombatant = game.combat?.combatants?.find(c => parentIsToken ? c.tokenId == effect.parent.token.id : c.actorId == effect.parent.id);
+
+        if (!matchingCombatant) return;
+
+        // if there's a matching combatant we should rerender
+        ui.combatCarousel.render();
     }
 
     /* -------------------------------------------- */
@@ -1113,8 +1131,9 @@ export default class CombatCarousel extends Application {
         if (!token) return;
 
         const controlTokenSetting = game.settings.get(NAME, SETTING_KEYS.controlActiveCombatantToken);
+        const canControlToken = token.can(game.userId, "control");
 
-        if (controlTokenSetting) token.control();
+        if (controlTokenSetting && canControlToken) token.control();
     }
 
     /**
@@ -1389,9 +1408,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (overlayPermissionSetting === permAll) 
-            || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((overlayPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((overlayPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((overlayPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((overlayPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showOverlaySetting) {
             case showAlways:
@@ -1443,9 +1462,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1503,9 +1522,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1564,9 +1583,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
-            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.OBSERVER))
-			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.ENTITY_PERMISSIONS.LIMITED));
+            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showBarSetting) {
             case showAlways:
@@ -1657,15 +1676,15 @@ export default class CombatCarousel extends Application {
                 break;
             
             case "allActive":
-                filteredEffects = actorEffects.filter(e => !e.data.disabled);
+                filteredEffects = actorEffects.filter(e => !e.disabled);
                 break;
             
             case "activeTemporary":
-                filteredEffects = actorEffects.filter(e => !e.data.disabled && e.isTemporary);
+                filteredEffects = actorEffects.filter(e => !e.disabled && e.isTemporary);
                 break;
             
             case "activePassive":
-                filteredEffects = actorEffects.filter(e => !e.data.disabled && !e.isTemporary);
+                filteredEffects = actorEffects.filter(e => !e.disabled && !e.isTemporary);
                 break;
         
             default:
@@ -1674,10 +1693,15 @@ export default class CombatCarousel extends Application {
         }
         
         if (filteredEffects) {
+            if(game.system.id === 'pf1') {
+                console.log("effects", filteredEffects);
+                filteredEffects = filteredEffects.filter(e => e.data.flags.pf1?.show ?? true);
+            }
+            
             filteredEffects = filteredEffects.map(e => { 
                 return {
-                    img: e.data.icon,
-                    name: e.name ?? e.data.label
+                    img: e.icon,
+                    name: e.name ?? e.label
                 }
             });
         }
@@ -1700,7 +1724,7 @@ export default class CombatCarousel extends Application {
             return {
                 name: o.name,
                 img: o.img,
-                value: getProperty(actor, `data.${o.value}`)
+                value: getProperty(actor, `${o.value}`)
             }
         });
 

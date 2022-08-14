@@ -80,12 +80,8 @@ export default function registerHooks() {
 
         if (hasProperty(update, "turn")) {
             if (update.turn !== ui.combatCarousel.turn) {
-                const combatant = combat.turns[update.turn];
-
-                if (!combatant) return;
-
                 ui.combatCarousel.turn = update.turn;
-                
+
                 return ui.combatCarousel.render();
                 //return ui.combatCarousel.setActiveCombatant(combatant);
             }
@@ -229,7 +225,13 @@ export default function registerHooks() {
 
         if (!enabled || !game.combat || ui.combatCarousel?._collapsed) return;
 
-        if (!hasProperty(updateData, "data.attributes.hp") && !hasProperty(updateData, "img") && !hasProperty(updateData, "name")) return;
+        // try to use system's primary attribute bar, then fallback to combat carousel setting, then fallback to matching all data updates
+        const hasUpdatedBar1 = hasProperty(updateData, ((game.system.data.primaryTokenAttribute ?? game.settings.get(NAME, SETTING_KEYS.bar1Attribute)) ?? "data"));
+
+        const hasUpdatedOverlayProperties = game.settings.get(NAME, SETTING_KEYS.overlaySettings)
+          .filter(o => o.value).reduce((a,o) => a || hasProperty(updateData, o.value), false);
+
+        if (!hasUpdatedBar1 && !hasUpdatedOverlayProperties && !hasProperty(updateData, "img") && !hasProperty(updateData, "name")) return;
         // find any matching combat carousel combatants
         
         if (!game.combat?.combatants.some(c => c.actor.id === actor.id)) return;
@@ -260,6 +262,17 @@ export default function registerHooks() {
         // update their hp bar and effects
         ui.combatCarousel.render();
     });
+
+    /* --------------- Active Effect -------------- */
+    
+    Hooks.on("createActiveEffect", (effect, options, userId) => {
+        CombatCarousel._onActiveEffectChange(effect, options, userId);
+    });
+
+    Hooks.on("deleteActiveEffect", (effect, options, userId) => {
+        CombatCarousel._onActiveEffectChange(effect, options, userId);
+    });
+
 
     /* -------------------------------------------- */
     /*                 Render Hooks                 */
