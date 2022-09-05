@@ -290,7 +290,7 @@ export default class CombatCarousel extends Application {
         //@todo use util method to setup turns -- need to filter out non-visible turns
         //const turns = game?.combat?.turns.filter(t => t.token).map(t => this.prepareTurnData(t)) ?? [];
         const turns = combat?.turns?.map(t => this.prepareTurnData(t)) ?? [];
-        const visibleTurns = turns.filter(t => t.visible);
+        const visibleTurns = turns.filter(t => t?.visible);
 
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
