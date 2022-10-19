@@ -8,7 +8,8 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:59999",
+            "url": "http://localhost:49999",
+            "webRoot": "http://localhost:49999",
             "pathMapping": {
                 "/modules/combat-carousel": "${workspaceFolder}"
             },
