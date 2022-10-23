@@ -19,7 +19,7 @@
                 <a class="next turn" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.NextTurn"}}" data-action="nextTurn"><i class="fas fa-chevron-right"></i></a>
                 {{/if}}
                 {{#if this.hasNextRound}}
-                <a class="next round" title="{{localize "COMBAT_CAROUSEL.CAROUSEL.NextRound"}}" data-action="nextRound"><i class="fas fa-step-forward"></i></a>
+                <a class="next round" title="{{this.nextRoundControl.title}}" data-action="{{this.nextRoundControl.action}}"><i class="{{this.nextRoundControl.icon}}"></i></a>
                 {{/if}}
             </div>
             <div class="splide__track">

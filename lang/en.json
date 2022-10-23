@@ -43,6 +43,7 @@
         },
 
         "CAROUSEL": {
+            "BeginCombat": "Begin Combat",
             "NextTurn": "Next Turn",
             "PreviousTurn": "Previous Turn",
             "NextRound": "Next Round",

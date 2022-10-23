@@ -284,6 +284,7 @@ export default class CombatCarousel extends Application {
         const encounter = hasCombat ? currentCombatIdx + 1 : null;
         const previousEncounter = encounter > 1 ? encounter - 1 : null;
         const nextEncounter = encounter < encounterCount ? encounter + 1 : null;
+        const started = combat.started;
         const round = combat ? combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
@@ -299,12 +300,17 @@ export default class CombatCarousel extends Application {
         const canControlCombat = game.user.isGM;
         const combatant = game?.combat?.combatant;
         const canAdvanceTurn = combatant?.players?.includes(game.user);
-        const hasPreviousTurn = canControlCombat && Number.isNumeric(this.turn) && turns.length;
-        const hasNextTurn = (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
+        const hasPreviousTurn = started && canControlCombat && Number.isNumeric(this.turn) && turns.length;
+        const hasNextTurn = started && (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
         const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
         const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
         const canAdvanceEncounter = !!(canControlCombat && nextEncounter);
         const canReverseEncounter = !!(canControlCombat && previousEncounter);
+        const nextRoundControl = {
+            action: started ? "nextRound" : "beginCombat",
+            title: game.i18n.localize(`${started ? "COMBAT_CAROUSEL.CAROUSEL.NextRound" : "COMBAT_CAROUSEL.CAROUSEL.BeginCombat"}`),
+            icon: started ? "fas fa-step-forward" : "fas fa-b"
+        };
         
         return {
             carouselIcon,
@@ -321,7 +327,8 @@ export default class CombatCarousel extends Application {
             hasNextTurn,
             canControlCombat,
             canAdvanceEncounter,
-            canReverseEncounter
+            canReverseEncounter,
+            nextRoundControl
         }
     }
 
@@ -835,6 +842,10 @@ export default class CombatCarousel extends Application {
         const action = event.currentTarget.dataset.action;
 
         switch (action) {
+            case "beginCombat":
+                game.combat.startCombat();
+                break;
+
             case "nextTurn":
                 game.combat.nextTurn();
                 break;
