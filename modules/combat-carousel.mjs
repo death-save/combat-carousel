@@ -554,7 +554,9 @@ export default class CombatCarousel extends Application {
      * Roll Initiative handler
      * @param {*} event 
      */
-    _onRollInitiative(event) {
+    async _onRollInitiative(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         const parentLi = event.currentTarget.closest("li");
         const combatantId = parentLi.dataset.combatantId;
         
@@ -568,7 +570,16 @@ export default class CombatCarousel extends Application {
         
         if (!token.isOwner) return;
 
-        if (!combatant.initiative) game.combat.rollInitiative(combatantId);
+        let options = {};
+        if (game.system.id === "pf2e") {
+            // From pf2e https://github.com/foundryvtt/pf2e/blob/master/src/scripts/sheet-util.ts
+            const skipDefault = !game.user.settings.showRollDialogs;
+            const params = { skipDialog: event.shiftKey ? !skipDefault : skipDefault };
+            if (event.ctrlKey || event.metaKey) params.secret = true;
+            options = params;
+        }
+
+        if (!combatant.initiative) game.combat.rollInitiative([combatantId], options);
     }
 
     /**
