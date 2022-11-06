@@ -20,7 +20,8 @@
   "changelog": "https://github.com/death-save/combat-carousel/CHANGELOG.md",
   "readme": "https://github.com/death-save/combat-carousel/wiki/",
   "scripts": [
-    "libs/splide/js/splide.min.js"
+    "libs/splide/js/splide.min.js",
+    "libs/splide/js/splide-render.min.js"
   ],
   "esmodules": [
     "init.js"
