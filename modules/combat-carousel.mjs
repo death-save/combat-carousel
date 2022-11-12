@@ -7,7 +7,7 @@ import CombatCarouselConfig from "./config-form.mjs";
 import { CAROUSEL_ICONS, DEFAULT_CONFIG, NAME, SETTING_KEYS, TEMPLATE_PATH } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
 import { toTitleCase } from "./util.mjs";
-import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId } from "./util.mjs";
+import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId, getActorFromCombatantId } from "./util.mjs";
 
 /**
  * Main app class
@@ -185,7 +185,7 @@ export default class CombatCarousel extends Application {
         const token = turn.token;
         const actor = turn.actor ?? (token ? token.actor : null);
 
-        if (!actor) return null;
+        //if (!actor) return null;
         //if (!token) return null;
 
         const isActiveTurn = game.combat.turn === game.combat.turns.indexOf(turn);
@@ -203,15 +203,15 @@ export default class CombatCarousel extends Application {
 
         switch (imageTypeSetting) {
             case "actor":
-                img = (actor.isToken ? game.actors.get(actor.id)?.img : actor.img) ?? turn.img;
+                img = (actor?.isToken ? game.actors.get(actor.id)?.img : actor?.img) ?? turn.img;
                 break;
 
             case "tokenActor":
-                img = actor.img ?? turn.img;
+                img = actor?.img ?? turn.img;
                 break;
 
             case "token":
-                img = token.img ?? turn.img;
+                img = token?.img ?? turn.img;
                 break;
 
             case "combatant":
@@ -257,7 +257,7 @@ export default class CombatCarousel extends Application {
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
                 overlayEffect: token?.overlayEffect || null,
-                effects: this._filterActorEffects(actor),
+                effects: actor ? this._filterActorEffects(actor) : [],
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
@@ -564,11 +564,7 @@ export default class CombatCarousel extends Application {
 
         const combatant = game.combat.combatants.get(combatantId);
 
-        if (!combatant) return;
-
-        const token = canvas.tokens.get(combatant.token.id);
-        
-        if (!token.isOwner) return;
+        if (!combatant?.isOwner) return;
 
         let options = {};
         if (game.system.id === "pf2e") {
@@ -755,7 +751,7 @@ export default class CombatCarousel extends Application {
             return await game.combat.update({turn: turnIndex});
         }
 
-        const token = canvas.tokens.get(combatant.token.id);
+        const token = canvas.tokens.get(combatant.token?.id);
         const index = this.getCombatantSlideIndex(combatant);
         if (Number.isFinite(index)) this.splide.go(index);
 
@@ -778,11 +774,11 @@ export default class CombatCarousel extends Application {
     _onCardDoubleClick(event, html) {
         const card = event.currentTarget;
         const combatantId = card.dataset.combatantId;
-        const token = getTokenFromCombatantId(combatantId);
+        const actor = getActorFromCombatantId(combatantId);
 
-        if (!game.user.isGM || !token.isOwner) return;
+        if (!game.user.isGM || !actor?.isOwner) return;
 
-        token.actor.sheet.render(true);
+        actor.sheet.render(true);
     }
 
     /**
@@ -1146,7 +1142,7 @@ export default class CombatCarousel extends Application {
         this.splide.go(slideIndex);
 
         const tokenDocument = combatant.token;
-        const token = canvas?.tokens.placeables.find(t => t.id === tokenDocument.id);
+        const token = canvas?.tokens.placeables.find(t => t.id === tokenDocument?.id);
 
         if (!token) return;
 
@@ -1459,7 +1455,7 @@ export default class CombatCarousel extends Application {
     _calculateInitiativeValueVisibility(combatant, {user=game.user, isActive=false, isHovered=false}={}) {
         const actor = combatant.actor;
 
-        if (!actor) return false;
+        //if (!actor) return false;
 
         const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
 
@@ -1482,9 +1478,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1513,7 +1509,7 @@ export default class CombatCarousel extends Application {
     _calculateInitiativeIconVisibility(combatant, {user=game.user}={}) {
         const actor = combatant.actor;
 
-        if (!actor) return false;
+        // if (!actor) return false;
 
         const showInitiativeIconSetting = game.settings.get(NAME, SETTING_KEYS.showInitiativeIcon);
 
@@ -1542,9 +1538,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1603,9 +1599,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
-            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
-			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
+            || ((barPermissionSetting === permOwner) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((barPermissionSetting === permLimited) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showBarSetting) {
             case showAlways:
