@@ -362,7 +362,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 #combat-carousel .card {
     border-radius: 3px;
     border: 1px solid black;
-    background: url("/ui/denim075.png") repeat;
+    background: url("../../../ui/denim075.png") repeat;
     padding: 2px;
     color: #f0f0e0;
 }
@@ -388,7 +388,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     top: 100%;
     left: 0;
     clip-path: polygon(0 0, 50% 100%, 100% 0);
-    background: url("/ui/denim075.png");
+    background: url("../../../ui/denim075.png");
     width: 99%;
     height: 6%;
 }
@@ -564,7 +564,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     overflow: hidden;
     text-overflow: ellipsis;
     height: 20px;
-    background: url("/ui/denim075.png") repeat;
+    background: url("../../../ui/denim075.png") repeat;
     border: 1px solid black;
     border-radius: 3px;
     z-index: 100;

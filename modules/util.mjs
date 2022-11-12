@@ -26,6 +26,19 @@ export function getTokenFromCombatantId(combatantId) {
 }
 
 /**
+ * Helper to get Actor instance based on Combatant Id
+ * @param {*} combatantId 
+ */
+export function getActorFromCombatantId(combatantId) {
+    const combatant = game?.combat?.combatants.find(c => c.id === combatantId);
+    if (!combatant) return;
+
+    const actor = combatant.actor ?? null;
+
+    return actor;
+}
+
+/**
  * Gets all the siblings of a given element
  * Adapted from: https://stackoverflow.com/a/51670871/7351584
  * @param {Element} element 

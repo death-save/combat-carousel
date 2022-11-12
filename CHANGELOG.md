@@ -7,6 +7,15 @@
 - When multiple combatants are added to combat at the same time, and the `Control Active Combatant` setting is enabled, there will be an error in console. It doesn't appear to prevent any Carousel behaviour.
 - Currently only the attribute set as the 1st Token bar is able to be set as the Carousel 1st bar (eg. if your Token config is set to `system.attributes.hp` then this is the only attribute Combat Carousel will work with for now)
 
+## [0.3.1] - 2022-11-12
+> This update adds compatibility for Foundry VTT v10.290
+- Combat Carousel now supports combatants with no Actor/Token (thanks @BoltsJ! 🎉)
+- Changed the behaviour of the Next Round button on Round 0: it now shows a `B` (for "Begin Combat") and correctly calls the matching functionality in Foundry's native tracker
+- Fixed some issues with Combatant visibility (thanks @DavidAremaCarretero! 🎉)
+- PF2e: the roll Initiative dialog setting is now respected (eg. dialog won't be shown if it is turned off)
+- Made reference to `denim075.png` relative in CSS so that it should work with a wider range of server configurations
+- Updated the Splide library to v4.1.3. This should fix some minor UI bugs with Splide
+
 ## [0.3.0] - 2022-08-12
 > This update adds compatibility for Foundry VTT v10
 

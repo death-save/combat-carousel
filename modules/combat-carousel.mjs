@@ -7,7 +7,7 @@ import CombatCarouselConfig from "./config-form.mjs";
 import { CAROUSEL_ICONS, DEFAULT_CONFIG, NAME, SETTING_KEYS, TEMPLATE_PATH } from "./config.mjs";
 import FixedDraggable from "./fixed-draggable.mjs";
 import { toTitleCase } from "./util.mjs";
-import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId } from "./util.mjs";
+import { getAllElementSiblings, getKeyByValue, getTokenFromCombatantId, getActorFromCombatantId } from "./util.mjs";
 
 /**
  * Main app class
@@ -185,7 +185,7 @@ export default class CombatCarousel extends Application {
         const token = turn.token;
         const actor = turn.actor ?? (token ? token.actor : null);
 
-        if (!actor) return null;
+        //if (!actor) return null;
         //if (!token) return null;
 
         const isActiveTurn = game.combat.turn === game.combat.turns.indexOf(turn);
@@ -203,15 +203,15 @@ export default class CombatCarousel extends Application {
 
         switch (imageTypeSetting) {
             case "actor":
-                img = (actor.isToken ? game.actors.get(actor.id)?.img : actor.img) ?? turn.img;
+                img = (actor?.isToken ? game.actors.get(actor.id)?.img : actor?.img) ?? turn.img;
                 break;
 
             case "tokenActor":
-                img = actor.img ?? turn.img;
+                img = actor?.img ?? turn.img;
                 break;
 
             case "token":
-                img = token.img ?? turn.img;
+                img = token?.img ?? turn.img;
                 break;
 
             case "combatant":
@@ -257,7 +257,7 @@ export default class CombatCarousel extends Application {
                 bar1,
                 overlayProperties: CombatCarousel.getOverlayProperties(actor, overlaySettings),
                 overlayEffect: token?.overlayEffect || null,
-                effects: this._filterActorEffects(actor),
+                effects: actor ? this._filterActorEffects(actor) : [],
                 showInitiativeValue,
                 showInitiativeIcon,
                 showInitiative,
@@ -284,13 +284,14 @@ export default class CombatCarousel extends Application {
         const encounter = hasCombat ? currentCombatIdx + 1 : null;
         const previousEncounter = encounter > 1 ? encounter - 1 : null;
         const nextEncounter = encounter < encounterCount ? encounter + 1 : null;
+        const started = combat.started;
         const round = combat ? combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
         //@todo use util method to setup turns -- need to filter out non-visible turns
         //const turns = game?.combat?.turns.filter(t => t.token).map(t => this.prepareTurnData(t)) ?? [];
         const turns = combat?.turns?.map(t => this.prepareTurnData(t)) ?? [];
-        const visibleTurns = turns.filter(t => t.visible);
+        const visibleTurns = turns.filter(t => t?.visible);
 
         const combatState = CombatCarousel.getCombatState(game.combat);
         const carouselIcon = CAROUSEL_ICONS[combatState];
@@ -299,12 +300,17 @@ export default class CombatCarousel extends Application {
         const canControlCombat = game.user.isGM;
         const combatant = game?.combat?.combatant;
         const canAdvanceTurn = combatant?.players?.includes(game.user);
-        const hasPreviousTurn = canControlCombat && Number.isNumeric(this.turn) && turns.length;
-        const hasNextTurn = (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
+        const hasPreviousTurn = started && canControlCombat && Number.isNumeric(this.turn) && turns.length;
+        const hasNextTurn = started && (canControlCombat || canAdvanceTurn) && Number.isNumeric(this.turn);
         const hasPreviousRound = canControlCombat && Number.isNumeric(previousRound);
         const hasNextRound = canControlCombat && Number.isNumeric(nextRound);
         const canAdvanceEncounter = !!(canControlCombat && nextEncounter);
         const canReverseEncounter = !!(canControlCombat && previousEncounter);
+        const nextRoundControl = {
+            action: started ? "nextRound" : "beginCombat",
+            title: game.i18n.localize(`${started ? "COMBAT_CAROUSEL.CAROUSEL.NextRound" : "COMBAT_CAROUSEL.CAROUSEL.BeginCombat"}`),
+            icon: started ? "fas fa-step-forward" : "fas fa-b"
+        };
         
         return {
             carouselIcon,
@@ -321,7 +327,8 @@ export default class CombatCarousel extends Application {
             hasNextTurn,
             canControlCombat,
             canAdvanceEncounter,
-            canReverseEncounter
+            canReverseEncounter,
+            nextRoundControl
         }
     }
 
@@ -547,7 +554,9 @@ export default class CombatCarousel extends Application {
      * Roll Initiative handler
      * @param {*} event 
      */
-    _onRollInitiative(event) {
+    async _onRollInitiative(event) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         const parentLi = event.currentTarget.closest("li");
         const combatantId = parentLi.dataset.combatantId;
         
@@ -555,13 +564,18 @@ export default class CombatCarousel extends Application {
 
         const combatant = game.combat.combatants.get(combatantId);
 
-        if (!combatant) return;
+        if (!combatant?.isOwner) return;
 
-        const token = canvas.tokens.get(combatant.token.id);
-        
-        if (!token.isOwner) return;
+        let options = {};
+        if (game.system.id === "pf2e") {
+            // From pf2e https://github.com/foundryvtt/pf2e/blob/master/src/scripts/sheet-util.ts
+            const skipDefault = !game.user.settings.showRollDialogs;
+            const params = { skipDialog: event.shiftKey ? !skipDefault : skipDefault };
+            if (event.ctrlKey || event.metaKey) params.secret = true;
+            options = params;
+        }
 
-        if (!combatant.initiative) game.combat.rollInitiative(combatantId);
+        if (!combatant.initiative) game.combat.rollInitiative([combatantId], options);
     }
 
     /**
@@ -645,8 +659,7 @@ export default class CombatCarousel extends Application {
 
         // Hide pagination during a hover event
         const splideSlider = hoveredCard.closest(".splide__slider");
-        const sliderSiblings = getAllElementSiblings(splideSlider);
-        const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
+        const splidePagination = splideSlider.querySelector(".combat-carousel-pagination");
         splidePagination.classList.remove("visible");
 
         // Grow the track
@@ -684,8 +697,7 @@ export default class CombatCarousel extends Application {
 
         // Reveal pagination after a hover event
         const splideSlider = hoveredCard.closest(".splide__slider");
-        const sliderSiblings = getAllElementSiblings(splideSlider);
-        const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
+        const splidePagination = splideSlider.querySelector(".combat-carousel-pagination");
         splidePagination.classList.add("visible");
 
         // Reset the track height
@@ -739,7 +751,7 @@ export default class CombatCarousel extends Application {
             return await game.combat.update({turn: turnIndex});
         }
 
-        const token = canvas.tokens.get(combatant.token.id);
+        const token = canvas.tokens.get(combatant.token?.id);
         const index = this.getCombatantSlideIndex(combatant);
         if (Number.isFinite(index)) this.splide.go(index);
 
@@ -762,11 +774,11 @@ export default class CombatCarousel extends Application {
     _onCardDoubleClick(event, html) {
         const card = event.currentTarget;
         const combatantId = card.dataset.combatantId;
-        const token = getTokenFromCombatantId(combatantId);
+        const actor = getActorFromCombatantId(combatantId);
 
-        if (!game.user.isGM || !token.isOwner) return;
+        if (!game.user.isGM || !actor?.isOwner) return;
 
-        token.actor.sheet.render(true);
+        actor.sheet.render(true);
     }
 
     /**
@@ -835,6 +847,10 @@ export default class CombatCarousel extends Application {
         const action = event.currentTarget.dataset.action;
 
         switch (action) {
+            case "beginCombat":
+                game.combat.startCombat();
+                break;
+
             case "nextTurn":
                 game.combat.nextTurn();
                 break;
@@ -1126,7 +1142,7 @@ export default class CombatCarousel extends Application {
         this.splide.go(slideIndex);
 
         const tokenDocument = combatant.token;
-        const token = canvas?.tokens.placeables.find(t => t.id === tokenDocument.id);
+        const token = canvas?.tokens.placeables.find(t => t.id === tokenDocument?.id);
 
         if (!token) return;
 
@@ -1439,7 +1455,7 @@ export default class CombatCarousel extends Application {
     _calculateInitiativeValueVisibility(combatant, {user=game.user, isActive=false, isHovered=false}={}) {
         const actor = combatant.actor;
 
-        if (!actor) return false;
+        //if (!actor) return false;
 
         const showInitiativeSetting = game.settings.get(NAME, SETTING_KEYS.showInitiative);
 
@@ -1462,9 +1478,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeSetting) {
             case showAlways:
@@ -1493,7 +1509,7 @@ export default class CombatCarousel extends Application {
     _calculateInitiativeIconVisibility(combatant, {user=game.user}={}) {
         const actor = combatant.actor;
 
-        if (!actor) return false;
+        // if (!actor) return false;
 
         const showInitiativeIconSetting = game.settings.get(NAME, SETTING_KEYS.showInitiativeIcon);
 
@@ -1522,9 +1538,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (initiativePermissionSetting === permAll) 
-            || ((initiativePermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
-            || ((initiativePermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
-			|| ((initiativePermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
+            || ((initiativePermissionSetting === permOwner) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((initiativePermissionSetting === permObserver) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((initiativePermissionSetting === permLimited) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showInitiativeIconSetting) {
             case showAlways:
@@ -1583,9 +1599,9 @@ export default class CombatCarousel extends Application {
 
         const hasPerm = game.user.isGM 
             || (barPermissionSetting === permAll) 
-            || ((barPermissionSetting === permOwner) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
-            || ((barPermissionSetting === permObserver) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
-			|| ((barPermissionSetting === permLimited) && actor.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
+            || ((barPermissionSetting === permOwner) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OWNER)) 
+            || ((barPermissionSetting === permObserver) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER))
+			|| ((barPermissionSetting === permLimited) && actor?.testUserPermission(user, CONST.DOCUMENT_PERMISSION_LEVELS.LIMITED));
 
         switch (showBarSetting) {
             case showAlways:
