@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/death-save/combat-carousel-public#readme",
   "devDependencies": {
+    "@league-of-foundry-developers/foundry-vtt-types": "^9.280.0",
     "@pixi/jsdoc-template": "^2.6.0",
     "gulp": "^4.0.2",
     "gulp-zip": "^5.0.2",
