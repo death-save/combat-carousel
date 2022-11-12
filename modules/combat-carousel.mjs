@@ -663,8 +663,7 @@ export default class CombatCarousel extends Application {
 
         // Hide pagination during a hover event
         const splideSlider = hoveredCard.closest(".splide__slider");
-        const sliderSiblings = getAllElementSiblings(splideSlider);
-        const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
+        const splidePagination = splideSlider.querySelector(".combat-carousel-pagination");
         splidePagination.classList.remove("visible");
 
         // Grow the track
@@ -702,8 +701,7 @@ export default class CombatCarousel extends Application {
 
         // Reveal pagination after a hover event
         const splideSlider = hoveredCard.closest(".splide__slider");
-        const sliderSiblings = getAllElementSiblings(splideSlider);
-        const splidePagination = sliderSiblings.find(e => e.classList.contains("combat-carousel-pagination")); 
+        const splidePagination = splideSlider.querySelector(".combat-carousel-pagination");
         splidePagination.classList.add("visible");
 
         // Reset the track height
