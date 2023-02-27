@@ -2,7 +2,7 @@
   "id": "combat-carousel",
   "title": "Combat Carousel",
   "description": "Adds a CRPG-style combat tracker to the top of the screen",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "authors": [
     {
       "name": "Evan Clarke",
@@ -80,7 +80,7 @@
   },
   "compatibility": {
     "minimum": "10.275",
-    "verified": "10.290"
+    "verified": "10.291"
   },
   "name": "combat-carousel",
   "minimumCoreVersion": "10.275"
