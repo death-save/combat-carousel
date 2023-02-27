@@ -362,13 +362,12 @@ export default class CombatCarousel extends Application {
 
         dragHandle.on("contextmenu", event => this._onContextDragHandle(event));
 
-        
-        initSpan.on("click", event => this._onEditInitiative(event, html))
-            .on("contextmenu", event => this._onContextInitiative(event, html));
-        
+            
         rollInit.on("click", this._onRollInitiative);
 
-        initiativeInput.on("change", event => this._onInitiativeChange(event, html))
+        initiativeInput.on("click", event => this._onEditInitiative(event, html))
+            .on("contextmenu", event => this._onContextInitiative(event, html))
+            .on("change", event => this._onInitiativeChange(event, html))
             .on("focusout", event => this._onInitiativeFocusOut(event, html));
 
         splide.on("mouseenter", event => this._onHoverSplide(event, html))
@@ -590,10 +589,10 @@ export default class CombatCarousel extends Application {
 
         if (!game.user.isGM) return;
 
-        const input = event.currentTarget.querySelector("input");
-        const $input = $(input);
-
-        $input.attr("disabled", null).focus().select();
+        const input = event.currentTarget;
+        input.removeAttribute("readonly");
+        input.focus();
+        input.select();
     }
 
     /**
@@ -606,9 +605,11 @@ export default class CombatCarousel extends Application {
         const card = event.target.closest("li.card");
         const combatantId = card ? card.dataset.combatantId : null;
 
-        input.setAttribute("disabled", "disabled");
+        input?.setAttribute("readonly", "");
         const init = parseFloat(input.value);
-        game.combat.setInitiative(combatantId, Math.round(init * 100) / 100);
+        if (Number.isNumeric(init)) {
+            game.combat.setInitiative(combatantId, Math.round(init * 100) / 100);
+        }
     }
 
     /**
@@ -638,7 +639,9 @@ export default class CombatCarousel extends Application {
      */
     _onInitiativeFocusOut(event, html) {
         const input = event.target;
-        input.setAttribute("disabled", "disabled");
+        const selection = input?.ownerDocument?.getSelection();
+        selection?.removeAllRanges();
+        input?.setAttribute("readonly", "");
     }
 
     /**
