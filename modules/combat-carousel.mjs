@@ -884,6 +884,15 @@ export default class CombatCarousel extends Application {
         event.preventDefault();
         const action = event.currentTarget.dataset.action;
 
+        let options = {};
+        if (game.system.id === "pf2e") {
+            // From pf2e https://github.com/foundryvtt/pf2e/blob/master/src/scripts/sheet-util.ts
+            const skipDefault = !game.user.settings.showRollDialogs;
+            const params = { skipDialog: event.shiftKey ? !skipDefault : skipDefault };
+            if (event.ctrlKey || event.metaKey) params.secret = true;
+            options = params;
+        }
+
         switch (action) {
             case "create":
                 return await ui.combat._onCombatCreate(event);
@@ -895,10 +904,10 @@ export default class CombatCarousel extends Application {
                 return new CombatTrackerConfig().render(true);
 
             case "rollAll":
-                return this.combat.rollAll()
+                return this.combat.rollAll(options)
 
             case "rollNPC":
-                return this.combat.rollNPC();
+                return this.combat.rollNPC(options);
                 
             case "resetAll":
                 return this.combat.resetAll();
