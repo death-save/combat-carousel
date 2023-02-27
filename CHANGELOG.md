@@ -7,6 +7,12 @@
 - When multiple combatants are added to combat at the same time, and the `Control Active Combatant` setting is enabled, there will be an error in console. It doesn't appear to prevent any Carousel behaviour.
 - Currently only the attribute set as the 1st Token bar is able to be set as the Carousel 1st bar (eg. if your Token config is set to `system.attributes.hp` then this is the only attribute Combat Carousel will work with for now)
 
+## [0.3.2] - 2023-02-26
+> This update adds compatibility for Foundry VTT v10.291
+- Fixed issue with editing initiative
+- Make Roll All / Roll NPCs buttons respect **PF2e** Roll Options Dialog setting
+- **Spanish** translation updated (thanks @lozanoje ! 🎉)
+
 ## [0.3.1] - 2022-11-12
 > This update adds compatibility for Foundry VTT v10.290
 - Combat Carousel now supports combatants with no Actor/Token (thanks @BoltsJ! 🎉)

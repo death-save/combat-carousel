@@ -284,7 +284,7 @@ export default class CombatCarousel extends Application {
         const encounter = hasCombat ? currentCombatIdx + 1 : null;
         const previousEncounter = encounter > 1 ? encounter - 1 : null;
         const nextEncounter = encounter < encounterCount ? encounter + 1 : null;
-        const started = combat.started;
+        const started = combat?.started;
         const round = combat ? combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
@@ -362,13 +362,12 @@ export default class CombatCarousel extends Application {
 
         dragHandle.on("contextmenu", event => this._onContextDragHandle(event));
 
-        
-        initSpan.on("click", event => this._onEditInitiative(event, html))
-            .on("contextmenu", event => this._onContextInitiative(event, html));
-        
+            
         rollInit.on("click", this._onRollInitiative);
 
-        initiativeInput.on("change", event => this._onInitiativeChange(event, html))
+        initiativeInput.on("click", event => this._onEditInitiative(event, html))
+            .on("contextmenu", event => this._onContextInitiative(event, html))
+            .on("change", event => this._onInitiativeChange(event, html))
             .on("focusout", event => this._onInitiativeFocusOut(event, html));
 
         splide.on("mouseenter", event => this._onHoverSplide(event, html))
@@ -590,10 +589,10 @@ export default class CombatCarousel extends Application {
 
         if (!game.user.isGM) return;
 
-        const input = event.currentTarget.querySelector("input");
-        const $input = $(input);
-
-        $input.attr("disabled", null).focus().select();
+        const input = event.currentTarget;
+        input.removeAttribute("readonly");
+        input.focus();
+        input.select();
     }
 
     /**
@@ -606,9 +605,11 @@ export default class CombatCarousel extends Application {
         const card = event.target.closest("li.card");
         const combatantId = card ? card.dataset.combatantId : null;
 
-        input.setAttribute("disabled", "disabled");
+        input?.setAttribute("readonly", "");
         const init = parseFloat(input.value);
-        game.combat.setInitiative(combatantId, Math.round(init * 100) / 100);
+        if (Number.isNumeric(init)) {
+            game.combat.setInitiative(combatantId, Math.round(init * 100) / 100);
+        }
     }
 
     /**
@@ -638,7 +639,9 @@ export default class CombatCarousel extends Application {
      */
     _onInitiativeFocusOut(event, html) {
         const input = event.target;
-        input.setAttribute("disabled", "disabled");
+        const selection = input?.ownerDocument?.getSelection();
+        selection?.removeAllRanges();
+        input?.setAttribute("readonly", "");
     }
 
     /**
@@ -881,6 +884,15 @@ export default class CombatCarousel extends Application {
         event.preventDefault();
         const action = event.currentTarget.dataset.action;
 
+        let options = {};
+        if (game.system.id === "pf2e") {
+            // From pf2e https://github.com/foundryvtt/pf2e/blob/master/src/scripts/sheet-util.ts
+            const skipDefault = !game.user.settings.showRollDialogs;
+            const params = { skipDialog: event.shiftKey ? !skipDefault : skipDefault };
+            if (event.ctrlKey || event.metaKey) params.secret = true;
+            options = params;
+        }
+
         switch (action) {
             case "create":
                 return await ui.combat._onCombatCreate(event);
@@ -892,10 +904,10 @@ export default class CombatCarousel extends Application {
                 return new CombatTrackerConfig().render(true);
 
             case "rollAll":
-                return this.combat.rollAll()
+                return this.combat.rollAll(options)
 
             case "rollNPC":
-                return this.combat.rollNPC();
+                return this.combat.rollNPC(options);
                 
             case "resetAll":
                 return this.combat.resetAll();

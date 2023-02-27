@@ -333,8 +333,7 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     color: #f0f0e0
 }
 
-#combat-carousel .initiative input[type="text"]:disabled.fa-stack-1x {
-    pointer-events: none;
+#combat-carousel .initiative input[type="text"][readonly].fa-stack-1x {
     background: none;
     border: none;
 }
