@@ -284,7 +284,7 @@ export default class CombatCarousel extends Application {
         const encounter = hasCombat ? currentCombatIdx + 1 : null;
         const previousEncounter = encounter > 1 ? encounter - 1 : null;
         const nextEncounter = encounter < encounterCount ? encounter + 1 : null;
-        const started = combat.started;
+        const started = combat?.started;
         const round = combat ? combat.round : null;
         const previousRound = round > 0 ? round - 1 : null;
         const nextRound = Number.isNumeric(round) ? round + 1 : null;
