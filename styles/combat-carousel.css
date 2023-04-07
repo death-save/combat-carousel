@@ -474,6 +474,10 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     background:var(--sub-optimum);
 }
 
+#combat-carousel meter::-webkit-meter-even-less-good-value {
+    background: var(--sub-sub-optimum);
+}
+
 /* #combat-carousel meter[value="0"] {
     -webkit-appearance: none;
     -moz-appearance: none;
