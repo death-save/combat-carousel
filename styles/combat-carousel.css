@@ -338,6 +338,10 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     border: none;
 }
 
+#combat-carousel .initiative input[type="text"][readonly][value=""].fa-stack-1x {
+    pointer-events: none;
+}
+
 #combat-carousel .fa-dice-d20 {
     color: maroon;
 }
