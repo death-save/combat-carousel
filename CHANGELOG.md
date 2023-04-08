@@ -7,6 +7,11 @@
 - When multiple combatants are added to combat at the same time, and the `Control Active Combatant` setting is enabled, there will be an error in console. It doesn't appear to prevent any Carousel behaviour.
 - Currently only the attribute set as the 1st Token bar is able to be set as the Carousel 1st bar (eg. if your Token config is set to `system.attributes.hp` then this is the only attribute Combat Carousel will work with for now)
 
+## [0.3.3] - 2023-04-08
+- Fixed issue with rolling initiative caused by fixing issue with editing initiative in the previous update. For every bug we fix, we must put at least 2 bugs back in.
+- Changes to Actor-linked token bar values (eg. HP) will now show in the Carousel again
+- Fixed CSS issue with bar1 colouring in webkit (Chrome) browsers for sub-sub-optimum values
+
 ## [0.3.2] - 2023-02-26
 > This update adds compatibility for Foundry VTT v10.291
 - Fixed issue with editing initiative

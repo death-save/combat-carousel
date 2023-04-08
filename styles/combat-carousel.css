@@ -338,6 +338,10 @@ li[data-control="combat-carousel"] i.collapse-indicator {
     border: none;
 }
 
+#combat-carousel .initiative input[type="text"][readonly][value=""].fa-stack-1x {
+    pointer-events: none;
+}
+
 #combat-carousel .fa-dice-d20 {
     color: maroon;
 }
@@ -468,6 +472,10 @@ li[data-control="combat-carousel"] i.collapse-indicator {
 
 #combat-carousel meter::-webkit-meter-suboptimum-value {
     background:var(--sub-optimum);
+}
+
+#combat-carousel meter::-webkit-meter-even-less-good-value {
+    background: var(--sub-sub-optimum);
 }
 
 /* #combat-carousel meter[value="0"] {
