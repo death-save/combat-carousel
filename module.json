@@ -2,7 +2,7 @@
   "id": "combat-carousel",
   "title": "Combat Carousel",
   "description": "Adds a CRPG-style combat tracker to the top of the screen",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "authors": [
     {
       "name": "Evan Clarke",
